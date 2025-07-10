@@ -1,15 +1,15 @@
-import { observer } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite'
 
-import { Box, Group, Input } from '@mantine/core';
+import { Box, Group, Input } from '@mantine/core'
 
 interface ItemFieldProps {
-	edit: boolean,
-	label?: string,
-	value?: string | number,
-	unit?: string,
-	type?: string,
-	placeholder?: string,
-	onChange?: () => void,
+	edit: boolean
+	label?: string
+	value?: string | number
+	unit?: string
+	type?: string
+	placeholder?: string
+	onChange?: (value: any) => void
 }
 
 export const ItemField = observer(
@@ -24,18 +24,19 @@ export const ItemField = observer(
 	}: ItemFieldProps) => {
 		return (
 			<Group gap={0} grow>
-				<Box>{label}</Box>
-				<Box flex="auto" ta="right" maw="100%">
+				<Box maw='50%'>{label}</Box>
+				<Box flex='auto' ta='right' maw={`${100 - 50}%`}>
 					{edit ? (
 						<Input
-							variant="filled"
-							size="xs" radius={0}
 							type={type}
 							placeholder={placeholder}
 							rightSection={unit}
 							value={value}
-							onChange={onChange}
-							/>) : 'Нет'}
+							onChange={e => onChange?.(e.target.value)}
+						/>
+					) : (
+						'Нет'
+					)}
 				</Box>
 			</Group>
 		)

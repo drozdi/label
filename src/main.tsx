@@ -1,10 +1,40 @@
-import { MantineProvider } from '@mantine/core';
-import '@mantine/core/styles.css';
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
+import {
+	Button,
+	createTheme,
+	Group,
+	Input,
+	MantineProvider,
+} from '@mantine/core'
+import '@mantine/core/styles.css'
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
+
+const theme = createTheme({
+	components: {
+		Group: Group.extend({
+			defaultProps: {
+				mih: 30,
+			},
+		}),
+		Button: Button.extend({
+			defaultProps: {
+				size: 'xs',
+				radius: 0,
+				variant: 'subtle',
+			},
+		}),
+		Input: Input.extend({
+			defaultProps: {
+				variant: 'filled',
+				size: 'xs',
+				radius: 0,
+			},
+		}),
+	},
+})
 
 createRoot(document.querySelector('body')!).render(
-  <MantineProvider>
-    <App />
-  </MantineProvider>
+	<MantineProvider theme={theme}>
+		<App />
+	</MantineProvider>
 )
