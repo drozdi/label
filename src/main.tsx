@@ -4,6 +4,8 @@ import {
 	Group,
 	Input,
 	MantineProvider,
+	NumberInput,
+	TextInput,
 } from '@mantine/core'
 import '@mantine/core/styles.css'
 import { createRoot } from 'react-dom/client'
@@ -24,6 +26,20 @@ const theme = createTheme({
 			},
 		}),
 		Input: Input.extend({
+			defaultProps: {
+				variant: 'filled',
+				size: 'xs',
+				radius: 0,
+			},
+		}),
+		TextInput: TextInput.extend({
+			defaultProps: {
+				variant: 'filled',
+				size: 'xs',
+				radius: 0,
+			},
+		}),
+		NumberInput: NumberInput.extend({
 			defaultProps: {
 				variant: 'filled',
 				size: 'xs',
