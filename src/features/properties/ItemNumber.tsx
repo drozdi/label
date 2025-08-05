@@ -1,4 +1,4 @@
-import { Box, Button, Group, NumberInput } from '@mantine/core'
+import { Box, Group, NumberInput } from '@mantine/core'
 
 interface ItemNumberProps {
 	label?: string
@@ -6,31 +6,16 @@ interface ItemNumberProps {
 	unit?: string
 	placeholder?: string
 	onChange?: (e: React.MouseEvent) => void
-	onClick?: (e: React.MouseEvent) => void
-	editable?: boolean
+	edit?: boolean
+	[key: string]: any
 }
 
-export function ItemNumber({
-	label,
-	value,
-	placeholder,
-	onChange,
-	onClick,
-	editable,
-	unit,
-	...props
-}: ItemNumberProps) {
+export function ItemNumber({ label, edit, unit, ...other }: ItemNumberProps) {
 	return (
 		<Group gap={0} grow>
-			<Box flex='auto' maw='100%'>
-				<NumberInput
-					placeholder={placeholder}
-					value={value}
-					onChange={onChange}
-				/>
-			</Box>
-			<Box flex='none' maw='100%'>
-				<Button onClick={onClick}>Ок</Button>
+			<Box maw='50%'>{label}</Box>
+			<Box flex='auto' ta='right' maw={`${100 - 50}%`}>
+				{edit ? <NumberInput rightSection={unit} {...other} /> : 'Нет'}
 			</Box>
 		</Group>
 	)

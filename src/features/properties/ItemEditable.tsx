@@ -16,13 +16,13 @@ interface ItemEditableProps {
 export function ItemEditable({
 	label,
 	value,
-	type,
+	type = 'text',
 	placeholder,
 	onChange,
 	onClick,
 	editable,
 	unit,
-	...props
+	...other
 }: ItemEditableProps) {
 	const [edit, setEdit] = useState<boolean>(false)
 	return (

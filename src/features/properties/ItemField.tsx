@@ -17,10 +17,11 @@ export const ItemField = observer(
 		edit,
 		label,
 		value,
-		type,
+		type = 'text',
 		unit,
 		placeholder,
 		onChange,
+		...other
 	}: ItemFieldProps) => {
 		return (
 			<Group gap={0} grow>
@@ -28,6 +29,7 @@ export const ItemField = observer(
 				<Box flex='auto' ta='right' maw={`${100 - 50}%`}>
 					{edit ? (
 						<Input
+							{...other}
 							type={type}
 							placeholder={placeholder}
 							rightSection={unit}

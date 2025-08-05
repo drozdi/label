@@ -3,22 +3,23 @@ import { Group, Select } from '@mantine/core'
 interface LabelTolbarSelectProps {
 	w?: number
 	label?: string
-	value?: string
+	name?: string
 	options?: any[]
+	value?: string
+	defaultValue?: string
 	onChange?: (value: null | string, option: any) => void
 }
 
 export function LabelTolbarSelect({
 	w = 75,
 	label,
-	value,
 	options = [],
-	onChange,
+	...props
 }: LabelTolbarSelectProps) {
 	return (
 		<Group component='label' gap='xs'>
 			{label}
-			<Select data={options} value={value} onChange={onChange} w={w} />
+			<Select {...props} data={options} w={w} />
 		</Group>
 	)
 }
