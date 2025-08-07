@@ -1,0 +1,8 @@
+.root {
+	border: 1px solid var(--mantine-color-default-border);
+	color: var(--mantine-color-default-color);
+	padding: var(--mantine-spacing-xs);
+}
+.root:hover {
+	background-color: var(--mantine-primary-color-light-hover);
+}

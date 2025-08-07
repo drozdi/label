@@ -6,7 +6,4 @@ export class TextElement extends BaseElement {
 			type: 'text',
 		})
 	}
-	get style() {
-		return {}
-	}
 }

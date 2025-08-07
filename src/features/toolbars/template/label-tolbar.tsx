@@ -1,8 +1,8 @@
 import { Group, NumberInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../../../entites/template/store'
-import { LabelTolbarInput } from './LabelTolbarInput'
-import { LabelTolbarSelect } from './LabelTolbarSelect'
+import { LabelTolbarInput } from './label-tolbar-input'
+import { LabelTolbarSelect } from './label-tolbar-select'
 
 const w = 60
 

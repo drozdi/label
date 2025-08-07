@@ -4,8 +4,8 @@ import Memory from '../store/Memory'
 import Msg from '../store/Msg'
 import Object from '../store/Object'
 import Templates from '../store/Templates'
+import { request } from './api'
 import config from './config.json'
-import { request } from './service.config'
 
 const fakeVariable = {
 	barcode: "~10103665585002190215'hX%t7Ir8FMl93dGVz",
