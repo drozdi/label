@@ -49,7 +49,6 @@ class StoreTemplate {
 
 	constructor() {
 		makeAutoObservable(this)
-		return
 		this.loadObjects(exapmle as any[])
 	}
 
