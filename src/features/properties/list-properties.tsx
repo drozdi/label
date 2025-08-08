@@ -1,5 +1,12 @@
-import { Stack } from '@mantine/core'
+import { ActionIcon, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import {
+	TbAlignCenter,
+	TbAlignLeft,
+	TbAlignRight,
+	TbBaselineDensitySmall,
+	TbX,
+} from 'react-icons/tb'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
 import { useAppContext } from '../context'
@@ -30,6 +37,9 @@ export const ListProperties = observer(() => {
 					checked={current.enabled}
 					onChange={val => storeTemplate.setEnabled(val)}
 				/>
+			)}
+			{allowProp('code_type') && (
+				<ItemEditable label='Тип кода:' value={current.code_type} />
 			)}
 			{allowProp('name') && (
 				<ItemEditable
@@ -97,19 +107,19 @@ export const ListProperties = observer(() => {
 			)}
 			{allowProp('text_align') && (
 				<ItemOptions
-					label='Позиция:'
+					label='Выравнивание:'
 					options={[
 						{
 							value: '1',
-							label: 'Слева',
+							label: <TbAlignLeft title='Слева' />,
 						},
 						{
 							value: '2',
-							label: 'В центре',
+							label: <TbAlignCenter title='В центре' />,
 						},
 						{
 							value: '3',
-							label: 'Справа',
+							label: <TbAlignRight title='Справа' />,
 						},
 					]}
 					labels={{
@@ -154,7 +164,6 @@ export const ListProperties = observer(() => {
 					label='Шрифт:'
 					value={current.fontFamily}
 					onClick={() => {
-						ctx.setFontFamilyOld(current.font_id)
 						ctx.setFontFamilyFlag(true)
 					}}
 				/>
@@ -163,19 +172,60 @@ export const ListProperties = observer(() => {
 				<ItemText
 					type={current?.type === 'block' ? 'textarea' : 'text'}
 					edit
+					icon={
+						<ActionIcon radius={0} onClick={() => ctx.setVariableFlag(true)}>
+							<TbBaselineDensitySmall />
+						</ActionIcon>
+					}
 					placeholder='Введите текст'
 					value={current.data}
 					onChange={v => storeTemplate.setData(v)}
 				/>
 			)}
-
-			{allowProp('human_readable') && <></>}
+			{allowProp('human_readable') && (
+				<ItemOptions
+					label='Показывать текст:'
+					options={[
+						{
+							value: '0',
+							label: <TbX title='Скрыть' />,
+						},
+						{
+							value: '1',
+							label: <TbAlignLeft title='Слева' />,
+						},
+						{
+							value: '2',
+							label: <TbAlignCenter title='В центре' />,
+						},
+						{
+							value: '3',
+							label: <TbAlignRight title='Справа' />,
+						},
+					]}
+					labels={{
+						0: 'Скрытый',
+						1: 'Слева',
+						2: 'В центре',
+						3: 'Справа',
+					}}
+					value={current.human_readable}
+					onChange={v => storeTemplate.setHumanReadable(v)}
+				/>
+			)}
+			{allowProp('image_id') && (
+				<ItemAction
+					edit
+					label='Изображение:'
+					value={current.imageName}
+					onClick={() => {
+						ctx.setImageFlag(true)
+					}}
+				/>
+			)}
 
 			{allowProp('type') && <></>}
-			{allowProp('code_type') && <></>}
-
 			{allowProp('image_id') && <></>}
-
 			{allowProp('font_rel') && <></>}
 			{allowProp('image_rel') && <></>}
 		</Stack>

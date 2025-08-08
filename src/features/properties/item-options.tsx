@@ -30,7 +30,7 @@ export function ItemOptions({
 						maw='100%'
 						style={{ cursor: 'pointer', color: 'var(--mantine-color-blue-3)' }}
 					>
-						{`${labels ? labels[value] : value}${unit ?? ''}`}
+						{`${labels?.[value] ?? value}${unit ?? ''}`}
 					</Box>
 				</Group>
 			</Popover.Target>

@@ -25,10 +25,10 @@ class StoreTemplate {
 	mm_qr = MM_QR
 
 	////
-	currId = 0
+	currId: number | string = 0
 	currIndex = -1
 
-	selected = []
+	selected: Array<number | string> = []
 
 	selectObject(id) {
 		if (this.selected.includes(id)) {
@@ -49,6 +49,7 @@ class StoreTemplate {
 
 	constructor() {
 		makeAutoObservable(this)
+		return
 		this.loadObjects(exapmle as any[])
 	}
 
@@ -82,19 +83,19 @@ class StoreTemplate {
 	getCurrent() {
 		return this.objects[this.currIndex] || undefined
 	}
-	setActiveObject(id: number) {
+	setActiveObject(id: number | string) {
 		this.currId = id
 		this.currIndex = this.objects.findIndex(object => object.id === this.currId)
 		if (this.currIndex === -1) {
 			this.currId = 0
 		}
-		if (this.currId > 0) {
+		if (this.currId) {
 			this.selected = [this.currId]
 		} else {
 			this.selected = []
 		}
 	}
-	deleteObject(id: number) {
+	deleteObject(id: number | string) {
 		this.objects = this.objects.filter(object => {
 			return object.id !== id
 		})
@@ -106,8 +107,11 @@ class StoreTemplate {
 	loadObjects(objects: Array<any> = []) {
 		this.objects = []
 		objects.forEach(element => {
-			this.objects.push(factoryElement(element) as never)
+			this.addObject(element)
 		})
+	}
+	addObject(object) {
+		this.objects.push(factoryElement(object) as never)
 	}
 
 	setScale = (value: number | string) => {
@@ -180,6 +184,9 @@ class StoreTemplate {
 	}
 
 	setCurrent(object) {
+		if (!object || !this.objects[this.currIndex]) {
+			return
+		}
 		this.objects[this.currIndex] = object.copy()
 	}
 	setName(name: string) {
@@ -232,6 +239,14 @@ class StoreTemplate {
 	}
 	setData(value: string) {
 		this.current?.setData(value)
+		this.setCurrent(this.current)
+	}
+	setHumanReadable(rotation: string | number) {
+		this.current?.setHumanReadable(rotation)
+		this.setCurrent(this.current)
+	}
+	setImageId(value: string | number) {
+		this.current?.setImageId(value)
 		this.setCurrent(this.current)
 	}
 

@@ -1,5 +1,6 @@
 import { CM, MM, MM_QR } from '../../shared/constants'
 import { storeFonts } from '../fonts/store'
+import { storeImages } from '../images/store'
 import { factoryElement } from './factory-element'
 export class BaseElement {
 	/////
@@ -22,7 +23,7 @@ export class BaseElement {
 	code_type: string | null = null
 	font_size = 12
 	font_id = 0
-	image_id = null
+	image_id = 0
 	data: string | null = null
 	template_id = null
 	id = null
@@ -56,6 +57,7 @@ export class BaseElement {
 		this.image_rel = object.image_rel //*/
 	}
 	get properties() {
+		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height']
 		return [
 			'name',
 			'text_align',
@@ -80,6 +82,12 @@ export class BaseElement {
 	}
 	get fontFamily() {
 		return (storeFonts.findById(this.font_id) || this.font_rel)?.name
+	}
+	get imageName() {
+		return (storeImages.findById(this.image_id) || this.image_rel)?.name
+	}
+	get imageData() {
+		return (storeImages.findById(this.image_id) || this.image_rel)?.data
 	}
 	copy() {
 		return factoryElement(this)
@@ -208,5 +216,17 @@ export class BaseElement {
 	}
 	setData(value: string) {
 		this.data = value
+	}
+	setHumanReadable(value: string | number) {
+		if (typeof value === 'string') {
+			value = parseInt(value, 10)
+		}
+		this.human_readable = value
+	}
+	setImageId(value: string | number) {
+		if (typeof value === 'string') {
+			value = parseInt(value, 10)
+		}
+		this.image_id = value
 	}
 }

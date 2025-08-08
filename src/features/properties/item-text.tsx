@@ -19,6 +19,7 @@ export function ItemText({
 }: ItemTextProps) {
 	return type === 'textarea' ? (
 		<Textarea
+			rows={4}
 			disabled={!edit}
 			rightSection={icon}
 			onChange={({ target }) => onChange?.(target.value)}

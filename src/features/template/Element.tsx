@@ -15,16 +15,20 @@ export const Element = observer(
 			[object, refParent.current]
 		)
 		const handleClick = (event: React.MouseEvent) => {
+			const element = event.target.closest(`.${styles.element}`)
 			event.stopPropagation()
+			//event.preventDefault()
 			if (event.ctrlKey) {
-				storeTemplate.selectObject(parseInt(event.target.id, 10))
+				storeTemplate.selectObject(element.id)
 			} else {
-				if (event.target instanceof HTMLDivElement) {
-					storeTemplate.setActiveObject(parseInt(event.target.id, 10))
+				if (element instanceof HTMLDivElement) {
+					storeTemplate.setActiveObject(element.id)
 				}
 			}
 
 			ctx?.setFontFamilyFlag(false)
+			ctx?.setVariableFlag(false)
+			ctx?.setImageFlag(false)
 		}
 		return (
 			<div

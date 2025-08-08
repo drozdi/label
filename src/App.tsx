@@ -3,7 +3,9 @@ import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
 import { storeTemplate } from './entites/template/store'
 import { AppContextProvider } from './features/context'
+import { ContainerElement } from './features/elements/container-element'
 import { ContainerFontFamily } from './features/fonts/container-font-family'
+import { ContainerImage } from './features/images/container-image'
 import { ListLayers } from './features/layers/list-layers'
 import { ListProperties } from './features/properties/list-properties'
 import { Band } from './features/template/band'
@@ -14,7 +16,7 @@ import { ContainerVariable } from './features/variables/container-variable'
 const App = observer(() => {
 	const [fontFamilyFlag, setFontFamilyFlag] = useState(false)
 	const [variableFlag, setVariableFlag] = useState(false)
-	const [fontFamilyOld, setFontFamilyOld] = useState(0)
+	const [imageFlag, setImageFlag] = useState(false)
 
 	const context = useMemo(
 		() => ({
@@ -22,19 +24,29 @@ const App = observer(() => {
 			setFontFamilyFlag,
 			variableFlag,
 			setVariableFlag,
-			fontFamilyOld,
-			setFontFamilyOld,
+			imageFlag,
+			setImageFlag,
 		}),
-		[fontFamilyFlag, fontFamilyOld, variableFlag]
+		[fontFamilyFlag, imageFlag, variableFlag]
 	)
 	return (
 		<AppContextProvider value={context}>
-			<Stack h='100vh' w='100vw' p='md' align='stretch' justify='flex-start'>
+			<Stack h='100vh' w='100vw' align='stretch' justify='flex-start'>
 				<Box>
 					<LabelTolbar />
 				</Box>
 				<Group grow h='100%'>
-					<Box flex='none' w='16rem' maw='100%' h='100%'>
+					<Box
+						flex='none'
+						w='18rem'
+						maw='100%'
+						h='100%'
+						px='xs'
+						style={{
+							overflow: 'auto',
+						}}
+					>
+						<ContainerElement />
 						<Button onClick={() => console.log({ ...storeTemplate.objects })}>
 							check
 						</Button>
@@ -46,10 +58,23 @@ const App = observer(() => {
 							</Band>
 						</Box>
 					</Box>
-					<Box flex='none' w='16rem' maw='100%' h='100%'>
-						<ContainerVariable />
+					<Box
+						flex='none'
+						w='18rem'
+						maw='100%'
+						h='100%'
+						px='xs'
+						style={{
+							overflowX: 'hidden',
+							overflowY: 'auto',
+						}}
+					>
 						{fontFamilyFlag ? (
 							<ContainerFontFamily />
+						) : variableFlag ? (
+							<ContainerVariable />
+						) : imageFlag ? (
+							<ContainerImage />
 						) : (
 							<Tabs defaultValue='properties'>
 								<Tabs.List>

@@ -5,6 +5,7 @@ import {
 	Input,
 	MantineProvider,
 	NumberInput,
+	Textarea,
 	TextInput,
 } from '@mantine/core'
 import '@mantine/core/styles.css'
@@ -28,6 +29,19 @@ const theme = createTheme({
 				variant: 'filled',
 				size: 'xs',
 				radius: 0,
+			},
+		}),
+		Textarea: Textarea.extend({
+			defaultProps: {
+				variant: 'filled',
+				size: 'xs',
+				rows: 3,
+				radius: 0,
+				rightSectionProps: {
+					style: {
+						alignItems: 'flex-start',
+					},
+				},
 			},
 		}),
 		TextInput: TextInput.extend({

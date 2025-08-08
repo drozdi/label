@@ -1,5 +1,32 @@
 export const exapmle = [
-	/*{
+	{
+		name: 'img',
+		text_align: 1,
+		human_readable: 0,
+		radius: null,
+		line_thickness: null,
+		enabled: true,
+		type: 'img',
+		pos_x: 17.1,
+		pos_y: 22.3,
+		width: 10.0,
+		height: 10.0,
+		rotation: 0.0,
+		code_type: null,
+		font_size: null,
+		font_id: null,
+		image_id: 1,
+		data: null,
+		template_id: 4,
+		id: 174,
+		font_rel: null,
+		image_rel: {
+			name: 'pet',
+			tag_images: 'PETMB.BMP',
+			data: 'Qk0+AwAAAAAAAD4AAAAoAAAAQQAAAEAAAAABAAEAAAAAAAADAADEDgAAxA4AAAIAAAACAAAAAAAAAP///////////////4AAAAD/////8////4AAAAD/////9////4AAAAD/////5////4AAAAD/////x////4AAAAD/////x////4AAAAD/921XgAAAH4AAAADwAAAHgAAAD4AAAADgAAAGAAAAB4AAAADAAAAHAAAAA4AAAADAAAADAAAAA4AAAACAAAAHgAABA4AAAADAqqqvh///AYAAAACB////x///A4AAAACA////4//+A4AAAADA////9//+B4AAAADAf///9//+B4AAAADgP//////4D4AAAADgf//////8D4AAAADwH//////4H4AAAADwH//////wH4AAAAD4H//////wP4AAAAD4D//////wP4AAAAD8B//////Af4AAAAD8B//////gf4AAAAD+A/88Hf/A/4AAAAD+A/99/P+A/4AAAAD/Af8U/f+B/4AAAAD/geckHf8B/4AAAAD/gI91/f8D/4AAAAD/gB8EEL4D/4AAAAD/wB9WtX4H/4AAAAD/4B////8H/4AAAAD/gH/////P/4AAAAD8AD///////4AAAAD/QH///23//4AAAAD//////AD//4AAAAD//+v//oC//4AAAAD//4P//4B//4AAAAD//wP//8B//4AAAAD//wH//4A//4AAAAD//4H//4A//4AAAAD//4D//wAf/4AAAAD//8B//wOf/4AAAAD//+B//gPv/4AAAAD//+A//AP//4AAAAD///A//A///4AAAAD///Af+Af//4AAAAD///gP8B///4AAAAD///wP8B///4AAAAD///wH4D///4AAAAD///4H4D///4AAAAD///4DwH///4AAAAD///8BgP///4AAAAD///+BgP///4AAAAD///+AAf///4AAAAD////AA////4AAAAD////gA////4AAAAD////gB////4AAAAD////wB////4AAAAD////4H////4AAAAD//////////4AAAAD//////////4AAAAD//////////4AAAAA=',
+		},
+	},
+	{
 		name: '0104603721020607215>(eguk(e3fwgukLfdK5rLfdK(egukLfdK5r(egukLfdK5r(egukLfdK5r5r\u001d93zoJf',
 		text_align: 1,
 		human_readable: 0,
@@ -21,7 +48,7 @@ export const exapmle = [
 		id: 40,
 		font_rel: null,
 		image_rel: null,
-	},*/
+	},
 	{
 		name: 'block',
 		text_align: 1,

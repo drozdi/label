@@ -1,5 +1,5 @@
 import {
-	Box,
+	ActionIcon,
 	Button,
 	CloseButton,
 	FileButton,
@@ -10,13 +10,14 @@ import {
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { TbFilePlus } from 'react-icons/tb'
 import { storeFonts } from '../../entites/fonts/store'
 import { useAppContext } from '../context'
 import { ListFontFamily } from './list-font-family'
 
 export const ContainerFontFamily = observer(() => {
-	const [font, setFont] = useState<any>(null)
-	const [fontName, setFontName] = useState('')
+	const [file, setFile] = useState<any>(null)
+	const [name, setName] = useState('')
 	const ctx = useAppContext()
 
 	const handleFile = file => {
@@ -25,27 +26,29 @@ export const ContainerFontFamily = observer(() => {
 			alert('Необходимо загрузить файл с разрешением ttf')
 			return
 		}
-		setFontName(name.replace(/(\.)|(...$)/g, ''))
-		setFont(file)
+		setName(name.replace(/(\.)|(...$)/g, ''))
+		setFile(file)
 	}
-	const writeName = (value: string) => {
-		setFontName(value.replace(/[!@#№%^:$&?*()_\-=+<>\.,;:а-яёйА-ЯЁЙ\s]/g, ''))
+	const writeName = ({ target }) => {
+		setName(
+			target.value.replace(/[!@#№%^:$&?*()_\-=+<>\.,;:а-яёйА-ЯЁЙ\s]/g, '')
+		)
 	}
 	const handleSave = () => {
 		const reader = new FileReader()
 		reader.onload = async () => {
 			await storeFonts.add(
-				fontName,
+				name,
 				reader.result.replace(/data:application\/.*;base64,/g, '')
 			)
 
-			setFont(null)
-			setFontName('')
+			setFile(null)
+			setName('')
 		}
-		reader.readAsDataURL(font)
+		reader.readAsDataURL(file)
 	}
 	const handleCancel = () => {
-		setFont(null)
+		setFile(null)
 	}
 	const handleClose = () => {
 		ctx?.setFontFamilyFlag(false)
@@ -57,42 +60,26 @@ export const ContainerFontFamily = observer(() => {
 				Шрифты
 				<CloseButton onClick={handleClose} />
 			</Group>
-			{font ? (
+			{file ? (
 				<Stack>
-					<Box>
-						{' '}
-						Загружен шрифт "{font?.name || 'unknow'}". Оставьте текущее название
+					<Text size='xs'>
+						Загружен шрифт "{file?.name || 'unknow'}". Оставьте текущее название
 						или введите своё на латинице. Максимум 8 символов
-					</Box>
-					<TextInput value={fontName} onChange={writeName} required />
+					</Text>
+					<TextInput value={name} onChange={writeName} required />
 					<Group justify='space-between'>
 						<Button onClick={handleSave}>Сохранить</Button>
 						<Button onClick={handleCancel}>Отмена</Button>
 					</Group>
 				</Stack>
 			) : (
-				<FileButton onChange={handleFile}>
+				<FileButton onChange={handleFile} accept='.ttf'>
 					{props => (
 						<Group justify='space-between'>
 							Загрузить
-							<Button
-								{...props}
-								size='xs'
-								variant='outline'
-								style={{
-									paddingLeft: '0.25em',
-									paddingRight: '0.25em',
-								}}
-							>
-								<Text
-									style={{
-										fontSize: '3em',
-										marginTop: '-0.15em',
-									}}
-								>
-									+
-								</Text>
-							</Button>
+							<ActionIcon {...props}>
+								<TbFilePlus size='1.5em' />
+							</ActionIcon>
 						</Group>
 					)}
 				</FileButton>
