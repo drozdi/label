@@ -38,7 +38,7 @@ export const LabelTolbar = observer(() => {
 				label='Скругление'
 				name='radius'
 				value={storeTemplate.radius_label}
-				onChange={v => storeTemplate.changeGap(v)}
+				onChange={v => storeTemplate.changeRadius(v)}
 			/>
 			<LabelTolbarInput
 				w={w}
