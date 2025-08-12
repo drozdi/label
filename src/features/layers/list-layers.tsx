@@ -10,7 +10,9 @@ export const ListLayers = observer(() => {
 			{objects.map((object, index) => (
 				<Switch
 					key={object.id}
-					color={storeTemplate.selected.includes(object.id) ? 'green' : ''}
+					color={
+						storeTemplate.selected.includes(String(object.id)) ? 'green' : ''
+					}
 					label={object.name}
 					labelPosition='left'
 					checked={object.enabled}

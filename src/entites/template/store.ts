@@ -2,22 +2,22 @@ import { makeAutoObservable } from 'mobx'
 import { CM, MM, MM_QR } from '../../shared/constants'
 import { round } from '../../shared/utils'
 import { factoryElement } from '../element/factory-element'
-import { exapmle } from './example'
-const name = 'printer'
 
 class StoreTemplate {
 	dpi = 12
 	// размеры этикетки
-	width_label = 58
-	height_label = 58
+	width_mm = 58
+	height_mm = 58
 	radius_label = 5
-	gap = 2
-	DIRECTION_1 = 1
-	DIRECTION_2 = 0
-	ref_x = 0
-	ref_y = 0
+	gap_mm = 2
+	direction_x = 1
+	direction_y = 0
+	reference_x = 0
+	reference_y = 0
 	objects = []
 	scale = 1
+	id = 0
+	name = ''
 
 	/////
 	mm = MM
@@ -30,7 +30,8 @@ class StoreTemplate {
 
 	selected: Array<number | string> = []
 
-	selectObject(id) {
+	selectObject(id: number | string) {
+		id = String(id)
 		if (this.selected.includes(id)) {
 			this.selected = this.selected.filter(item => item !== id)
 		} else {
@@ -39,7 +40,7 @@ class StoreTemplate {
 		if (this.selected.length === 1) {
 			this.currId = this.selected[0]
 			this.currIndex = this.objects.findIndex(
-				object => object.id === this.currId
+				object => String(object.id) === String(this.currId)
 			)
 		} else {
 			this.currId = 0
@@ -49,20 +50,19 @@ class StoreTemplate {
 
 	constructor() {
 		makeAutoObservable(this)
-		this.loadObjects(exapmle as any[])
 	}
 
 	get width() {
-		return this.width_label * this.mm * this.scale
+		return this.width_mm * this.mm * this.scale
 	}
 	get height() {
-		return this.height_label * this.mm * this.scale
+		return this.height_mm * this.mm * this.scale
 	}
 	get borderRadius() {
 		return this.radius_label
 	}
 	get space() {
-		return this.gap * this.mm * this.scale
+		return this.gap_mm * this.mm * this.scale
 	}
 	get style() {
 		return {
@@ -76,7 +76,7 @@ class StoreTemplate {
 	}
 	get selectedIndex() {
 		return this.selected.map(id =>
-			this.objects.findIndex(object => object.id === id)
+			this.objects.findIndex(object => String(object.id) === id)
 		)
 	}
 	getCurrent() {
@@ -84,7 +84,9 @@ class StoreTemplate {
 	}
 	setActiveObject(id: number | string) {
 		this.currId = id
-		this.currIndex = this.objects.findIndex(object => object.id === this.currId)
+		this.currIndex = this.objects.findIndex(
+			object => String(object.id) === String(this.currId)
+		)
 		if (this.currIndex === -1) {
 			this.currId = 0
 		}
@@ -112,8 +114,42 @@ class StoreTemplate {
 	addObject(object) {
 		this.objects.push(factoryElement(object) as never)
 	}
+	clear() {
+		this.width_mm = 58
+		this.height_mm = 58
+		this.radius_label = 5
+		this.gap_mm = 2
+		this.direction_x = 1
+		this.direction_y = 0
+		this.reference_x = 0
+		this.reference_y = 0
+		this.id = 0
+		this.name = ''
+		this.objects = []
+	}
+	loadTemplate(template, copy: boolean = false) {
+		if (template) {
+			this.width_mm = template.width_mm
+			this.height_mm = template.height_mm
+			this.radius_label = template.radius_label ?? this.radius_label
+			this.gap_mm = template.gap_mm
+			this.direction_x = template.direction_x
+			this.direction_y = template.direction_y
+			this.reference_x = template.reference_x
+			this.reference_y = template.reference_y
+			this.loadObjects(template.objects || [])
 
-	setScale = (value: number | string) => {
+			if (copy) {
+				this.id = 0
+				this.name = ''
+			} else {
+				this.id = template.id
+				this.name = template.name
+			}
+		}
+	}
+
+	setScale(value: number | string) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)
 		}
@@ -130,13 +166,13 @@ class StoreTemplate {
 		if (typeof width === 'string') {
 			width = parseInt(width, 10)
 		}
-		this.width_label = width
+		this.width_mm = width
 	}
 	changeHeight(height: number | string) {
 		if (typeof height === 'string') {
 			height = parseInt(height, 10)
 		}
-		this.height_label = height
+		this.height_mm = height
 	}
 	changeRadius(radius: number | string) {
 		if (typeof radius === 'string') {
@@ -144,35 +180,35 @@ class StoreTemplate {
 		}
 		this.radius_label = radius
 	}
-	changeGap(gap: number | string) {
-		if (typeof gap === 'string') {
-			gap = parseInt(gap, 10)
-		}
-		this.gap = gap
-	}
-	changeRefX = (value: number | string) => {
+	changeGap(value: number | string) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)
 		}
-		this.ref_x = value
+		this.gap_mm = value
 	}
-	changeRefY = (value: number | string) => {
+	changeRefX(value: number | string) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)
 		}
-		this.ref_y = value
+		this.reference_x = value
 	}
-	changeDirection1 = (value: number | string) => {
+	changeRefY(value: number | string) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)
 		}
-		this.DIRECTION_1 = value
+		this.reference_y = value
 	}
-	changeDirection2 = (value: number | string) => {
+	changeDirection1(value: number | string) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)
 		}
-		this.DIRECTION_2 = value
+		this.direction_x = value
+	}
+	changeDirection2(value: number | string) {
+		if (typeof value === 'string') {
+			value = parseInt(value, 10)
+		}
+		this.direction_y = value
 	}
 	toggleEnabled(id: number) {
 		const index = this.objects.findIndex(object => object.id === id)

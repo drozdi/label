@@ -9,6 +9,9 @@ import {
 	TextInput,
 } from '@mantine/core'
 import '@mantine/core/styles.css'
+import { ModalsProvider } from '@mantine/modals'
+import { Notifications } from '@mantine/notifications'
+import '@mantine/notifications/styles.css'
 
 const theme = createTheme({
 	components: {
@@ -62,5 +65,10 @@ const theme = createTheme({
 })
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-	return <MantineProvider theme={theme}>{children}</MantineProvider>
+	return (
+		<MantineProvider theme={theme}>
+			<Notifications />
+			<ModalsProvider>{children}</ModalsProvider>
+		</MantineProvider>
+	)
 }

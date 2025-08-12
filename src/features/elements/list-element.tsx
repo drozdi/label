@@ -31,6 +31,9 @@ const elements = [
 		data: '{barcode}',
 		width: 6,
 		height: 6,
+		callback: ctx => {
+			ctx?.setDataMatrixFlag(true)
+		},
 	},
 	{
 		label: 'EAN 13',

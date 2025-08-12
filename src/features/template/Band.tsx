@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../../entites/template/store'
 
-export const Band = observer(({ children }) => {
-	storeTemplate
+export const Band = observer(({ template, children }) => {
+	template = template || storeTemplate
 	return (
 		<div
 			style={{
-				width: storeTemplate.width + 8,
+				width: (template.width || 60) + 8,
 				position: 'relative',
 				zIndex: 2,
 				height: '100%',
@@ -25,11 +25,11 @@ export const Band = observer(({ children }) => {
 					overflow: 'hidden',
 					position: 'relative',
 					border: '1px solid #c3bfbf',
-					marginTop: (-storeTemplate.height * 4) / 5,
-					height: storeTemplate.height,
-					width: storeTemplate.width,
-					borderRadius: storeTemplate.borderRadius,
-					marginBottom: storeTemplate.space,
+					marginTop: (-(template.height || 6) * 4) / 5,
+					height: template.height || 60,
+					width: template.width || 60,
+					borderRadius: template.borderRadius || 5,
+					marginBottom: template.space,
 				}}
 			></div>
 			{children}

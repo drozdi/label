@@ -5,6 +5,7 @@ import {
 	FileButton,
 	Group,
 	Image,
+	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
@@ -14,6 +15,7 @@ import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { TbFilePlus } from 'react-icons/tb'
 import { storeImages } from '../../entites/images/store'
+import { serviceNotifications } from '../../entites/notifications/service'
 import { useAppContext } from '../context'
 import { ListImage } from './list-image'
 
@@ -27,16 +29,15 @@ export const ContainerImage = observer(() => {
 	}
 	const handleFile = (file: any) => {
 		const name = file.name
+
 		if (file.type !== 'image/bmp') {
-			alert(
-				'Вы пытаетесь добавить файл ' +
-					file.type +
-					'. Вы можете загрузить только изображение с форматом .bmp'
+			serviceNotifications.error(
+				`Вы пытаетесь добавить файл ${file.type}. Вы можете загрузить только изображение с форматом .bmp`
 			)
 			return
 		}
 		if (file.size > 512000) {
-			alert(
+			serviceNotifications.error(
 				'Превышен максимальный размер файла. Максимальный разрешённый размер 515 Кб'
 			)
 			return
@@ -44,7 +45,6 @@ export const ContainerImage = observer(() => {
 		const reader = new FileReader()
 		reader.onload = () => {
 			setImage(reader.result.replace(/data:image\/bmp;base64,/g, ''))
-			// console.log(reader.result);
 		}
 		reader.readAsDataURL(file)
 
@@ -66,7 +66,7 @@ export const ContainerImage = observer(() => {
 		)
 	}
 	return (
-		<Stack>
+		<Stack h='100%'>
 			<Group justify='space-between'>
 				Изображения
 				<CloseButton onClick={handleClose} />
@@ -105,7 +105,9 @@ export const ContainerImage = observer(() => {
 					)}
 				</FileButton>
 			)}
-			<ListImage />
+			<ScrollArea h='100%'>
+				<ListImage />
+			</ScrollArea>
 		</Stack>
 	)
 })

@@ -1,22 +1,37 @@
-import { Box, Button, Group, Stack, Tabs } from '@mantine/core'
+import { LoadingOverlay, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
-import { storeTemplate } from './entites/template/store'
+import { storeFonts } from './entites/fonts/store'
+import { storeImages } from './entites/images/store'
+import { storeTemplates } from './entites/templates/store'
+import { storeVariables } from './entites/variables/store'
 import { AppContextProvider } from './features/context'
-import { ContainerElement } from './features/elements/container-element'
-import { ContainerFontFamily } from './features/fonts/container-font-family'
-import { ContainerImage } from './features/images/container-image'
-import { ListLayers } from './features/layers/list-layers'
-import { ListProperties } from './features/properties/list-properties'
-import { Band } from './features/template/band'
-import { Template } from './features/template/template'
-import { LabelTolbar } from './features/toolbars/template/label-tolbar'
-import { ContainerVariable } from './features/variables/container-variable'
+import { Settings } from './features/settings/setting'
+import { Editor } from './widgets/Editor'
+import { Header } from './widgets/Header'
+import { Templates } from './widgets/Templates'
 
 const App = observer(() => {
 	const [fontFamilyFlag, setFontFamilyFlag] = useState(false)
 	const [variableFlag, setVariableFlag] = useState(false)
 	const [imageFlag, setImageFlag] = useState(false)
+	const [loadTemplateFlag, setLoadTemplateFlag] = useState(false)
+	const [settingsFlag, setSettingsFlag] = useState(false)
+	const [dataMatrixFlag, setDataMatrixFlag] = useState(false)
+
+	const visible = useMemo(
+		() =>
+			storeTemplates.isLoading ||
+			storeImages.isLoading ||
+			storeFonts.isLoading ||
+			storeVariables.isLoading,
+		[
+			storeTemplates.isLoading,
+			storeImages.isLoading,
+			storeFonts.isLoading,
+			storeVariables.isLoading,
+		]
+	)
 
 	const context = useMemo(
 		() => ({
@@ -26,76 +41,34 @@ const App = observer(() => {
 			setVariableFlag,
 			imageFlag,
 			setImageFlag,
+			loadTemplateFlag,
+			setLoadTemplateFlag,
+			settingsFlag,
+			setSettingsFlag,
+			dataMatrixFlag,
+			setDataMatrixFlag,
 		}),
-		[fontFamilyFlag, imageFlag, variableFlag]
+		[
+			fontFamilyFlag,
+			imageFlag,
+			variableFlag,
+			loadTemplateFlag,
+			settingsFlag,
+			dataMatrixFlag,
+		]
 	)
 	return (
 		<AppContextProvider value={context}>
 			<Stack h='100vh' w='100vw' align='stretch' justify='flex-start'>
-				<Box>
-					<LabelTolbar />
-				</Box>
-				<Group grow h='100%'>
-					<Box
-						flex='none'
-						w='18rem'
-						maw='100%'
-						h='100%'
-						px='xs'
-						style={{
-							overflow: 'auto',
-						}}
-					>
-						<ContainerElement />
-						<Button onClick={() => console.log({ ...storeTemplate.objects })}>
-							check
-						</Button>
-					</Box>
-					<Box flex='auto' w='auto' maw='100%' h='100%'>
-						<Box h='100%'>
-							<Band>
-								<Template />
-							</Band>
-						</Box>
-					</Box>
-					<Box
-						flex='none'
-						w='18rem'
-						maw='100%'
-						h='100%'
-						px='xs'
-						style={{
-							overflowX: 'hidden',
-							overflowY: 'auto',
-						}}
-					>
-						{fontFamilyFlag ? (
-							<ContainerFontFamily />
-						) : variableFlag ? (
-							<ContainerVariable />
-						) : imageFlag ? (
-							<ContainerImage />
-						) : (
-							<Tabs defaultValue='properties'>
-								<Tabs.List>
-									<Tabs.Tab value='properties'>Свойства</Tabs.Tab>
-									<Tabs.Tab value='layers'>Слои</Tabs.Tab>
-									<Tabs.Tab value='histories'>История</Tabs.Tab>
-								</Tabs.List>
-								<Tabs.Panel keepMounted value='properties' p='0.5rem'>
-									{storeTemplate.isOne() && <ListProperties />}
-								</Tabs.Panel>
-								<Tabs.Panel keepMounted value='layers' p='0.5rem'>
-									<ListLayers />
-								</Tabs.Panel>
-								<Tabs.Panel keepMounted value='histories' p='0.5rem'>
-									histories
-								</Tabs.Panel>
-							</Tabs>
-						)}
-					</Box>
-				</Group>
+				<LoadingOverlay
+					visible={visible}
+					zIndex={1000}
+					overlayProps={{ radius: 'sm', blur: 2 }}
+				/>
+				<Header />
+				{loadTemplateFlag ? <Templates /> : <Editor />}
 			</Stack>
+			<Settings />
 		</AppContextProvider>
 	)
 })

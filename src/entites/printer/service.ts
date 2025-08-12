@@ -1,6 +1,10 @@
-import Templates from '../../store/Templates'
-import { storeMessage } from '../messege/store'
-import { apiPrinter } from './api'
+import { serviceNotifications } from '../notifications/service'
+import {
+	requestPrinterPing,
+	requestPrinterSettings,
+	requestPrinterSettingsSave,
+} from './api'
+import { storePrinter } from './store'
 
 const fakeVariable = {
 	barcode: "~10103665585002190215'hX%t7Ir8FMl93dGVz",
@@ -40,25 +44,42 @@ const fakeVariable = {
 
 class Printer {
 	async ping(trial = false) {
+		const config = storePrinter.getConfig()
 		try {
-			const res = await apiPrinter.ping()
-			if (res.data.success) {
-				if (!trial || res.data.data !== 'Готов к работе') {
-					storeMessage.success(`Ответ от принтера. ${res.data.data}`)
+			const res = await requestPrinterPing({
+				host: config.host,
+				port: config.port,
+				type_printer: config.type_printer,
+			})
+			if (res.success) {
+				if (!trial || res.data !== 'Готов к работе') {
+					serviceNotifications.danger(`Ответ от принтера. ${res.data}`)
 				}
-				return true
 			} else {
-				storeMessage.danger(`Ошибка принтера. ${res.data.data}`)
+				serviceNotifications.error(`Ошибка принтера. ${res.data}`)
 			}
+			return res.data
 		} catch (e) {
 			console.error(e)
-			storeMessage.error(
+			serviceNotifications.error(
 				'Ответ от принтера не получен. Возможные ошибки: 1. Неверные параметры настройки принтера, в редакторе этикеток. 2. Принтер выключен. 3. На принтере отсутствует подключение к локальной сети'
 			)
 		}
 		return false
 	}
-	async trialPrint() {
+	async getSettings() {
+		const config = storePrinter.getConfig()
+		return await requestPrinterSettings({
+			host: config.host,
+			port: config.port,
+			type_printer: config.type_printer,
+		})
+	}
+	async setSettings(data) {
+		const res = await requestPrinterSettingsSave(data)
+	}
+
+	/*async trialPrint() {
 		const ping = await this.pingPrinter(true)
 		if (!ping) return
 		try {
@@ -125,7 +146,7 @@ class Printer {
 				)
 			}
 		}
-	}
+	}*/
 }
 
 export const servicePrinter = new Printer()

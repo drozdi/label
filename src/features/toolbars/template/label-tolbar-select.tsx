@@ -6,11 +6,13 @@ interface LabelTolbarSelectProps {
 	name?: string
 	options?: any[]
 	value?: string
+	disabled?: boolean
 	defaultValue?: string
 	onChange?: (value: null | string, option: any) => void
 }
 
 export function LabelTolbarSelect({
+	disabled,
 	w = 75,
 	label,
 	options = [],
@@ -19,7 +21,7 @@ export function LabelTolbarSelect({
 	return (
 		<Group component='label' gap='xs'>
 			{label}
-			<Select {...props} data={options} w={w} />
+			<Select disabled={disabled} {...props} data={options} w={w} />
 		</Group>
 	)
 }

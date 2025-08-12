@@ -5,19 +5,23 @@ import { useAppContext } from '../context'
 import styles from './Element.module.css'
 
 export const Element = observer(
-	({ object, index }: { object: object; index: number }) => {
+	({ object, index, preview }: { object: object; index: number }) => {
 		const refParent = useRef<HTMLDivElement>(null)
 		const ctx = useAppContext()
 		const style = useMemo(
 			() => ({
 				...object.style(refParent.current),
+				...(preview ? { border: '0px' } : {}),
 			}),
 			[object, refParent.current]
 		)
 		const handleClick = (event: React.MouseEvent) => {
+			if (preview) {
+				return
+			}
 			const element = event.target.closest(`.${styles.element}`)
 			event.stopPropagation()
-			//event.preventDefault()
+
 			if (event.ctrlKey) {
 				storeTemplate.selectObject(element.id)
 			} else {
@@ -37,13 +41,13 @@ export const Element = observer(
 				ref={refParent}
 				className={
 					styles.element +
-					(storeTemplate.selected.includes(object.id)
+					(storeTemplate.selected.includes(String(object.id))
 						? ' ' + styles.active
 						: '')
 				}
 				onClick={handleClick}
 			>
-				{object.render()}
+				{object.render(preview)}
 			</div>
 		)
 	}

@@ -10,9 +10,9 @@ export const Template = observer(() => {
 	const refTemplate = useRef<HTMLDivElement>(null)
 
 	const handleClick = (event: React.MouseEvent) => {
-		/*if (event.target instanceof HTMLDivElement) {
+		if (event.target instanceof HTMLDivElement) {
 			storeTemplate.setActiveObject(0)
-		}*/
+		}
 	}
 
 	useEffect(() => {

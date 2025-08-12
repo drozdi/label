@@ -28,7 +28,7 @@ class Printer {
 		try {
 			const config = localStorage.getItem(name)
 			if (config) {
-				this.config = JSON.parse(config)
+				this.config = { ...this.config, ...JSON.parse(config) }
 				this.loaded = true
 				return true
 			}
@@ -38,20 +38,12 @@ class Printer {
 		return false
 	}
 	setConfig(config) {
-		try {
-			this.config = { ...this.config, ...config }
-			this.saveConfig()
-		} catch (e) {
-			console.log(e)
-		}
+		this.config = { ...this.config, ...config }
+		this.saveConfig()
 	}
 	getConfig() {
 		this.loadConfig()
-		try {
-			return this.config
-		} catch (e) {
-			console.log(e)
-		}
+		return this.config
 	}
 	saveConfig() {
 		try {
@@ -84,9 +76,6 @@ class Printer {
 	}
 	get DENSITY() {
 		return this.getConfig().DENSITY
-	}
-	get RIBBON() {
-		return this.getConfig().RIBBON
 	}
 	get SHIFT_X() {
 		return this.getConfig().SHIFT_X

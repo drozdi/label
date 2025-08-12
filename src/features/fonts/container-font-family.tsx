@@ -4,6 +4,7 @@ import {
 	CloseButton,
 	FileButton,
 	Group,
+	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
@@ -12,6 +13,7 @@ import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { TbFilePlus } from 'react-icons/tb'
 import { storeFonts } from '../../entites/fonts/store'
+import { serviceNotifications } from '../../entites/notifications/service'
 import { useAppContext } from '../context'
 import { ListFontFamily } from './list-font-family'
 
@@ -23,7 +25,7 @@ export const ContainerFontFamily = observer(() => {
 	const handleFile = file => {
 		const name = file.name
 		if (!name.toLowerCase().match(/\.ttf$/g)) {
-			alert('Необходимо загрузить файл с разрешением ttf')
+			serviceNotifications.error('Необходимо загрузить файл с разрешением ttf')
 			return
 		}
 		setName(name.replace(/(\.)|(...$)/g, ''))
@@ -55,7 +57,7 @@ export const ContainerFontFamily = observer(() => {
 	}
 
 	return (
-		<Stack>
+		<Stack h='100%'>
 			<Group justify='space-between'>
 				Шрифты
 				<CloseButton onClick={handleClose} />
@@ -84,7 +86,9 @@ export const ContainerFontFamily = observer(() => {
 					)}
 				</FileButton>
 			)}{' '}
-			<ListFontFamily />
+			<ScrollArea h='100%'>
+				<ListFontFamily />
+			</ScrollArea>
 		</Stack>
 	)
 })

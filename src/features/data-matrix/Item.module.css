@@ -2,7 +2,7 @@
 	border: 1px solid var(--mantine-color-default-border);
 	color: var(--mantine-color-default-color);
 	padding: var(--mantine-spacing-xs);
-	font-size: 0.85rem;
+	font-size: 1rem;
 	cursor: pointer;
 }
 .root:hover {
