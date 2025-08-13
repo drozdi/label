@@ -46,8 +46,9 @@ export const Element = observer(
 						: '')
 				}
 				onClick={handleClick}
+				draggable={!preview}
 			>
-				{object.render(preview)}
+				{object.render(1, preview)}
 			</div>
 		)
 	}

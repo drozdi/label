@@ -8,7 +8,9 @@ export const ItemDataMatrix = observer(({ dataMatrix }) => {
 	const { current } = storeTemplate
 	const ctx = useAppContext()
 	const handleSelect = async () => {
-		storeTemplate.setName(await storeDataMatrix.selectedDM(dataMatrix))
+		const dm = await storeDataMatrix.selectedDM(dataMatrix)
+		storeTemplate.setName(dm.dm)
+		storeTemplate.setRadius(dm.size / storeTemplate.dpi)
 		ctx?.setDataMatrixFlag(false)
 	}
 	return (

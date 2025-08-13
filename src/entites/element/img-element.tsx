@@ -22,7 +22,7 @@ export class ImgElement extends BaseElement {
 			'type',
 		]
 	}
-	render(): React.ReactNode {
+	render(scale = 1, preview = false): React.ReactNode {
 		return (
 			<img
 				src={`data:image/bmp;base64,${this.imageData}`}

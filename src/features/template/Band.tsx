@@ -25,7 +25,7 @@ export const Band = observer(({ template, children }) => {
 					overflow: 'hidden',
 					position: 'relative',
 					border: '1px solid #c3bfbf',
-					marginTop: (-(template.height || 6) * 4) / 5,
+					marginTop: (-(template.height || 6) * 9) / 10,
 					height: template.height || 60,
 					width: template.width || 60,
 					borderRadius: template.borderRadius || 5,

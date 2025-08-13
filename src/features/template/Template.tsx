@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
 import { Element } from './element'
+import classes from './Element.module.css'
 
 export const Template = observer(() => {
 	const { objects } = storeTemplate
@@ -13,6 +14,23 @@ export const Template = observer(() => {
 		if (event.target instanceof HTMLDivElement) {
 			storeTemplate.setActiveObject(0)
 		}
+	}
+
+	const sPosition = useRef(null)
+	const handleDragStart = (event: React.DragEvent) => {
+		const element = event.target.closest(`.${classes.element}`)
+		if (!element) {
+			return
+		}
+		sPosition.current = {
+			x: event.pageX,
+			y: event.pageY,
+		}
+	}
+	const handleDragStop = (event: React.DragEvent) => {
+		storeTemplate.moveX((event.pageX - sPosition.current.x) / storeTemplate.mm)
+		storeTemplate.moveY((event.pageY - sPosition.current.y) / storeTemplate.mm)
+		sPosition.current = null
 	}
 
 	useEffect(() => {
@@ -39,7 +57,7 @@ export const Template = observer(() => {
 			event.preventDefault()
 
 			if (event.key === 'Delete') {
-				storeTemplate.deleteCurrentObject()
+				storeTemplate.deleteSelectedObject()
 			}
 			if (event.key === 'ArrowRight') {
 				storeTemplate.moveX(STEP)
@@ -70,8 +88,11 @@ export const Template = observer(() => {
 				height: storeTemplate.height,
 				width: storeTemplate.width,
 				borderRadius: storeTemplate.borderRadius,
+				userSelect: 'none',
 			}}
 			onClick={handleClick}
+			onDragStart={handleDragStart}
+			onDragEnd={handleDragStop}
 			ref={refTemplate}
 		>
 			{objects.map((object, index) => (

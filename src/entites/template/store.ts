@@ -100,6 +100,9 @@ class StoreTemplate {
 		this.objects = this.objects.filter(object => {
 			return object.id !== id
 		})
+		if (this.selected.includes(id)) {
+			this.selected = this.selected.filter(item => item !== id)
+		}
 		this.setActiveObject(this.currId)
 	}
 	deleteCurrentObject() {

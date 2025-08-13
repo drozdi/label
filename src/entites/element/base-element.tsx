@@ -144,7 +144,7 @@ export class BaseElement {
 		}
 	}
 
-	render() {
+	render(scale = 1, preview = false): React.ReactNode {
 		return this.data
 	}
 

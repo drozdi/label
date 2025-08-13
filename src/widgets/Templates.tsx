@@ -14,8 +14,8 @@ import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { useAppContext } from '../features/context'
 import { Band } from '../features/template/band'
-import { ListTemplate } from '../features/template/list-template'
-import { Preview } from '../features/template/preview'
+import { ListTemplate } from '../features/templates/list-template'
+import { Preview } from '../features/templates/preview'
 import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
 
 export const Templates = observer(() => {

@@ -5,11 +5,11 @@ export class TextElement extends BaseElement {
 	constructor(object: Record<string, any>) {
 		super({
 			font_id: storeFonts.defaultFont?.id,
-			width: 'fit-content',
-			height: 'fit-content',
 			font_size: 12,
 			...object,
 			type: 'text',
+			width: 'fit-content',
+			height: 'fit-content',
 		})
 	}
 	get properties() {

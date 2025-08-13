@@ -1,4 +1,4 @@
-import { Box, Group, Tabs } from '@mantine/core'
+import { Box, Group, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../entites/template/store'
 import { useAppContext } from '../features/context'
@@ -25,7 +25,6 @@ export const Editor = observer(() => {
 				<Box flex='none' w='18rem' h='100%' px='sm'>
 					{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
 				</Box>
-
 				<Box flex='auto' w='auto' maw='100%' h='100%'>
 					<Box h='100%'>
 						<Band>
@@ -58,10 +57,30 @@ export const Editor = observer(() => {
 								<Tabs.Tab value='histories'>История</Tabs.Tab>
 							</Tabs.List>
 							<Tabs.Panel keepMounted value='properties' p='0.5rem'>
-								{storeTemplate.isOne() && <ListProperties />}
+								{storeTemplate.objects.length === 0 ? (
+									<Text c='dimmed' size='xl'>
+										Нет ни одного объекта
+									</Text>
+								) : storeTemplate.isOne() ? (
+									<ListProperties />
+								) : storeTemplate.selected.length > 1 ? (
+									<Text c='dimmed' size='xl'>
+										Выбрано несколько объектов
+									</Text>
+								) : (
+									<Text c='dimmed' size='xl'>
+										Не один объект не выбран
+									</Text>
+								)}
 							</Tabs.Panel>
 							<Tabs.Panel keepMounted value='layers' p='0.5rem'>
-								<ListLayers />
+								{storeTemplate.objects.length === 0 ? (
+									<Text c='dimmed' size='xl'>
+										Нет ни одного объекта
+									</Text>
+								) : (
+									<ListLayers />
+								)}
 							</Tabs.Panel>
 							<Tabs.Panel keepMounted value='histories' p='0.5rem'>
 								histories
