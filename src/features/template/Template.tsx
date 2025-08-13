@@ -12,7 +12,7 @@ export const Template = observer(() => {
 
 	const handleClick = (event: React.MouseEvent) => {
 		if (event.target instanceof HTMLDivElement) {
-			storeTemplate.setActiveObject(0)
+			setTimeout(() => storeTemplate.setActiveObject(0), 100)
 		}
 	}
 

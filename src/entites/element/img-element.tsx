@@ -22,6 +22,9 @@ export class ImgElement extends BaseElement {
 			'type',
 		]
 	}
+	get resize() {
+		return ['e', 's', 'se']
+	}
 	render(scale = 1, preview = false): React.ReactNode {
 		return (
 			<img

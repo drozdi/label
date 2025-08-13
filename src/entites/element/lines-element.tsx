@@ -12,6 +12,9 @@ export class LinesElement extends BaseElement {
 	get properties() {
 		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'rotation']
 	}
+	get resize() {
+		return ['e']
+	}
 	style(element, scale = 1) {
 		return {
 			...super.style(element, scale),

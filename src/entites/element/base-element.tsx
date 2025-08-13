@@ -89,6 +89,9 @@ export class BaseElement {
 	get imageData() {
 		return (storeImages.findById(this.image_id) || this.image_rel)?.data
 	}
+	get resize(): number[] {
+		return []
+	}
 	copy() {
 		return factoryElement(this)
 	}

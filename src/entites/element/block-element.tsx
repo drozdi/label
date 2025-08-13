@@ -27,4 +27,7 @@ export class BlockElement extends BaseElement {
 			'data',
 		]
 	}
+	get resize() {
+		return ['e', 's', 'se']
+	}
 }

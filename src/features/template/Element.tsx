@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react-lite'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { storeTemplate } from '../../entites/template/store'
+import { minMax } from '../../shared/utils'
 import { useAppContext } from '../context'
-import styles from './Element.module.css'
+import classes from './Element.module.css'
 
 export const Element = observer(
 	({ object, index, preview }: { object: object; index: number }) => {
@@ -19,7 +20,7 @@ export const Element = observer(
 			if (preview) {
 				return
 			}
-			const element = event.target.closest(`.${styles.element}`)
+			const element = event.target.closest(`.${classes.element}`)
 			event.stopPropagation()
 
 			if (event.ctrlKey) {
@@ -34,21 +35,105 @@ export const Element = observer(
 			ctx?.setVariableFlag(false)
 			ctx?.setImageFlag(false)
 		}
+
+		const resize = object.resize
+		const sPosition = useRef(null)
+		const handleMouseDown = (
+			event: React.MouseEvent,
+			dir: 's' | 'e' | 'se'
+		) => {
+			event.preventDefault()
+			event.stopPropagation()
+			const element = event.target.closest(`.${classes.element}`)
+			if (element instanceof HTMLDivElement) {
+				storeTemplate.setActiveObject(element.id)
+			}
+			const elementRect = element.getBoundingClientRect()
+			const parentRect = element.parentNode.getBoundingClientRect()
+			sPosition.current = {
+				pl: parentRect.left,
+				pr: parentRect.right,
+				pt: parentRect.top,
+				pb: parentRect.bottom,
+				el: elementRect.left,
+				er: elementRect.right,
+				et: elementRect.top,
+				eb: elementRect.bottom,
+				x: event.clientX,
+				y: event.clientY,
+				dir,
+			}
+		}
+		const handleMouseMove = (event: React.MouseEvent) => {
+			if (!sPosition.current) {
+				return
+			}
+			event.preventDefault()
+			event.stopPropagation()
+		}
+		const handleMouseUp = (event: React.MouseEvent) => {
+			if (!sPosition.current) {
+				return
+			}
+			
+			event.preventDefault()
+			event.stopPropagation()
+
+			const dx = minMax(minMax(
+				event.clientX,
+				sPosition.current.el,
+				sPosition.current.pr
+			) - sPosition.current.x - 4, 0)
+			const dy = minMax(minMax(
+				event.clientY,
+				sPosition.current.et,
+				sPosition.current.pb
+			) - sPosition.current.y - 4, 0)
+
+			if (sPosition.current?.dir === 'e' || sPosition.current?.dir === 'se') {
+				storeTemplate.setWidth(
+					minMax(storeTemplate.current.width + dx / storeTemplate.mm, 0.1)
+				)
+			}
+
+			if (sPosition.current?.dir === 's' || sPosition.current?.dir === 'se') {
+				storeTemplate.setHeight(
+					minMax(storeTemplate.current.height + dy / storeTemplate.mm, 0.1)
+				)
+			}
+			sPosition.current = null
+		}
+		useEffect(() => {
+			document.addEventListener('mousemove', handleMouseMove)
+			document.addEventListener('mouseup', handleMouseUp)
+			return () => {
+				document.removeEventListener('mousemove', handleMouseMove)
+				document.removeEventListener('mouseup', handleMouseUp)
+			}
+		}, [])
+
 		return (
 			<div
 				id={object.id}
 				style={style}
 				ref={refParent}
 				className={
-					styles.element +
+					classes.element +
 					(storeTemplate.selected.includes(String(object.id))
-						? ' ' + styles.active
+						? ' ' + classes.active
 						: '')
 				}
 				onClick={handleClick}
 				draggable={!preview}
 			>
-				{object.render(1, preview)}
+				{object.render(storeTemplate.scale, preview)}
+				{resize.map(dir => (
+					<div
+						key={dir}
+						onMouseDown={e => handleMouseDown(e, dir)}
+						className={`${classes.res} ${classes['res_' + dir]}`}
+					></div>
+				))}
 			</div>
 		)
 	}

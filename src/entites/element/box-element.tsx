@@ -22,6 +22,9 @@ export class BoxElement extends BaseElement {
 			'line_thickness',
 		]
 	}
+	get resize() {
+		return ['e', 's', 'se']
+	}
 	style(element, scale = 1) {
 		return {
 			...super.style(element, scale),
