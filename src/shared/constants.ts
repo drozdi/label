@@ -8,28 +8,14 @@ export const ROUND = 100
 
 export const DEF_TEMPLATE = {
 	dpi: 12,
-	height_mm: 60,
-	width_mm: 60,
+	height_mm: 40,
+	width_mm: 58,
 	radius_label: 5,
-	gap_mm: 6,
+	gap_mm: 3,
 	scale: 1,
-	objects: [
-		/*{
-			code_type: null,
-			data: 'Какойто текст',
-			enabled: true,
-			font_id: 1,
-			font_size: 12,
-			height: 'fit-content',
-			human_readable: 0,
-			line_thickness: 0,
-			pos_x: 10,
-			pos_y: 30,
-			radius: 0,
-			rotation: 0,
-			text_align: 1,
-			type: 'text',
-			width: 'fit-content',
-		},*/
-	],
+	direction_x: 1,
+	direction_y: 0,
+	reference_x: 0,
+	reference_y: 0,
+	objects: [],
 }

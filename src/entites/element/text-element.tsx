@@ -26,4 +26,7 @@ export class TextElement extends BaseElement {
 			'data',
 		]
 	}
+	getProps() {
+		return { ...super.getProps(), width: null, height: 6 }
+	}
 }

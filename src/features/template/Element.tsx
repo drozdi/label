@@ -5,6 +5,10 @@ import { minMax } from '../../shared/utils'
 import { useAppContext } from '../context'
 import classes from './Element.module.css'
 
+function aspect(width: number, height: number): number {
+	return width / height
+}
+
 export const Element = observer(
 	({
 		object,
@@ -20,7 +24,7 @@ export const Element = observer(
 		const style = useMemo(
 			() => ({
 				...object.style(refParent.current),
-				...(preview ? { border: '0px' } : {}),
+				...(preview ? { outline: '0px' } : {}),
 			}),
 			[object, refParent.current]
 		)
@@ -88,19 +92,48 @@ export const Element = observer(
 			event.preventDefault()
 			event.stopPropagation()
 
-			const dx =
-				minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
-				sPosition.current.x
-			const dy =
-				minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
-				sPosition.current.y
+			const a = aspect(sPosition.current.width, sPosition.current.height)
+			let dx = 0,
+				dy = 0
 
-			if (sPosition.current?.dir === 'e' || sPosition.current?.dir === 'se') {
-				cloneElement.current.style.width = sPosition.current.width + dx + 'px'
+			if (sPosition.current?.dir === 'e') {
+				dx =
+					minMax(
+						event.clientX,
+						sPosition.current.minX,
+						sPosition.current.maxX
+					) - sPosition.current.x
+				if (event.shiftKey && resize.includes('se')) {
+					dy = dx * a
+				}
+			} else if (sPosition.current?.dir === 's') {
+				dy =
+					minMax(
+						event.clientY,
+						sPosition.current.minY,
+						sPosition.current.maxY
+					) - sPosition.current.y
+				if (event.shiftKey && resize.includes('se')) {
+					dx = dy / a
+				}
+			} else if (sPosition.current?.dir === 'se') {
+				dx =
+					minMax(
+						event.clientX,
+						sPosition.current.minX,
+						sPosition.current.maxX
+					) - sPosition.current.x
+				dy = event.shiftKey
+					? dx * a
+					: minMax(
+							event.clientY,
+							sPosition.current.minY,
+							sPosition.current.maxY
+					  ) - sPosition.current.y
 			}
-			if (sPosition.current?.dir === 's' || sPosition.current?.dir === 'se') {
-				cloneElement.current.style.height = sPosition.current.height + dy + 'px'
-			}
+
+			cloneElement.current.style.width = sPosition.current.width + dx + 'px'
+			cloneElement.current.style.height = sPosition.current.height + dy + 'px'
 		}
 		const handleMouseUp = (event: React.MouseEvent) => {
 			if (!sPosition.current) {
@@ -110,32 +143,62 @@ export const Element = observer(
 			event.preventDefault()
 			event.stopPropagation()
 
-			const dx =
-				minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
-				sPosition.current.x
-			const dy =
-				minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
-				sPosition.current.y
+			const a = aspect(sPosition.current.width, sPosition.current.height)
+			let dx = 0,
+				dy = 0
 
-			if (sPosition.current?.dir === 'e' || sPosition.current?.dir === 'se') {
-				storeTemplate.setWidth(
+			if (sPosition.current?.dir === 'e') {
+				dx =
 					minMax(
-						storeTemplate.current.width +
-							dx / storeTemplate.mm / storeTemplate.scale,
-						0.1
-					)
-				)
+						event.clientX,
+						sPosition.current.minX,
+						sPosition.current.maxX
+					) - sPosition.current.x
+				if (event.shiftKey && resize.includes('se')) {
+					dy = dx * a
+				}
+			} else if (sPosition.current?.dir === 's') {
+				dy =
+					minMax(
+						event.clientY,
+						sPosition.current.minY,
+						sPosition.current.maxY
+					) - sPosition.current.y
+				if (event.shiftKey && resize.includes('se')) {
+					dx = dy / a
+				}
+			} else if (sPosition.current?.dir === 'se') {
+				dx =
+					minMax(
+						event.clientX,
+						sPosition.current.minX,
+						sPosition.current.maxX
+					) - sPosition.current.x
+				dy = event.shiftKey
+					? dx * a
+					: minMax(
+							event.clientY,
+							sPosition.current.minY,
+							sPosition.current.maxY
+					  ) - sPosition.current.y
 			}
 
-			if (sPosition.current?.dir === 's' || sPosition.current?.dir === 'se') {
-				storeTemplate.setHeight(
-					minMax(
-						storeTemplate.current.height +
-							dy / storeTemplate.mm / storeTemplate.scale,
-						0.1
-					)
+			storeTemplate.setWidth(
+				minMax(
+					storeTemplate.current.width +
+						dx / storeTemplate.mm / storeTemplate.scale,
+					0.1
 				)
-			}
+			)
+
+			storeTemplate.setHeight(
+				minMax(
+					storeTemplate.current.height +
+						dy / storeTemplate.mm / storeTemplate.scale,
+					0.1
+				)
+			)
+
 			cloneElement.current?.remove()
 			sPosition.current = null
 			cloneElement.current = null
@@ -156,7 +219,7 @@ export const Element = observer(
 				ref={refParent}
 				className={
 					classes.element +
-					(storeTemplate.selected.includes(String(object.id))
+					(!preview && storeTemplate.selected.includes(String(object.id))
 						? ' ' + classes.active
 						: '')
 				}

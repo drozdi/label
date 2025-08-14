@@ -92,6 +92,19 @@ export class BaseElement {
 	get resize(): number[] {
 		return []
 	}
+	getProps() {
+		return {
+			...this,
+			id: parseInt(this.id) > 0 ? this.id : undefined,
+			font_id: parseInt(this.font_id) > 0 ? this.font_id : undefined,
+			image_id: parseInt(this.image_id) > 0 ? this.image_id : undefined,
+			mm: undefined,
+			cm: undefined,
+			mm_qr: undefined,
+			font_rel: undefined,
+			image_rel: undefined,
+		}
+	}
 	copy() {
 		return factoryElement(this)
 	}

@@ -134,7 +134,7 @@ export class BarcodeElement extends BaseElement {
 			style.width = 'auto'
 			style.height = 'auto'
 		}
-		style.border = 0
+		style.outline = 0
 		style.borderRadius = 0
 		return style
 	}

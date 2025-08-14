@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { CM, MM, MM_QR } from '../../shared/constants'
+import { CM, DEF_TEMPLATE, MM, MM_QR } from '../../shared/constants'
 import { round } from '../../shared/utils'
 import { factoryElement } from '../element/factory-element'
 
@@ -118,17 +118,7 @@ class StoreTemplate {
 		this.objects.push(factoryElement(object) as never)
 	}
 	clear() {
-		this.width_mm = 58
-		this.height_mm = 58
-		this.radius_label = 5
-		this.gap_mm = 2
-		this.direction_x = 1
-		this.direction_y = 0
-		this.reference_x = 0
-		this.reference_y = 0
-		this.id = 0
-		this.name = ''
-		this.objects = []
+		this.loadTemplate(DEF_TEMPLATE, true)
 	}
 	loadTemplate(template, copy: boolean = false) {
 		if (template) {
@@ -151,7 +141,9 @@ class StoreTemplate {
 			}
 		}
 	}
-
+	setTemplateName(name: string) {
+		this.name = name
+	}
 	setScale(value: number | string) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)

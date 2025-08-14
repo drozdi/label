@@ -6,6 +6,7 @@ import {
 	requestTemplateId,
 	requestTemplateImportCode,
 	requestTemplateList,
+	requestTemplateSave,
 } from './api'
 import { Preview } from './preview'
 class StoreTemplates {
@@ -68,6 +69,21 @@ class StoreTemplates {
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async newTemplate(template) {
+		this.isLoading = true
+		this.error = ''
+		try {
+			const res = await requestTemplateSave(template)
+			await this.load(true)
+			return res
+		} catch (e) {
+			console.error(e)
+			this.error = e.message || e.toString() || 'Unknown error'
+			throw this.error
 		} finally {
 			this.isLoading = false
 		}

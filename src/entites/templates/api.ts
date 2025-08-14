@@ -6,6 +6,24 @@ export async function requestTemplateList() {
 	return res.data.data.response
 }
 
+//   Сохранить шаблон
+export async function requestTemplateSave(obj) {
+	const res = await api.post(`/form_labels/`, obj)
+	return res.data
+}
+
+// Обновление параметров этикетки
+export async function requestTemplateUpdate(id, options) {
+	const res = await api.patch(`/form_labels/label/` + id, options)
+	return res.data
+}
+
+// Обновление существующих объектов внутри шаблона
+export async function requestObjectUpdate(obj) {
+	const res = await api.post(`/form_labels/field/`, obj)
+	return res.data
+}
+
 // Получить шаблон по id
 export async function requestTemplateId(id: number) {
 	const res = await api.get(`/form_labels/${id}`)

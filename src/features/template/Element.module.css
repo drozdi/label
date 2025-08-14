@@ -1,7 +1,7 @@
 .element {
 	position: absolute;
 	display: flex;
-	border: 1px solid #00000040;
+	outline: 1px solid #00000040;
 	cursor: default;
 	user-select: none;
 	z-index: 10;

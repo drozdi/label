@@ -1,8 +1,9 @@
 import { LoadingOverlay, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { storeFonts } from './entites/fonts/store'
 import { storeImages } from './entites/images/store'
+import { storeTemplate } from './entites/template/store'
 import { storeTemplates } from './entites/templates/store'
 import { storeVariables } from './entites/variables/store'
 import { AppContextProvider } from './features/context'
@@ -57,6 +58,10 @@ const App = observer(() => {
 			dataMatrixFlag,
 		]
 	)
+	useEffect(() => {
+		storeTemplate.clear()
+	}, [])
+
 	return (
 		<AppContextProvider value={context}>
 			<Stack h='100vh' w='100vw' align='stretch' justify='flex-start'>
