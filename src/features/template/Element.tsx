@@ -6,7 +6,15 @@ import { useAppContext } from '../context'
 import classes from './Element.module.css'
 
 export const Element = observer(
-	({ object, index, preview }: { object: object; index: number }) => {
+	({
+		object,
+		index,
+		preview,
+	}: {
+		object: object
+		index: number
+		preview: boolean
+	}) => {
 		const refParent = useRef<HTMLDivElement>(null)
 		const ctx = useAppContext()
 		const style = useMemo(
@@ -21,7 +29,10 @@ export const Element = observer(
 				return
 			}
 			const element = event.target.closest(`.${classes.element}`)
-			event.stopPropagation()
+			if (element instanceof HTMLDivElement) {
+				event.preventDefault()
+				event.stopPropagation()
+			}
 
 			if (event.ctrlKey) {
 				storeTemplate.selectObject(element.id)
@@ -38,27 +49,33 @@ export const Element = observer(
 
 		const resize = object.resize
 		const sPosition = useRef(null)
+		const cloneElement = useRef(null)
+
 		const handleMouseDown = (
 			event: React.MouseEvent,
 			dir: 's' | 'e' | 'se'
 		) => {
-			event.preventDefault()
-			event.stopPropagation()
+			if (preview) {
+				return
+			}
 			const element = event.target.closest(`.${classes.element}`)
 			if (element instanceof HTMLDivElement) {
+				event.preventDefault()
+				event.stopPropagation()
 				storeTemplate.setActiveObject(element.id)
 			}
 			const elementRect = element.getBoundingClientRect()
 			const parentRect = element.parentNode.getBoundingClientRect()
+			cloneElement.current = element.cloneNode(true)
+			cloneElement.current?.classList?.add?.(classes.clone)
+			element.parentNode.appendChild(cloneElement.current)
 			sPosition.current = {
-				pl: parentRect.left,
-				pr: parentRect.right,
-				pt: parentRect.top,
-				pb: parentRect.bottom,
-				el: elementRect.left,
-				er: elementRect.right,
-				et: elementRect.top,
-				eb: elementRect.bottom,
+				minX: elementRect.left + 2,
+				maxX: parentRect.right - 2,
+				minY: elementRect.top + 2,
+				maxY: parentRect.bottom - 2,
+				width: elementRect.width,
+				height: elementRect.height,
 				x: event.clientX,
 				y: event.clientY,
 				dir,
@@ -70,38 +87,58 @@ export const Element = observer(
 			}
 			event.preventDefault()
 			event.stopPropagation()
+
+			const dx =
+				minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
+				sPosition.current.x
+			const dy =
+				minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
+				sPosition.current.y
+
+			if (sPosition.current?.dir === 'e' || sPosition.current?.dir === 'se') {
+				cloneElement.current.style.width = sPosition.current.width + dx + 'px'
+			}
+			if (sPosition.current?.dir === 's' || sPosition.current?.dir === 'se') {
+				cloneElement.current.style.height = sPosition.current.height + dy + 'px'
+			}
 		}
 		const handleMouseUp = (event: React.MouseEvent) => {
 			if (!sPosition.current) {
 				return
 			}
-			
+
 			event.preventDefault()
 			event.stopPropagation()
 
-			const dx = minMax(minMax(
-				event.clientX,
-				sPosition.current.el,
-				sPosition.current.pr
-			) - sPosition.current.x - 4, 0)
-			const dy = minMax(minMax(
-				event.clientY,
-				sPosition.current.et,
-				sPosition.current.pb
-			) - sPosition.current.y - 4, 0)
+			const dx =
+				minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
+				sPosition.current.x
+			const dy =
+				minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
+				sPosition.current.y
 
 			if (sPosition.current?.dir === 'e' || sPosition.current?.dir === 'se') {
 				storeTemplate.setWidth(
-					minMax(storeTemplate.current.width + dx / storeTemplate.mm, 0.1)
+					minMax(
+						storeTemplate.current.width +
+							dx / storeTemplate.mm / storeTemplate.scale,
+						0.1
+					)
 				)
 			}
 
 			if (sPosition.current?.dir === 's' || sPosition.current?.dir === 'se') {
 				storeTemplate.setHeight(
-					minMax(storeTemplate.current.height + dy / storeTemplate.mm, 0.1)
+					minMax(
+						storeTemplate.current.height +
+							dy / storeTemplate.mm / storeTemplate.scale,
+						0.1
+					)
 				)
 			}
+			cloneElement.current?.remove()
 			sPosition.current = null
+			cloneElement.current = null
 		}
 		useEffect(() => {
 			document.addEventListener('mousemove', handleMouseMove)
@@ -124,7 +161,7 @@ export const Element = observer(
 						: '')
 				}
 				onClick={handleClick}
-				draggable={!preview}
+				data-draggable={!preview}
 			>
 				{object.render(storeTemplate.scale, preview)}
 				{resize.map(dir => (

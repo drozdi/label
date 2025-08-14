@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react-lite'
-import { storeImages } from '../../entites/images/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useAppContext } from '../context'
 import classes from './Item.module.css'
@@ -18,7 +17,6 @@ export const ItemElement = observer(({ label, callback, element }) => {
 			...element,
 		})
 		storeTemplate.setActiveObject(id)
-		console.log(storeImages)
 		callback?.(ctx)
 	}
 	return (

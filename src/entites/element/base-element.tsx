@@ -141,7 +141,7 @@ export class BaseElement {
 					? 'flex-end'
 					: 'flex-start',
 			rotate: this.rotation + 'deg',
-			opacity: this.enabled ? 1 : 0.2,
+			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,
 			fontFamily: this.fontFamily,
 		}

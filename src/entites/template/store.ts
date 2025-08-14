@@ -291,6 +291,9 @@ class StoreTemplate {
 	isOne() {
 		return this.selected.length === 1
 	}
+	isEmpty() {
+		return this.selected.length === 0
+	}
 	isSelected(id: number) {
 		return this.selected.includes(id)
 	}

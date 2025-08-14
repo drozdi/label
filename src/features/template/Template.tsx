@@ -3,34 +3,122 @@ import type React from 'react'
 import { useEffect, useRef } from 'react'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
+import { minMax } from '../../shared/utils'
+
 import { Element } from './element'
 import classes from './Element.module.css'
 
 export const Template = observer(() => {
-	const { objects } = storeTemplate
+	const { objects, current } = storeTemplate
 	const refTemplate = useRef<HTMLDivElement>(null)
+	const isDrag = useRef(false)
 
 	const handleClick = (event: React.MouseEvent) => {
-		if (event.target instanceof HTMLDivElement) {
-			setTimeout(() => storeTemplate.setActiveObject(0), 100)
+		if (!isDrag.current && event.target instanceof HTMLDivElement) {
+			storeTemplate.setActiveObject(0)
 		}
 	}
 
 	const sPosition = useRef(null)
-	const handleDragStart = (event: React.DragEvent) => {
+	const cloneElement = useRef([])
+
+	const handleMouseDown = (event: React.MouseEvent) => {
 		const element = event.target.closest(`.${classes.element}`)
-		if (!element) {
+		if (!element || (storeTemplate.isOne() && current?.id !== element?.id)) {
 			return
 		}
-		sPosition.current = {
-			x: event.pageX,
-			y: event.pageY,
+		if (storeTemplate.isEmpty() && element instanceof HTMLDivElement) {
+			storeTemplate.setActiveObject(element?.id || 0)
 		}
+
+		event.preventDefault()
+		event.stopPropagation()
+
+		const pRect = refTemplate.current?.getBoundingClientRect()
+
+		storeTemplate.selected.forEach(id => {
+			const element = document.getElementById(id)
+			const rect = element?.getBoundingClientRect()
+			const clone = element?.cloneNode(true)
+
+			clone?.classList?.add?.(classes.clone)
+
+			refTemplate.current?.appendChild(clone)
+
+			cloneElement.current.push({
+				minX: pRect.left - (rect.left - event.clientX),
+				maxX: pRect.right - (rect.right - event.clientX),
+				minY: pRect.top - (rect.top - event.clientY),
+				maxY: pRect.bottom - (rect.bottom - event.clientY),
+				top: rect.top - pRect.top,
+				left: rect.left - pRect.left,
+				clone,
+			})
+		})
+
+		sPosition.current = {
+			minX: cloneElement.current.reduce(
+				(acc, item) => Math.max(acc, item.minX),
+				0
+			),
+			maxX:
+				cloneElement.current.reduce(
+					(acc, item) => Math.min(acc, item.maxX),
+					10000
+				) - 1,
+			minY: cloneElement.current.reduce(
+				(acc, item) => Math.max(acc, item.minY),
+				0
+			),
+			maxY:
+				cloneElement.current.reduce(
+					(acc, item) => Math.min(acc, item.maxY),
+					10000
+				) - 1,
+			x: event.clientX,
+			y: event.clientY,
+		}
+		isDrag.current = true
 	}
-	const handleDragStop = (event: React.DragEvent) => {
-		storeTemplate.moveX((event.pageX - sPosition.current.x) / storeTemplate.mm)
-		storeTemplate.moveY((event.pageY - sPosition.current.y) / storeTemplate.mm)
+	const handleMouseMove = (event: React.MouseEvent) => {
+		if (!isDrag.current) {
+			return
+		}
+		event.preventDefault()
+		event.stopPropagation()
+		const dx =
+			minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
+			sPosition.current.x
+		const dy =
+			minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
+			sPosition.current.y
+
+		cloneElement.current.forEach(item => {
+			item.clone.style.left = item.left + dx + 'px'
+			item.clone.style.top = item.top + dy + 'px'
+		})
+	}
+	const handleMouseUp = (event: React.MouseEvent) => {
+		if (!isDrag.current) {
+			return
+		}
+		event.preventDefault()
+		event.stopPropagation()
+		const dx =
+			minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
+			sPosition.current.x
+		const dy =
+			minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
+			sPosition.current.y
+
+		storeTemplate.moveX(dx / storeTemplate.mm / storeTemplate.scale)
+		storeTemplate.moveY(dy / storeTemplate.mm / storeTemplate.scale)
+
+		cloneElement.current.forEach(item => item.clone?.remove())
+
 		sPosition.current = null
+		cloneElement.current = []
+		setTimeout(() => (isDrag.current = false), 10)
 	}
 
 	useEffect(() => {
@@ -73,8 +161,12 @@ export const Template = observer(() => {
 			}
 		}
 		document.addEventListener('keydown', pressKey)
+		document.addEventListener('mousemove', handleMouseMove)
+		document.addEventListener('mouseup', handleMouseUp)
 		return () => {
 			document.removeEventListener('keydown', pressKey)
+			document.removeEventListener('mousemove', handleMouseMove)
+			document.removeEventListener('mouseup', handleMouseUp)
 		}
 	}, [])
 
@@ -91,8 +183,7 @@ export const Template = observer(() => {
 				userSelect: 'none',
 			}}
 			onClick={handleClick}
-			onDragStart={handleDragStart}
-			onDragEnd={handleDragStop}
+			onMouseDown={handleMouseDown}
 			ref={refTemplate}
 		>
 			{objects.map((object, index) => (

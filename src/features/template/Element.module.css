@@ -11,7 +11,7 @@
 	z-index: 11;
 }
 
-.active::before {
+.active:not(.clone)::before {
 	content: '';
 	position: absolute;
 	top: -3px;
@@ -19,6 +19,11 @@
 	right: -3px;
 	bottom: -3px;
 	border: 1px dashed #12db1290;
+}
+
+.clone {
+	opacity: 0.5;
+	z-index: 20;
 }
 
 .res {
@@ -54,4 +59,7 @@
 }
 *:has(.res_se) .res_s {
 	width: calc(100% - 4px);
+}
+.clone .res {
+	display: none;
 }
