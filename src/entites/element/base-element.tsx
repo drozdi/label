@@ -1,4 +1,5 @@
 import { CM, MM, MM_QR } from '../../shared/constants'
+import { round } from '../../shared/utils'
 import { storeFonts } from '../fonts/store'
 import { storeImages } from '../images/store'
 import { factoryElement } from './factory-element'
@@ -171,25 +172,25 @@ export class BaseElement {
 		if (typeof width === 'string') {
 			width = parseInt(width, 10)
 		}
-		this.width = width
+		this.width = round(width)
 	}
 	setHeight(height: string | number) {
 		if (typeof height === 'string') {
 			height = parseInt(height, 10)
 		}
-		this.height = height
+		this.height = round(height)
 	}
 	setPosX(pos_x: string | number) {
 		if (typeof pos_x === 'string') {
 			pos_x = parseInt(pos_x, 10)
 		}
-		this.pos_x = pos_x
+		this.pos_x = round(pos_x)
 	}
 	setPosY(pos_y: string | number) {
 		if (typeof pos_y === 'string') {
 			pos_y = parseInt(pos_y, 10)
 		}
-		this.pos_y = pos_y
+		this.pos_y = round(pos_y)
 	}
 	setRotation(rotation: string | number) {
 		if (typeof rotation === 'string') {
@@ -213,7 +214,7 @@ export class BaseElement {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)
 		}
-		this.line_thickness = value
+		this.line_thickness = round(value)
 	}
 	setRadius(value: string | number) {
 		if (typeof value === 'string') {

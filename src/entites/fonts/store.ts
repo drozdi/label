@@ -58,7 +58,7 @@ class StoreFonts {
 		this._default = index
 	}
 	findById(id) {
-		return this._list.find(item => item.id === id) || this.default
+		return this._list.find(item => item.id === id) || this.defaultFont
 	}
 }
 

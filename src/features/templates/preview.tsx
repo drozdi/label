@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { Element } from '../template/element'
+import { Element } from '../element/element'
 
 export const Preview = observer(({ template, objects }) => {
 	return (

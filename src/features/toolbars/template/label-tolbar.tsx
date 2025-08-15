@@ -72,6 +72,7 @@ export const LabelTolbar = observer(({ template, disabled }) => {
 			<Group gap={0}>
 				Смещение по x:
 				<NumberInput
+					min={0}
 					disabled={disabled}
 					w={w}
 					value={template.reference_x}
@@ -79,6 +80,7 @@ export const LabelTolbar = observer(({ template, disabled }) => {
 				/>
 				y:
 				<NumberInput
+					min={0}
 					disabled={disabled}
 					w={w}
 					value={template.reference_y}

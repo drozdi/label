@@ -1,26 +1,38 @@
 import { notifications } from '@mantine/notifications'
+
 import classes from './Style.module.css'
 
+function send(item) {
+	notifications.cleanQueue()
+	/*if (notificationsStore.notifications.length) {
+		if (
+			notificationsStore.notifications.findIndex(notification => {
+				return notification.message === item.message
+			}) > -1
+		) {
+			return
+		}
+	}*/
+	return notifications.show({
+		...item,
+		autoClose: 10000,
+		withCloseButton: true,
+		position: 'top-center',
+		classNames: classes,
+	})
+}
+
 export const serviceNotifications = {
-	send(item) {
-		notifications.show({
-			...item,
-			autoClose: 5000,
-			withCloseButton: true,
-			position: 'top-center',
-			classNames: classes,
-		})
-	},
 	error: message => {
-		serviceNotifications.send({ message, color: 'red' })
+		send({ message, color: 'red' })
 	},
 	success: message => {
-		serviceNotifications.send({ message, color: 'green' })
+		send({ message, color: 'green' })
 	},
 	danger: message => {
-		serviceNotifications.send({ message, color: 'orange' })
+		send({ message, color: 'orange' })
 	},
 	alert: message => {
-		serviceNotifications.send({ message })
+		send({ message })
 	},
 }

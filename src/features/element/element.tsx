@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { storeTemplate } from '../../entites/template/store'
 import { minMax } from '../../shared/utils'
 import { useAppContext } from '../context'
-import classes from './Element.module.css'
+import classes from './element.module.css'
 
 function aspect(width: number, height: number): number {
 	return width / height

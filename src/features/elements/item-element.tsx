@@ -1,11 +1,8 @@
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../../entites/template/store'
+import { genId } from '../../shared/utils'
 import { useAppContext } from '../context'
 import classes from './Item.module.css'
-
-const genId = () => {
-	return 'n' + Math.random().toString(36).substring(2, 15)
-}
 
 export const ItemElement = observer(({ label, callback, element }) => {
 	const ctx = useAppContext()

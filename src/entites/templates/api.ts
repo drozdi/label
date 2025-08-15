@@ -6,6 +6,12 @@ export async function requestTemplateList() {
 	return res.data.data.response
 }
 
+// Получить шаблон по id
+export async function requestTemplateId(id: number) {
+	const res = await api.get(`/form_labels/${id}`)
+	return res.data.data
+}
+
 //   Сохранить шаблон
 export async function requestTemplateSave(obj) {
 	const res = await api.post(`/form_labels/`, obj)
@@ -18,16 +24,16 @@ export async function requestTemplateUpdate(id, options) {
 	return res.data
 }
 
-// Обновление существующих объектов внутри шаблона
-export async function requestObjectUpdate(obj) {
-	const res = await api.post(`/form_labels/field/`, obj)
+// Удалить шаблон
+export async function requestTemplateDelete(id: number | number[]) {
+	const deleteTemplate = {
+		method: 'delete',
+		maxBodyLength: Infinity,
+		url: '/template_list',
+		data: { id_label: [].concat(id as never | never[]) },
+	}
+	const res = await api(deleteTemplate)
 	return res.data
-}
-
-// Получить шаблон по id
-export async function requestTemplateId(id: number) {
-	const res = await api.get(`/form_labels/${id}`)
-	return res.data.data
 }
 
 // Получить юникодшаблона
@@ -43,16 +49,33 @@ export async function requestTemplateImportCode(data) {
 	return res.data
 }
 
-// Удалить шаблон
-export async function requestTemplateDelete(id: number | number[]) {
-	const deleteTemplate = {
+// Обновление существующих объектов внутри шаблона
+export async function requestObjectNew(template_id = 0, objects: any | any[]) {
+	if (template_id < 1) {
+		return
+	}
+
+	const res = await api.post('/template_fields', {
+		template_id,
+		object: [].concat(objects),
+	})
+
+	return res.data
+}
+
+export async function requestObjectUpdate(objects: any | any[]) {
+	const res = await api.patch(`/form_labels/field/`, [].concat(objects))
+	return res.data
+}
+// Обновление существующих объектов внутри шаблона
+export async function requestObjectDelete(objects: number | number[]) {
+	const deleteData = {
 		method: 'delete',
 		maxBodyLength: Infinity,
-		url: '/template_list',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		data: { id_label: [].concat(id as never | never[]) },
+		url: '/form_labels/field',
+		data: { id_fields: [].concat(objects) },
 	}
-	const res = await api(deleteTemplate)
+
+	const res = await api(deleteData)
+	return res.data
 }

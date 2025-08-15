@@ -61,6 +61,12 @@ class StoreTemplate {
 	get borderRadius() {
 		return this.radius_label
 	}
+	get referenceX() {
+		return this.reference_x * this.mm * this.scale
+	}
+	get referenceY() {
+		return this.reference_y * this.mm * this.scale
+	}
 	get space() {
 		return this.gap_mm * this.mm * this.scale
 	}
@@ -74,9 +80,10 @@ class StoreTemplate {
 	get current() {
 		return this.objects[this.currIndex] || undefined
 	}
+
 	get selectedIndex() {
 		return this.selected.map(id =>
-			this.objects.findIndex(object => String(object.id) === id)
+			this.objects.findIndex(object => String(object.id) === String(id))
 		)
 	}
 	getCurrent() {
@@ -98,7 +105,7 @@ class StoreTemplate {
 	}
 	deleteObject(id: number | string) {
 		this.objects = this.objects.filter(object => {
-			return object.id !== id
+			return String(object.id) !== String(id)
 		})
 		if (this.selected.includes(id)) {
 			this.selected = this.selected.filter(item => item !== id)
@@ -117,21 +124,27 @@ class StoreTemplate {
 	addObject(object) {
 		this.objects.push(factoryElement(object) as never)
 	}
-	clear() {
-		this.loadTemplate(DEF_TEMPLATE, true)
+	private _loadTemplate(template) {
+		this.width_mm = template.width_mm
+		this.height_mm = template.height_mm
+		this.radius_label = template.radius_label ?? this.radius_label
+		this.gap_mm = template.gap_mm
+		this.direction_x = template.direction_x
+		this.direction_y = template.direction_y
+		this.reference_x = template.reference_x
+		this.reference_y = template.reference_y
+		this.loadObjects(template.objects || [])
+	}
+	clear(all: boolean = true) {
+		this._loadTemplate(DEF_TEMPLATE)
+		if (all) {
+			this.id = 0
+			this.name = ''
+		}
 	}
 	loadTemplate(template, copy: boolean = false) {
 		if (template) {
-			this.width_mm = template.width_mm
-			this.height_mm = template.height_mm
-			this.radius_label = template.radius_label ?? this.radius_label
-			this.gap_mm = template.gap_mm
-			this.direction_x = template.direction_x
-			this.direction_y = template.direction_y
-			this.reference_x = template.reference_x
-			this.reference_y = template.reference_y
-			this.loadObjects(template.objects || [])
-
+			this._loadTemplate(template)
 			if (copy) {
 				this.id = 0
 				this.name = ''

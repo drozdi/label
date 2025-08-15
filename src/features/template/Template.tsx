@@ -5,13 +5,25 @@ import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
 import { minMax } from '../../shared/utils'
 
-import { Element } from './element'
-import classes from './Element.module.css'
+import { useAppContext } from '../context'
+import { Element } from '../element/element'
+import classes from '../element/element.module.css'
 
 export const Template = observer(() => {
 	const { objects, current } = storeTemplate
+	const ctx = useAppContext()
 	const refTemplate = useRef<HTMLDivElement>(null)
 	const isDrag = useRef(false)
+
+	useEffect(() => {
+		if (!current) {
+			ctx.setFontFamilyFlag(false)
+			ctx.setVariableFlag(false)
+			ctx.setImageFlag(false)
+			ctx.setLoadTemplateFlag(false)
+			ctx.setDataMatrixFlag(false)
+		}
+	}, [current])
 
 	const handleClick = (event: React.MouseEvent) => {
 		if (!isDrag.current && event.target instanceof HTMLDivElement) {
@@ -24,8 +36,13 @@ export const Template = observer(() => {
 
 	const handleMouseDown = (event: React.MouseEvent) => {
 		const element = event.target.closest(`.${classes.element}`)
-		if (!element || (storeTemplate.isOne() && current?.id !== element?.id)) {
-			return
+		if (
+			(!element ||
+				(storeTemplate.isOne() &&
+					String(current?.id) !== String(element?.id))) &&
+			!event.ctrlKey
+		) {
+			storeTemplate.setActiveObject(element?.id || 0)
 		}
 		if (storeTemplate.isEmpty() && element instanceof HTMLDivElement) {
 			storeTemplate.setActiveObject(element?.id || 0)
@@ -43,6 +60,11 @@ export const Template = observer(() => {
 
 			clone?.classList?.add?.(classes.clone)
 
+			let canvas
+			if ((canvas = element?.querySelector('canvas'))) {
+				clone.querySelector('canvas').getContext('2d').drawImage(canvas, 0, 0)
+			}
+
 			refTemplate.current?.appendChild(clone)
 
 			cloneElement.current.push({
@@ -57,26 +79,28 @@ export const Template = observer(() => {
 		})
 
 		sPosition.current = {
-			minX: cloneElement.current.reduce(
-				(acc, item) => Math.max(acc, item.minX),
-				0
-			),
+			minX:
+				cloneElement.current.reduce(
+					(acc, item) => Math.max(acc, item.minX),
+					0
+				) + 1,
 			maxX:
 				cloneElement.current.reduce(
 					(acc, item) => Math.min(acc, item.maxX),
-					10000
-				) - 1,
-			minY: cloneElement.current.reduce(
-				(acc, item) => Math.max(acc, item.minY),
-				0
-			),
+					100000
+				) - 2,
+			minY:
+				cloneElement.current.reduce(
+					(acc, item) => Math.max(acc, item.minY),
+					0
+				) + 1,
 			maxY:
 				cloneElement.current.reduce(
 					(acc, item) => Math.min(acc, item.maxY),
-					10000
-				) - 1,
-			x: event.clientX,
-			y: event.clientY,
+					100000
+				) - 2,
+			x: event?.clientX,
+			y: event?.clientY,
 		}
 		isDrag.current = true
 	}
@@ -84,14 +108,23 @@ export const Template = observer(() => {
 		if (!isDrag.current) {
 			return
 		}
+
 		event.preventDefault()
 		event.stopPropagation()
+
 		const dx =
-			minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
-			sPosition.current.x
+			minMax(
+				event.clientX,
+				sPosition.current?.minX ?? 0,
+				sPosition.current?.maxX ?? window.innerWidth
+			) - (sPosition.current.x ?? 0)
+
 		const dy =
-			minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
-			sPosition.current.y
+			minMax(
+				event.clientY,
+				sPosition.current?.minY ?? 0,
+				sPosition.current?.maxY ?? window.innerHeight
+			) - (sPosition.current.y ?? 0)
 
 		cloneElement.current.forEach(item => {
 			item.clone.style.left = item.left + dx + 'px'
@@ -102,11 +135,14 @@ export const Template = observer(() => {
 		if (!isDrag.current) {
 			return
 		}
+
 		event.preventDefault()
 		event.stopPropagation()
+
 		const dx =
 			minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) -
 			sPosition.current.x
+
 		const dy =
 			minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
 			sPosition.current.y
@@ -118,7 +154,7 @@ export const Template = observer(() => {
 
 		sPosition.current = null
 		cloneElement.current = []
-		setTimeout(() => (isDrag.current = false), 10)
+		setTimeout(() => (isDrag.current = false), 0)
 	}
 
 	useEffect(() => {
@@ -173,22 +209,60 @@ export const Template = observer(() => {
 	return (
 		<div
 			style={{
-				background: '#fff',
-				overflow: 'hidden',
 				position: 'relative',
-				border: '1px solid #c3bfbf',
 				height: storeTemplate.height,
 				width: storeTemplate.width,
 				borderRadius: storeTemplate.borderRadius,
 				userSelect: 'none',
+				overflow: 'hidden',
+				background: '#fff',
 			}}
-			onClick={handleClick}
-			onMouseDown={handleMouseDown}
-			ref={refTemplate}
 		>
-			{objects.map((object, index) => (
-				<Element key={object.id} index={index} object={object} />
-			))}
+			<div
+				style={{
+					position: 'absolute',
+					fontSize: 12,
+					color: '#000000a1',
+					left: storeTemplate.referenceX - 20,
+					top: storeTemplate.referenceY + 8,
+					textWrap: 'nowrap',
+					writingMode: 'vertical-lr',
+				}}
+			>
+				reference по - x
+			</div>
+			<div
+				style={{
+					position: 'absolute',
+					fontSize: 12,
+					color: '#000000a1',
+					left: storeTemplate.referenceX + 8,
+					top: storeTemplate.referenceY - 20,
+					textWrap: 'nowrap',
+				}}
+			>
+				reference по - y
+			</div>
+			<div
+				style={{
+					background: '#fff',
+					overflow: 'hidden',
+					position: 'relative',
+					border: '1px solid #c3bfbf',
+					height: storeTemplate.height,
+					width: storeTemplate.width,
+					borderRadius: storeTemplate.borderRadius,
+					marginLeft: storeTemplate.referenceX,
+					marginTop: storeTemplate.referenceY,
+				}}
+				onClick={handleClick}
+				onMouseDown={handleMouseDown}
+				ref={refTemplate}
+			>
+				{objects.map((object, index) => (
+					<Element key={object.id} index={index} object={object} />
+				))}
+			</div>
 		</div>
 	)
 })

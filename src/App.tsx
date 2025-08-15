@@ -7,6 +7,7 @@ import { storeTemplate } from './entites/template/store'
 import { storeTemplates } from './entites/templates/store'
 import { storeVariables } from './entites/variables/store'
 import { AppContextProvider } from './features/context'
+import { Import } from './features/import/import'
 import { Settings } from './features/settings/setting'
 import { Editor } from './widgets/Editor'
 import { Header } from './widgets/Header'
@@ -18,6 +19,7 @@ const App = observer(() => {
 	const [imageFlag, setImageFlag] = useState(false)
 	const [loadTemplateFlag, setLoadTemplateFlag] = useState(false)
 	const [settingsFlag, setSettingsFlag] = useState(false)
+	const [importFlag, setImportFlag] = useState(false)
 	const [dataMatrixFlag, setDataMatrixFlag] = useState(false)
 
 	const visible = useMemo(
@@ -48,6 +50,8 @@ const App = observer(() => {
 			setSettingsFlag,
 			dataMatrixFlag,
 			setDataMatrixFlag,
+			importFlag,
+			setImportFlag,
 		}),
 		[
 			fontFamilyFlag,
@@ -56,6 +60,7 @@ const App = observer(() => {
 			loadTemplateFlag,
 			settingsFlag,
 			dataMatrixFlag,
+			importFlag,
 		]
 	)
 	useEffect(() => {
@@ -74,6 +79,7 @@ const App = observer(() => {
 				{loadTemplateFlag ? <Templates /> : <Editor />}
 			</Stack>
 			<Settings />
+			<Import />
 		</AppContextProvider>
 	)
 })

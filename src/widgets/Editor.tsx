@@ -1,6 +1,7 @@
 import { Box, Group, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../entites/template/store'
+import { Band } from '../features/band/band'
 import { useAppContext } from '../features/context'
 import { ContainerDataMatrix } from '../features/data-matrix/container-data-matrix'
 import { ContainerElement } from '../features/elements/container-element'
@@ -8,9 +9,9 @@ import { ContainerFontFamily } from '../features/fonts/container-font-family'
 import { ContainerImage } from '../features/images/container-image'
 import { ListLayers } from '../features/layers/list-layers'
 import { ListProperties } from '../features/properties/list-properties'
-import { Band } from '../features/template/band'
 import { Template } from '../features/template/template'
 import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
+import { ToolbarTools } from '../features/toolbars/tools/toolbar-tools'
 import { ContainerVariable } from '../features/variables/container-variable'
 
 export const Editor = observer(() => {
@@ -23,7 +24,14 @@ export const Editor = observer(() => {
 			</Box>
 			<Group grow h='100%'>
 				<Box flex='none' w='18rem' h='100%' px='sm'>
-					{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
+					<Group gap={0}>
+						<Box maw='100%' flex='auto' w='auto'>
+							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
+						</Box>
+						<Box w='3rem'>
+							<ToolbarTools />
+						</Box>
+					</Group>
 				</Box>
 				<Box flex='auto' w='auto' maw='100%' h='100%'>
 					<Box h='100%'>

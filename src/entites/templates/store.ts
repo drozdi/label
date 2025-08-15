@@ -1,12 +1,16 @@
 import * as FileSaver from 'file-saver'
 import { makeAutoObservable } from 'mobx'
 import {
+	requestObjectDelete,
+	requestObjectNew,
+	requestObjectUpdate,
 	requestTemplateDelete,
 	requestTemplateExportCode,
 	requestTemplateId,
 	requestTemplateImportCode,
 	requestTemplateList,
 	requestTemplateSave,
+	requestTemplateUpdate,
 } from './api'
 import { Preview } from './preview'
 class StoreTemplates {
@@ -40,12 +44,13 @@ class StoreTemplates {
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'
+			throw this.error
 		} finally {
 			this.isLoading = false
 		}
 	}
 	async clear() {
-		this.selected = null
+		//this.selected = null
 	}
 	async selectTemplate(id: number | string) {
 		this.isLoading = true
@@ -56,6 +61,7 @@ class StoreTemplates {
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'
+			throw this.error
 		} finally {
 			this.isLoading = false
 		}
@@ -69,6 +75,7 @@ class StoreTemplates {
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'
+			throw this.error
 		} finally {
 			this.isLoading = false
 		}
@@ -79,6 +86,61 @@ class StoreTemplates {
 		try {
 			const res = await requestTemplateSave(template)
 			await this.load(true)
+			return res
+		} catch (e) {
+			console.error(e)
+			this.error = e.message || e.toString() || 'Unknown error'
+			throw this.error
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async updateTemplate(template) {
+		this.isLoading = true
+		this.error = ''
+		try {
+			const deleteObjects = this.selected.objects.map(item => item.id)
+			const newObjects = []
+			const updateObjects = []
+			template.objects.forEach(item => {
+				let index = -1
+				if (
+					(index = deleteObjects.findIndex(
+						id => String(id) === String(item.id)
+					)) > -1
+				) {
+					deleteObjects.splice(index, 1)
+				}
+				if (parseInt(item.id) > 0) {
+					updateObjects.push({
+						...item,
+						field_id: item.id,
+						id: undefined,
+					})
+				} else {
+					newObjects.push({
+						...item,
+						id: undefined,
+					})
+				}
+			})
+			if (deleteObjects.length > 0) {
+				await requestObjectDelete(deleteObjects)
+			}
+			if (newObjects.length > 0) {
+				await requestObjectNew(Number(template.id), newObjects)
+			}
+			if (updateObjects.length > 0) {
+				await requestObjectUpdate(updateObjects)
+			}
+
+			const res = await requestTemplateUpdate(template.id, {
+				...template,
+				objects: undefined,
+				id: undefined,
+			})
+			await this.load(true)
+			await this.selectTemplate(template.id)
 			return res
 		} catch (e) {
 			console.error(e)
