@@ -41,7 +41,7 @@ function genObj(def = {}) {
 		...def,
 	}
 }
-function parseSplit(str: string) {
+function parseSplit(str: string): any[] {
 	return str
 		.trim()
 		.split(',')
@@ -370,10 +370,10 @@ export const Import = observer(() => {
 	}
 
 	const ezplParser = {
-		test(str) {
+		test(str: string) {
 			return /\^Q/.test(str)
 		},
-		parse(str) {
+		parse(str: string) {
 			const arr = str
 				.trim()
 				.split('^')
@@ -383,27 +383,27 @@ export const Import = observer(() => {
 			const count = arr.length
 			const unprocessed = []
 			while (i < count) {
-				/*if (/^Q/.test(arr[i])) {
-					let s = arr[i].replace(/^Q/, '').split(',')
-					s[0] && Memory.heigthLabelChange(parseInt(s[0], 10))
-					s[1] && Memory.gapLabelChange(parseInt(s[1], 10))
+				if (/^Q/.test(arr[i])) {
+					let s = parseSplit(arr[i].replace(/^Q/, ''))
+					s[0] && storeTemplate.changeHeight(parseInt(s[0], 10))
+					s[1] && storeTemplate.changeGap(parseInt(s[1], 10))
 				} else if (/^H/.test(arr[i])) {
-					Memory.heigthLabelChange(parseInt(arr[i].replace(/^H/, ''), 10))
+					storeTemplate.changeHeight(parseInt(arr[i].replace(/^H/, ''), 10))
 				} else if (/^W/.test(arr[i])) {
-					Memory.widthLabelChange(parseInt(arr[i].replace(/^W/, ''), 10))
+					storeTemplate.changeWidth(parseInt(arr[i].replace(/^W/, ''), 10))
 				} else if (/^R/.test(arr[i])) {
-					Memory.labelRefX(parseInt(arr[i].replace(/^R/, ''), 10))
+					storeTemplate.changeRefX(parseInt(arr[i].replace(/^R/, ''), 10))
 				} else if (/^L/.test(arr[i])) {
 					this.parseContent(arr[i].replace(/^L/, ''))
 				} else {
 					unprocessed.push(arr[i])
-				}*/
+				}//*/
 				i++
 			} //*/
 			setUnprocessed(v => ({ ...v, unprocessedKey: unprocessed }))
 		},
 
-		parseContent(str) {
+		parseContent(str: string) {
 			const lines = str
 				.trim()
 				.split(/\n/)
@@ -423,7 +423,6 @@ export const Import = observer(() => {
 						lines[i].replace(/^XRB/, ''),
 						lines[i + 1]
 					)
-					setSelectedDM(true)
 					i++
 					e = true
 				} else if (/^W/.test(lines[i])) {
@@ -446,81 +445,61 @@ export const Import = observer(() => {
 					unprocessed.push(lines[i])
 				}
 				if (e) {
-					Object.addObj(obj)
+					storeTemplate.addObject(obj)
 				}
 				i++
 			} //*/
 			setUnprocessed(v => ({ ...v, unprocessedBody: unprocessed }))
 		},
-		textElement(obj, str) {
+		textElement(obj: Record<string, any>, str: string) {
 			obj.name = 'text'
 			obj.typeObj = 'text'
-			obj.w = 'fit-content'
-			obj.h = 'fit-content'
-			obj.pxW = 'fit-content'
-			obj.pxH = 'fit-content'
-			obj.style.fontFamily = 'AriaRegular' || Fonts.default_font.name
+			obj.width = 'fit-content'
+			obj.height = 'fit-content'
+			obj.font_id = storeFonts.defaultFont?.id || 1
 
-			obj.font_family_id = 4 || Fonts.default_font.id
+			const arr = parseSplit(str)
 
-			const arr = str.split(',').map(v => String(v).trim())
-
-			obj.x = arr[1] / storeTemplate.dpi
-			obj.y = arr[2] / storeTemplate.dpi
+			obj.pos_x = arr[1] / storeTemplate.dpi
+			obj.pos_y = arr[2] / storeTemplate.dpi
 			obj.rotation = arr[6]
-			obj.body = arr[9]
-
-			obj.pxFakeX = obj.x * storeTemplate.mm
-			obj.pxX = obj.x * storeTemplate.mm
-			obj.pxFakeY = obj.y * storeTemplate.mm
-			obj.pxY = obj.y * storeTemplate.mm
+			obj.data = arr[9]
 		},
-		datamatrixElement(obj, str, body) {
-			obj.name = 'datamatrix'
-			obj.typeObj = 'barcode'
-			obj.typeBarcode = 'datamatrix'
-			const arr = str.trim().split(',')
+		datamatrixElement(obj: Record<string, any>, str: string, body: string) {
+			obj.name = fakeBodyDM
+			obj.type = 'barcode'
+			obj.code_type = 'datamatrix'
+			const arr = parseSplit(str)
 
-			obj.x = (parseInt(arr[0], 10) * storeTemplate.mm) / storeTemplate.dpi
-			obj.y = (parseInt(arr[1], 10) * storeTemplate.mm) / storeTemplate.dpi
-			obj.w = parseInt(arr[2].replace(/[^\d]/, ''), 10)
-			obj.h = obj.w
+			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
+			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
+			obj.width = parseInt(arr[2].replace(/[^\d]/, ''), 10)
+			obj.height = obj.width
 			obj.rotation = parseInt(arr[3].replace(/[^\d]/, ''), 10)
 
-			obj.size = obj.w
-			obj.min_size = obj.w / storeTemplate.dpi
-			obj.pxW = obj.w
-			obj.pxH = obj.h
-			obj.pxX = obj.x
-			obj.pxY = obj.y
-			obj.body = body
-			obj.fakeBody = fakeBodyDM
+			obj.data = body
 		},
-		putbmpElement(obj, str) {
+		putbmpElement(obj: Record<string, any>, str: string) {
 			obj.name = 'img'
-			obj.typeObj = 'img'
-			obj.body = '#'
-			obj.id = 999
-			obj.w = 10
-			obj.h = 10
-			obj.pxW = 10
-			obj.pxH = 10
-			const arr = str.split(',').map(v => String(v).trim())
+			obj.type = 'img'
+			obj.width = 10
+			obj.height = 10
 
-			obj.x = (parseInt(arr[0], 10) * storeTemplate.mm) / storeTemplate.dpi
-			obj.y = (parseInt(arr[1], 10) * storeTemplate.mm) / storeTemplate.dpi
-			obj.pxX = obj.x
-			obj.pxY = obj.y
-			/*Msg.writeMessages(
+			const arr = str.split(',').map(v => String(v).trim())
+			
+			obj.pos_x = (parseInt(arr[0], 10) * storeTemplate.mm) / storeTemplate.dpi
+			obj.pos_y = (parseInt(arr[1], 10) * storeTemplate.mm) / storeTemplate.dpi
+			
+			serviceNotifications.alert(
 				'Изображение не загружено, пожалуйста, передобавьте его вручную.'
-			)*/
+			)
 		},
-		barElement(obj, str) {
+		barElement(obj: Record<string, any>, str: string) {
 			obj.name = 'Линия'
-			obj.typeObj = 'lines'
+			obj.type = 'lines'
 			obj.rotation = 0
 
-			const arr = str.split(',').map(v => String(v).trim())
+			const arr = parseSplit(str)
 
 			const p1 = [
 				parseInt(arr[1], 10) / storeTemplate.dpi,
@@ -531,8 +510,8 @@ export const Import = observer(() => {
 				parseInt(arr[5], 10) / storeTemplate.dpi,
 			]
 
-			obj.x = Math.min(p1[0], p2[0])
-			obj.y = Math.min(p1[1], p2[1])
+			obj.pos_x = Math.min(p1[0], p2[0])
+			obj.pos_y = Math.min(p1[1], p2[1])
 
 			const x = Math.max(p1[0], p2[0])
 			const y = Math.max(p1[1], p2[1])
@@ -540,25 +519,20 @@ export const Import = observer(() => {
 			const dx = Math.abs(x - obj.x)
 			const dy = Math.abs(y - obj.y)
 
-			obj.w =
+			obj.width =
 				y === 0 || dy === 0 ? dx : parseInt(arr[3], 10) / storeTemplate.dpi
-			obj.h =
+			obj.height =
 				x === 0 || dx === 0 ? dy : parseInt(arr[3], 10) / storeTemplate.dpi
 
-			obj.pxX = obj.x * storeTemplate.mm
-			obj.pxY = obj.y * storeTemplate.mm
-
-			obj.pxW = obj.w
-			obj.pxH = obj.h
 		},
-		barcodeElement(obj, str, type) {
-			const arr = str.split(',').map(v => String(v).trim())
+		barcodeElement(obj: Record<string, any>, str: string, type: string) {
+			const arr = parseSplit(str)
 
-			obj.x = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.y = parseInt(arr[2], 10) / storeTemplate.dpi
+			obj.pos_x = parseInt(arr[1], 10) / storeTemplate.dpi
+			obj.pos_y = parseInt(arr[2], 10) / storeTemplate.dpi
 
-			obj.w = parseInt(arr[4], 10)
-			obj.h = parseInt(arr[5], 10) / storeTemplate.dpi
+			obj.width = parseInt(arr[4], 10)
+			obj.height = parseInt(arr[5], 10) / storeTemplate.dpi
 
 			obj.human_readable = parseInt(arr[7], 10)
 			obj.human_readable =
@@ -570,56 +544,37 @@ export const Import = observer(() => {
 					? 3
 					: 0
 
-			obj.human_readable_visible = obj.human_readable > 0
-
 			obj.rotation = parseInt(arr[6], 10)
-			obj.body = arr[8]
-
-			obj.pxFakeX = obj.x * storeTemplate.mm
-			obj.pxX = obj.x * storeTemplate.mm
-			obj.pxFakeY = obj.y * storeTemplate.mm
-			obj.pxY = obj.y * storeTemplate.mm
-			obj.pxH = Math.round(obj.h)
+			obj.data = arr[8]
 		},
-		barcodeElementEAN13(obj, str) {
+		barcodeElementEAN13(obj: Record<string, any>, str: string) {
 			obj.name = 'barcode'
-			obj.typeObj = 'barcode'
-			obj.typeBarcode = 'ean13'
-			obj.human_readable_visible = false
-			obj.fakeBody = '978020137962'
+			obj.type = 'barcode'
+			obj.code_type = 'ean13'
+			obj.data = '978020137962'
 			this.barcodeElement(obj, str, 'EAN13')
 		},
-		barcodeElementCode128(obj, str) {
+		barcodeElementCode128(obj: Record<string, any>, str: string) {
 			obj.name = 'barcode'
-			obj.typeObj = 'barcode'
-			obj.typeBarcode = 'code128'
-			obj.human_readable_visible = false
-			obj.fakeBody = 'barcode046037210206'
+			obj.type = 'barcode'
+			obj.code_type = 'code128'
+			obj.data = 'barcode046037210206'
 			this.barcodeElement(obj, str, '128')
 		},
-		qrcodeElement(obj, str, body) {
+		qrcodeElement(obj: Record<string, any>, str: string, body: string) {
 			obj.name = 'qrcode'
-			obj.typeObj = 'barcode'
-			obj.typeBarcode = 'qrcode'
-			obj.w = 10
-			obj.h = 10
-			obj.pxW = 10
-			obj.pxH = 10
+			obj.type = 'barcode'
+			obj.code_type = 'qrcode'
+			obj.width = 10
+			obj.height = 10
 
-			const arr = str.split(',').map(v => String(v).trim())
+			const arr = parseSplit(str)
 
-			obj.x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.y = parseInt(arr[1], 10) / storeTemplate.dpi
+			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
+			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
 			obj.rotation = parseInt(arr[8], 10)
 
-			obj.pxFakeX = obj.x * storeTemplate.mm
-			obj.pxX = obj.x * storeTemplate.mm
-
-			obj.pxFakeY = obj.y * storeTemplate.mm
-			obj.pxY = obj.y * storeTemplate.mm
-
-			obj.body = body
-			obj.fakeBody = 'barcode046037210206'
+			obj.data = body
 		},
 	}
 

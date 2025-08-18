@@ -1,25 +1,41 @@
-import { ActionIcon, Button, Group, List, Popover } from '@mantine/core'
+import {
+	ActionIcon,
+	Button,
+	Group,
+	List,
+	Popover,
+	useComputedColorScheme,
+	useMantineColorScheme,
+} from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import {
 	TbArrowDown,
 	TbArrowLeft,
 	TbArrowRight,
 	TbArrowUp,
+	TbMoon,
 	TbQuestionMark,
 	TbSettings,
+	TbSun,
 } from 'react-icons/tb'
 import { storeTemplate } from '../entites/template/store'
 import { useAppContext } from '../features/context'
 import { HeaderMain } from '../features/header/header-main'
+import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
 
 export function Header() {
 	const ctx = useAppContext()
 	const { loadTemplateFlag, settingsFlag } = ctx
 	const [openedInfo, info] = useDisclosure(false)
+	const { setColorScheme } = useMantineColorScheme()
+	const computedColorScheme = useComputedColorScheme('light', {
+		getInitialValueInEffect: true,
+	})
 	return (
-		<Group justify='space-between'>
+		<Group justify='space-between' gap='xs' p='xs'>
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
+			{loadTemplateFlag ? null : <HeaderPrint />}
 			<Group>
 				<ActionIcon
 					color={settingsFlag ? 'lime' : ''}
@@ -53,6 +69,25 @@ export function Header() {
 						</List>
 					</Popover.Dropdown>
 				</Popover>
+
+				<ActionIcon
+					onClick={() =>
+						setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')
+					}
+					variant='default'
+					aria-label='Toggle color scheme'
+				>
+					<TbSun
+						style={{
+							display: computedColorScheme === 'light' ? 'block' : 'none',
+						}}
+					/>
+					<TbMoon
+						style={{
+							display: computedColorScheme === 'dark' ? 'block' : 'none',
+						}}
+					/>
+				</ActionIcon>
 				<Button
 					onClick={() =>
 						console.log({

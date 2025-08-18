@@ -22,13 +22,13 @@ export const Editor = observer(() => {
 			<Box>
 				<LabelTolbar />
 			</Box>
-			<Group grow h='100%'>
-				<Box flex='none' w='18rem' h='100%' px='sm'>
-					<Group gap={0}>
-						<Box maw='100%' flex='auto' w='auto'>
+			<Group grow h='100%' gap={0}>
+				<Box flex='none' w='18rem' maw='100%' h='100%' px='xs'>
+					<Group h='100%' gap={0}>
+						<Box flex='auto' h='100%'>
 							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
 						</Box>
-						<Box w='3rem'>
+						<Box flex='none' w='3rem' maw='100%'>
 							<ToolbarTools />
 						</Box>
 					</Group>
@@ -45,7 +45,7 @@ export const Editor = observer(() => {
 					w='18rem'
 					maw='100%'
 					h='100%'
-					px='sm'
+					px='xs'
 					style={{
 						overflowX: 'hidden',
 						overflowY: 'auto',

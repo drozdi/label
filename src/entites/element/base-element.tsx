@@ -110,7 +110,7 @@ export class BaseElement {
 		return factoryElement(this)
 	}
 
-	style(element, scale = 1) {
+	style(scale = 1, element) {
 		let width, height, _width, _height
 		let left = this.pos_x * this.mm * scale
 		let top = this.pos_y * this.mm * scale

@@ -1,8 +1,11 @@
 import { serviceNotifications } from '../notifications/service'
 import {
+	requestPrinterCode,
+	requestPrinterExample,
 	requestPrinterPing,
 	requestPrinterSettings,
 	requestPrinterSettingsSave,
+	requestPrinterTrial,
 } from './api'
 import { storePrinter } from './store'
 
@@ -40,11 +43,13 @@ const fakeVariable = {
 	sizing_l: '1,53',
 	pack_name: 'Агрегат',
 	cell: '35',
+	taskid: '15',
 }
 
 class Printer {
 	async ping(trial = false) {
 		const config = storePrinter.getConfig()
+		storePrinter.setLoading(true)
 		try {
 			const res = await requestPrinterPing({
 				host: config.host,
@@ -64,6 +69,8 @@ class Printer {
 			serviceNotifications.error(
 				'Ответ от принтера не получен. Возможные ошибки: 1. Неверные параметры настройки принтера, в редакторе этикеток. 2. Принтер выключен. 3. На принтере отсутствует подключение к локальной сети'
 			)
+		} finally {
+			storePrinter.setLoading(false)
 		}
 		return false
 	}
@@ -78,75 +85,121 @@ class Printer {
 	async setSettings(data) {
 		const res = await requestPrinterSettingsSave(data)
 	}
-
-	/*async trialPrint() {
-		const ping = await this.pingPrinter(true)
-		if (!ping) return
-		try {
-			const res = await apiPrinter.trialPrint({
-				id_template: Templates.template_id,
-				is_update: true,
-			})
-
-			Templates.setCodeTypeTemplate(res.data)
-			console.log(res.data)
-			return res.data
-		} catch (e) {
-			console.error(e)
-			if (e.code === 'ERR_NETWORK') {
-				storeMessage.error(
-					'Шаблон не распечатан. Возможные ошибки: 1. Неверные параметры настройки принтера, в редакторе этикеток. 2. Принтер выключен. 3. На принтере отсутствует соединение с локальной сетью'
-				)
-			}
-		}
-	}
-	async codePrint() {
+	async codePrint(template_id) {
 		const ping = await this.ping(true)
 		if (!ping) {
 			return
 		}
+		const config = storePrinter.getConfig()
+		storePrinter.setLoading(true)
 		try {
-			const res = await apiPrinter.codePrint({
-				id_template: Templates.template_id,
-				is_update: true,
+			const res = await requestPrinterCode({
+				template: {
+					id_template: template_id,
+					is_update: true,
+				},
+				setting_printer: {
+					host: config.host,
+					port: config.port,
+					type_printer: config.type_printer,
+					number_labels: config.number_labels,
+					printer_resolution: config.printer_resolution,
+				},
 			})
-			Templates.setCodeTypeTemplate(res.data)
-			console.log(res.data)
 			return res.data
 		} catch (e) {
 			console.error(e)
 			if (e.code === 'ERR_NETWORK') {
-				storeMessage.error(
+				serviceNotifications.error(
 					'Шаблон не получен. Возможные ошибки: 1. Неверные параметры настройки принтера, в редакторе этикеток. 2. Принтер выключен. 3. На принтере отсутствует соединение с локальной сетью'
 				)
 			}
+		} finally {
+			storePrinter.setLoading(false)
 		}
 	}
-	async examplePrint() {
-		const ping = await this.pingPrinter(true)
+	async trialPrint(template_id) {
+		const ping = await this.ping(true)
 		if (!ping) return
+		const config = storePrinter.getConfig()
+		storePrinter.setLoading(true)
 		try {
-			const resTmp = await apiPrinter.codePrint({
-				id_template: Templates.template_id,
-				is_update: true,
+			const res = await requestPrinterTrial({
+				template: {
+					id_template: template_id,
+					is_update: true,
+				},
+				setting_printer: {
+					host: config.host,
+					port: config.port,
+					type_printer: config.type_printer,
+					number_labels: config.number_labels,
+					printer_resolution: config.printer_resolution,
+				},
 			})
-			const res = await apiPrinter.examplePrint({
-				template: resTmp.data.data,
-				variable: fakeVariable,
-			})
-
-			Templates.setCodeTypeTemplate(resTmp.data.data)
-			console.log(res.data)
+			//Templates.setCodeTypeTemplate(res.data)
+			console.log(res)
 			return res.data
 		} catch (e) {
 			console.error(e)
 			if (e.code === 'ERR_NETWORK') {
-				storeMessage.error(
+				serviceNotifications.error(
 					'Шаблон не распечатан. Возможные ошибки: 1. Неверные параметры настройки принтера, в редакторе этикеток. 2. Принтер выключен. 3. На принтере отсутствует соединение с локальной сетью'
 				)
 			}
+		} finally {
+			storePrinter.setLoading(false)
 		}
-	}*/
+	}
+	async examplePrint(template_id) {
+		const ping = await this.ping(true)
+		if (!ping) return
+
+		const config = storePrinter.getConfig()
+		storePrinter.setLoading(true)
+		try {
+			const resTmp = await requestPrinterCode({
+				template: {
+					id_template: template_id,
+					is_update: true,
+				},
+				setting_printer: {
+					host: config.host,
+					port: config.port,
+					type_printer: config.type_printer,
+					number_labels: config.number_labels,
+					printer_resolution: config.printer_resolution,
+				},
+			})
+
+			const res = await requestPrinterExample({
+				template_str: {
+					template: resTmp.data,
+					variable: fakeVariable,
+				},
+				setting_printer: {
+					host: config.host,
+					port: config.port,
+					type_printer: config.type_printer,
+					number_labels: config.number_labels,
+					printer_resolution: config.printer_resolution,
+				},
+			})
+
+			//Templates.setCodeTypeTemplate(res.data)
+			console.log(res)
+			return res.data
+		} catch (e) {
+			console.error(e)
+			if (e.code === 'ERR_NETWORK') {
+				serviceNotifications.error(
+					'Шаблон не распечатан. Возможные ошибки: 1. Неверные параметры настройки принтера, в редакторе этикеток. 2. Принтер выключен. 3. На принтере отсутствует соединение с локальной сетью'
+				)
+			}
+		} finally {
+			storePrinter.setLoading(false)
+		}
+	}
 }
 
 export const servicePrinter = new Printer()

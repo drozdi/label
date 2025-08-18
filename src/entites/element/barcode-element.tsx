@@ -123,8 +123,8 @@ export class BarcodeElement extends BaseElement {
 	get min_size() {
 		return this.radius
 	}
-	style(element, scale = 1) {
-		const style = super.style(element, scale)
+	style(scale = 1, element) {
+		const style = super.style(scale, element)
 		if (this.code_type === 'datamatrix') {
 			/*style.width = style.width * this.min_size
 			style.height = style.height * this.min_size //*/

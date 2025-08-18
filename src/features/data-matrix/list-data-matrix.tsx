@@ -6,7 +6,7 @@ import { ItemDataMatrix } from './item-data-matrix'
 export const ListDataMatrix = observer(() => {
 	const { list } = storeDataMatrix
 	return (
-		<Stack>
+		<Stack gap={2}>
 			{list.map(dataMatrix => (
 				<ItemDataMatrix key={dataMatrix.id} dataMatrix={dataMatrix} />
 			))}

@@ -162,6 +162,7 @@ class StoreTemplate {
 			value = parseInt(value, 10)
 		}
 		this.scale = value
+		this.objects = this.objects.map(object => object.copy())
 	}
 	changeDpi(dpi: null | string) {
 		let newDpi: null | string | number = dpi || '12'

@@ -23,7 +23,7 @@ export const Element = observer(
 		const ctx = useAppContext()
 		const style = useMemo(
 			() => ({
-				...object.style(refParent.current),
+				...object.style(storeTemplate.scale, refParent.current),
 				...(preview ? { outline: '0px' } : {}),
 			}),
 			[object, refParent.current]

@@ -62,7 +62,7 @@ export const HeaderMain = observer(() => {
 		}
 	}
 	return (
-		<Group gap='sm' p='sm'>
+		<Group gap='xs'>
 			<TextInput
 				placeholder='Название'
 				value={storeTemplate.name}

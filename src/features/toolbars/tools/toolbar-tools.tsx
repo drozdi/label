@@ -1,13 +1,36 @@
-import { ActionIcon, Popover, Slider, Stack } from '@mantine/core'
+import { ActionIcon, FileButton, Popover, Slider, Stack } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { observer } from 'mobx-react-lite'
-import { TbBackground, TbZoom } from 'react-icons/tb'
+import { TbBackground, TbGrid3X3, TbZoom } from 'react-icons/tb'
 import { storeTemplate } from '../../../entites/template/store'
+import { useAppContext } from '../../context'
+
+const allowedExtensions = ['bmp', 'jpeg', 'png']
 
 export const ToolbarTools = observer(() => {
+	const ctx = useAppContext()
+	const { gridFlag, imageBg } = ctx
 	const [opened, { close, open }] = useDisclosure(false)
+
+	const selectedBG = file => {
+		const allowedExtensions = ['bmp', 'jpeg', 'png']
+		if (!allowedExtensions.map(item => 'image/' + item).includes(file.type)) {
+			return alert(
+				'Вы пытаетесь добавить файл ' +
+					file.type +
+					`. Вы можете загрузить только изображение с расширение .${allowedExtensions.join(
+						', .'
+					)}`
+			)
+		}
+		const reader = new FileReader()
+		reader.onload = () => {
+			ctx.setImageBg(reader.result)
+		}
+		reader.readAsDataURL(file)
+	}
 	return (
-		<Stack align='center' justify='flex-start'>
+		<Stack align='center' justify='flex-start' maw='none'>
 			<Popover
 				width={300}
 				position='bottom'
@@ -24,15 +47,46 @@ export const ToolbarTools = observer(() => {
 				<Popover.Dropdown onMouseEnter={open} onMouseLeave={close}>
 					<Slider
 						min={1}
-						max={2}
+						max={4}
 						step={0.01}
+						label={value => `${Math.round(value * 100)}`}
 						defaultValue={storeTemplate.scale}
-						onChange={value => storeTemplate.setScale(value)}
+						marks={[
+							{ value: 2, label: '200%' },
+							{ value: 3, label: '300%' },
+							{ value: 4, label: '400%' },
+						]}
+						onChange={value =>
+							storeTemplate.setScale(Math.round(value * 100) / 100)
+						}
 					/>
+					<br />
 				</Popover.Dropdown>
 			</Popover>
-			<ActionIcon>
-				<TbBackground />
+			<FileButton
+				onChange={selectedBG}
+				accept={allowedExtensions.map(ext => 'image/' + ext).join(', ')}
+			>
+				{props => (
+					<ActionIcon
+						{...props}
+						onClick={() => {
+							ctx.setImageBg('')
+							props.onClick()
+						}}
+						color={imageBg ? 'lime' : ''}
+						title='Загрузить фон'
+					>
+						<TbBackground />
+					</ActionIcon>
+				)}
+			</FileButton>
+			<ActionIcon
+				color={gridFlag ? 'lime' : ''}
+				title='Сетка разметки'
+				onClick={() => ctx.setGridFlag(v => !v)}
+			>
+				<TbGrid3X3 />
 			</ActionIcon>
 		</Stack>
 	)

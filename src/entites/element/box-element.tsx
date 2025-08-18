@@ -25,9 +25,9 @@ export class BoxElement extends BaseElement {
 	get resize() {
 		return ['e', 's', 'se']
 	}
-	style(element, scale = 1) {
+	style(scale = 1, element) {
 		return {
-			...super.style(element, scale),
+			...super.style(scale, element),
 			outline: 0,
 			borderRadius: 0,
 		}

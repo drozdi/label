@@ -25,7 +25,7 @@ export const Templates = observer(() => {
 
 	useEffect(() => {
 		if (templateSelected?.id) {
-			storeTemplates.selectTemplate(templateSelected?.id)
+			storeTemplates.selectTemplate(templateSelected?.id || 0)
 		}
 	}, [templateSelected?.id])
 

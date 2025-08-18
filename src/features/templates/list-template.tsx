@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { storeTemplates } from '../../entites/templates/store'
 import { ItemTemplate } from './item-template'
 
-export const ListTemplate = observer(({ onSelect }) => {
+export const ListTemplate = observer(() => {
 	const { isLoading, list, error, selected } = storeTemplates
 
 	return (

@@ -47,7 +47,7 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 				return serviceNotifications.danger('Не удалось считать настройки')
 			}
 			const printer = { ...config }
-			printer.printer_resolution = res.DPI ?? 300
+			printer.printer_resolution = Number(res.DPI) ?? 300
 			printer.VERSION = res.VERSION
 			printer.CODEPAGE = res.CODEPAGE
 			printer.SPEED = res.SPEED
@@ -75,7 +75,7 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 			port,
 			number_labels: count,
 			type_printer: typePrinter,
-			printer_resolution: printerResolution,
+			printer_resolution: Number(printerResolution),
 			DENSITY: storePrinter.DENSITY,
 			SHIFT_X: shiftX,
 			SHIFT_Y: shiftY,

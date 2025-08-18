@@ -15,9 +15,9 @@ export class LinesElement extends BaseElement {
 	get resize() {
 		return ['e']
 	}
-	style(element, scale = 1) {
+	style(scale = 1, element) {
 		return {
-			...super.style(element, scale),
+			...super.style(scale, element),
 			outline: 0,
 			borderRadius: 0,
 			background: 'black',

@@ -18,10 +18,10 @@ export const Settings = observer(() => {
 					<Tabs.Tab value='app'>Приложение</Tabs.Tab>
 					<Tabs.Tab value='printer'>Принтер</Tabs.Tab>
 				</Tabs.List>
-				<Tabs.Panel keepMounted value='app'>
+				<Tabs.Panel keepMounted value='app' pt='xs'>
 					<AppSettings />
 				</Tabs.Panel>
-				<Tabs.Panel keepMounted value='printer'>
+				<Tabs.Panel keepMounted value='printer' pt='xs'>
 					<PrinterSettings />
 				</Tabs.Panel>
 			</Tabs>

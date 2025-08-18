@@ -18,7 +18,7 @@ export const HeaderTemplates = observer(() => {
 	}
 
 	return (
-		<Group gap='sm' p='sm'>
+		<Group gap='xs'>
 			<Button variant='outline' onClick={() => ctx?.setLoadTemplateFlag(false)}>
 				Закрыть
 			</Button>

@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { storeFonts } from './entites/fonts/store'
 import { storeImages } from './entites/images/store'
+import { storePrinter } from './entites/printer/store'
 import { storeTemplate } from './entites/template/store'
 import { storeTemplates } from './entites/templates/store'
 import { storeVariables } from './entites/variables/store'
@@ -17,6 +18,8 @@ const App = observer(() => {
 	const [fontFamilyFlag, setFontFamilyFlag] = useState(false)
 	const [variableFlag, setVariableFlag] = useState(false)
 	const [imageFlag, setImageFlag] = useState(false)
+	const [gridFlag, setGridFlag] = useState(false)
+	const [imageBg, setImageBg] = useState(false)
 	const [loadTemplateFlag, setLoadTemplateFlag] = useState(false)
 	const [settingsFlag, setSettingsFlag] = useState(false)
 	const [importFlag, setImportFlag] = useState(false)
@@ -27,12 +30,14 @@ const App = observer(() => {
 			storeTemplates.isLoading ||
 			storeImages.isLoading ||
 			storeFonts.isLoading ||
-			storeVariables.isLoading,
+			storeVariables.isLoading ||
+			storePrinter.isLoading,
 		[
 			storeTemplates.isLoading,
 			storeImages.isLoading,
 			storeFonts.isLoading,
 			storeVariables.isLoading,
+			storePrinter.isLoading,
 		]
 	)
 
@@ -52,6 +57,10 @@ const App = observer(() => {
 			setDataMatrixFlag,
 			importFlag,
 			setImportFlag,
+			gridFlag,
+			setGridFlag,
+			imageBg,
+			setImageBg,
 		}),
 		[
 			fontFamilyFlag,
@@ -61,6 +70,8 @@ const App = observer(() => {
 			settingsFlag,
 			dataMatrixFlag,
 			importFlag,
+			gridFlag,
+			imageBg,
 		]
 	)
 	useEffect(() => {

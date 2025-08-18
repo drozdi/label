@@ -8,6 +8,8 @@ import { minMax } from '../../shared/utils'
 import { useAppContext } from '../context'
 import { Element } from '../element/element'
 import classes from '../element/element.module.css'
+import { BackgroundBg } from './background-bg'
+import { BackgroundGrid } from './background-grid'
 
 export const Template = observer(() => {
 	const { objects, current } = storeTemplate
@@ -243,9 +245,9 @@ export const Template = observer(() => {
 			>
 				reference по - y
 			</div>
+			<BackgroundGrid />
 			<div
 				style={{
-					background: '#fff',
 					overflow: 'hidden',
 					position: 'relative',
 					border: '1px solid #c3bfbf',
@@ -259,6 +261,7 @@ export const Template = observer(() => {
 				onMouseDown={handleMouseDown}
 				ref={refTemplate}
 			>
+				<BackgroundBg />
 				{objects.map((object, index) => (
 					<Element key={object.id} index={index} object={object} />
 				))}

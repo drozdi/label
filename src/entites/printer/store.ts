@@ -1,3 +1,5 @@
+import { makeAutoObservable } from 'mobx'
+
 const name = 'printer'
 
 class Printer {
@@ -16,7 +18,10 @@ class Printer {
 		SPEED: '',
 	}
 	loaded = false
+	isLoading = false
+	error = ''
 	constructor() {
+		makeAutoObservable(this)
 		if (!this.loadConfig()) {
 			this.saveConfig()
 		}
@@ -53,6 +58,9 @@ class Printer {
 			console.log(e)
 		}
 	}
+	setLoading(loading = false) {
+		this.isLoading = loading
+	}
 	get host() {
 		return this.getConfig().host
 	}
@@ -66,7 +74,7 @@ class Printer {
 		return this.getConfig().type_printer
 	}
 	get printer_resolution() {
-		return Number(this.getConfig().printer_resolution)
+		return parseInt(this.getConfig().printer_resolution, 10)
 	}
 	get VERSION() {
 		return this.getConfig().VERSION
