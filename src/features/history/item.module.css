@@ -1,0 +1,15 @@
+.item {
+	border: 1px solid var(--mantine-color-default-border);
+	color: var(--mantine-color-default-color);
+	padding: 0.1rem 0.25rem;
+	font-size: 0.75rem;
+	cursor: pointer;
+	overflow: hidden;
+}
+.item:hover {
+	background-color: var(--mantine-primary-color-light-hover);
+}
+
+.active {
+	background-color: var(--mantine-primary-color-light-hover);
+}

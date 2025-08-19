@@ -1,7 +1,14 @@
 import { ActionIcon, FileButton, Popover, Slider, Stack } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { observer } from 'mobx-react-lite'
-import { TbBackground, TbGrid3X3, TbZoom } from 'react-icons/tb'
+import {
+	TbArrowBack,
+	TbArrowForward,
+	TbBackground,
+	TbGrid3X3,
+	TbZoom,
+} from 'react-icons/tb'
+import { storeHistory } from '../../../entites/history/store'
 import { storeTemplate } from '../../../entites/template/store'
 import { useAppContext } from '../../context'
 
@@ -87,6 +94,21 @@ export const ToolbarTools = observer(() => {
 				onClick={() => ctx.setGridFlag(v => !v)}
 			>
 				<TbGrid3X3 />
+			</ActionIcon>
+			<br />
+			<ActionIcon
+				title='Назад'
+				disabled={storeHistory.canGoBack}
+				onClick={() => storeHistory.back()}
+			>
+				<TbArrowBack />
+			</ActionIcon>
+			<ActionIcon
+				title='Вперед'
+				disabled={storeHistory.canGoForward}
+				onClick={() => storeHistory.forward()}
+			>
+				<TbArrowForward />
 			</ActionIcon>
 		</Stack>
 	)

@@ -1,5 +1,6 @@
 import { Button, Group, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { storeHistory } from '../../entites/history/store'
 import { serviceNotifications } from '../../entites/notifications/service'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
@@ -68,13 +69,25 @@ export const HeaderMain = observer(() => {
 				value={storeTemplate.name}
 				onChange={({ target }) => storeTemplate.setTemplateName(target.value)}
 			/>
-			<Button variant='outline' onClick={() => storeTemplate.clear()}>
+			<Button
+				variant='outline'
+				onClick={() => {
+					storeTemplate.clear()
+					storeHistory.clear()
+				}}
+			>
 				Создать
 			</Button>
 			<Button variant='outline' onClick={handleSave}>
 				Сохранить
 			</Button>
-			<Button variant='outline' onClick={() => storeTemplate.clear(false)}>
+			<Button
+				variant='outline'
+				onClick={() => {
+					storeTemplate.clear(false)
+					storeHistory.append(storeTemplate.objects, 'Очистка')
+				}}
+			>
 				Очистить
 			</Button>
 			<Button variant='outline' onClick={() => ctx?.setLoadTemplateFlag(true)}>

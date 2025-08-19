@@ -7,6 +7,10 @@ import {
 	TbBaselineDensitySmall,
 	TbX,
 } from 'react-icons/tb'
+import {
+	histroyAppend,
+	histroyAppendDebounce,
+} from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
 import { useAppContext } from '../context'
@@ -16,6 +20,18 @@ import { ItemNumber } from './item-number'
 import { ItemOptions } from './item-options'
 import { ItemSwitch } from './item-switch'
 import { ItemText } from './item-text'
+
+const labelsTextAlign = {
+	1: 'Слева',
+	2: 'В центре',
+	3: 'Справа',
+}
+const labelsHumanReadable = {
+	0: 'Скрытый',
+	1: 'Слева',
+	2: 'В центре',
+	3: 'Справа',
+}
 
 export const ListProperties = observer(() => {
 	const { current } = storeTemplate
@@ -48,8 +64,14 @@ export const ListProperties = observer(() => {
 					value={current.name}
 					placeholder='введите имя'
 					type='text'
-					onChange={v => storeTemplate.setName(v)}
-					onClick={() => console.log('click')}
+					onChange={v => {
+						const name = current?.name
+						storeTemplate.setName(v)
+						histroyAppend(
+							storeTemplate.objects,
+							`Переименование "${name}" в "${v}"`
+						)
+					}}
 				/>
 			)}
 			{allowProp('width') && (
@@ -61,7 +83,13 @@ export const ListProperties = observer(() => {
 					}
 					step={STEP}
 					unit='mm'
-					onChange={v => storeTemplate.setWidth(v)}
+					onChange={v => {
+						storeTemplate.setWidth(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`"${current?.name}" ширина: ${v}`
+						)
+					}}
 				/>
 			)}
 			{allowProp('height') && (
@@ -73,7 +101,13 @@ export const ListProperties = observer(() => {
 					}
 					step={STEP}
 					unit='mm'
-					onChange={v => storeTemplate.setHeight(v)}
+					onChange={v => {
+						storeTemplate.setHeight(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`"${current?.name}" высота: ${v}`
+						)
+					}}
 				/>
 			)}
 			{allowProp('pos_x') && (
@@ -83,7 +117,13 @@ export const ListProperties = observer(() => {
 					value={current.pos_x}
 					step={STEP}
 					unit='mm'
-					onChange={v => storeTemplate.setPosX(v)}
+					onChange={v => {
+						storeTemplate.setPosX(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Перемещение "${current?.name}" по x в "${v}"`
+						)
+					}}
 				/>
 			)}
 			{allowProp('pos_y') && (
@@ -93,7 +133,13 @@ export const ListProperties = observer(() => {
 					value={current.pos_y}
 					step={STEP}
 					unit='mm'
-					onChange={v => storeTemplate.setPosY(v)}
+					onChange={v => {
+						storeTemplate.setPosY(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Перемещение "${current?.name}" по y в "${v}"`
+						)
+					}}
 				/>
 			)}
 			{allowProp('rotation') && (
@@ -101,7 +147,13 @@ export const ListProperties = observer(() => {
 					label='Поворот:'
 					unit='%'
 					options={['0', '90', '180', '270']}
-					onChange={v => storeTemplate.setRotation(v)}
+					onChange={v => {
+						storeTemplate.setRotation(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Поворот "${current?.name}" на ${v}`
+						)
+					}}
 					value={current.rotation}
 				/>
 			)}
@@ -122,12 +174,14 @@ export const ListProperties = observer(() => {
 							label: <TbAlignRight title='Справа' />,
 						},
 					]}
-					labels={{
-						1: 'Слева',
-						2: 'В центре',
-						3: 'Справа',
+					labels={labelsTextAlign}
+					onChange={v => {
+						storeTemplate.setTextAlign(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Выравнивание "${current?.name}": ${labelsTextAlign[v]}`
+						)
 					}}
-					onChange={v => storeTemplate.setTextAlign(v)}
 					value={current.text_align}
 				/>
 			)}
@@ -137,7 +191,13 @@ export const ListProperties = observer(() => {
 					label='Размер:'
 					value={current.font_size}
 					unit='mm'
-					onChange={v => storeTemplate.setFontSize(v)}
+					onChange={v => {
+						storeTemplate.setFontSize(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Размер текста "${current?.name}": ${v}`
+						)
+					}}
 				/>
 			)}
 			{allowProp('line_thickness') && (
@@ -146,7 +206,13 @@ export const ListProperties = observer(() => {
 					label='Толщина:'
 					value={current.line_thickness}
 					step={STEP}
-					onChange={v => storeTemplate.setLineThickness(v)}
+					onChange={v => {
+						storeTemplate.setLineThickness(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Толщина "${current?.name}": ${value}`
+						)
+					}}
 				/>
 			)}
 			{allowProp('radius') && (
@@ -155,7 +221,13 @@ export const ListProperties = observer(() => {
 					label='Скругение:'
 					value={current.radius}
 					step={STEP}
-					onChange={v => storeTemplate.setRadius(v)}
+					onChange={v => {
+						storeTemplate.setRadius(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Радиус "${current?.name}": ${v}`
+						)
+					}}
 				/>
 			)}
 			{allowProp('font_id') && (
@@ -179,7 +251,13 @@ export const ListProperties = observer(() => {
 					}
 					placeholder='Введите текст'
 					value={current.data}
-					onChange={v => storeTemplate.setData(v)}
+					onChange={v => {
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Изменение текста "${current?.data}" в "${v}"`
+						)
+						storeTemplate.setData(v)
+					}}
 				/>
 			)}
 			{allowProp('human_readable') && (
@@ -203,14 +281,15 @@ export const ListProperties = observer(() => {
 							label: <TbAlignRight title='Справа' />,
 						},
 					]}
-					labels={{
-						0: 'Скрытый',
-						1: 'Слева',
-						2: 'В центре',
-						3: 'Справа',
-					}}
+					labels={labelsHumanReadable}
 					value={current.human_readable}
-					onChange={v => storeTemplate.setHumanReadable(v)}
+					onChange={v => {
+						storeTemplate.setHumanReadable(v)
+						histroyAppendDebounce(
+							storeTemplate.objects,
+							`Выравнивание "${current?.name}" - ${labelsHumanReadable[v]}`
+						)
+					}}
 				/>
 			)}
 			{allowProp('image_id') && (
@@ -223,11 +302,6 @@ export const ListProperties = observer(() => {
 					}}
 				/>
 			)}
-
-			{allowProp('type') && <></>}
-			{allowProp('image_id') && <></>}
-			{allowProp('font_rel') && <></>}
-			{allowProp('image_rel') && <></>}
 		</Stack>
 	)
 })

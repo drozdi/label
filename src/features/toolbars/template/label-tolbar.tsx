@@ -58,6 +58,8 @@ export const LabelTolbar = observer(({ template, disabled }) => {
 				<NumberInput
 					disabled={disabled}
 					w={w}
+					min={0}
+					max={1}
 					value={template.direction_x}
 					onChange={v => template.changeDirection1?.(v)}
 				/>
@@ -65,6 +67,8 @@ export const LabelTolbar = observer(({ template, disabled }) => {
 				<NumberInput
 					disabled={disabled}
 					w={w}
+					min={0}
+					max={1}
 					value={template.direction_y}
 					onChange={v => template.changeDirection2?.(v)}
 				/>

@@ -15,7 +15,7 @@ interface ItemEditableProps {
 
 export function ItemEditable({
 	label,
-	value,
+	value: defaultValue,
 	type = 'text',
 	placeholder,
 	onChange,
@@ -25,6 +25,7 @@ export function ItemEditable({
 	...other
 }: ItemEditableProps) {
 	const [edit, setEdit] = useState<boolean>(false)
+	const [value, setValue] = useState<string>(defaultValue)
 	return (
 		<Group gap={0} grow>
 			{editable && edit ? (
@@ -35,13 +36,14 @@ export function ItemEditable({
 							placeholder={placeholder}
 							rightSection={unit}
 							value={value}
-							onChange={e => onChange?.(e.target.value)}
+							onChange={({ target }) => setValue(target.value)}
 						/>
 					</Box>
 					<Box flex='none' maw='100%'>
 						<Button
 							onClick={() => {
 								setEdit(false)
+								onChange?.(value)
 								onClick?.()
 							}}
 						>

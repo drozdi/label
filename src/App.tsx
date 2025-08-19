@@ -2,6 +2,7 @@ import { LoadingOverlay, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { storeFonts } from './entites/fonts/store'
+import { storeHistory } from './entites/history/store'
 import { storeImages } from './entites/images/store'
 import { storePrinter } from './entites/printer/store'
 import { storeTemplate } from './entites/template/store'
@@ -75,6 +76,9 @@ const App = observer(() => {
 		]
 	)
 	useEffect(() => {
+		storeHistory.fn = ({ objects }) => {
+			storeTemplate.loadObjects(JSON.parse(JSON.stringify(objects)))
+		}
 		storeTemplate.clear()
 	}, [])
 

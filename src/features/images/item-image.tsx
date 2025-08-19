@@ -1,5 +1,7 @@
 import { Image, Title } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { histroyAppend } from '../../entites/history/store'
+import { storeImages } from '../../entites/images/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useAppContext } from '../context'
 import classes from './Item.module.css'
@@ -9,6 +11,10 @@ export const ItemImage = observer(({ image }) => {
 	const ctx = useAppContext()
 	const handleSelect = () => {
 		storeTemplate.setImageId(image.id)
+		histroyAppend(
+			storeTemplate.objects,
+			`Картинка "${current?.name}" - ${storeImages.findById(image.id)?.name}`
+		)
 		ctx?.setImageFlag(false)
 	}
 	return (

@@ -103,6 +103,11 @@ class StoreTemplate {
 			this.selected = []
 		}
 	}
+	findById(id: number | string) {
+		return this.objects.find(object => {
+			return String(object.id) === String(id)
+		})
+	}
 	deleteObject(id: number | string) {
 		this.objects = this.objects.filter(object => {
 			return String(object.id) !== String(id)
@@ -115,13 +120,13 @@ class StoreTemplate {
 	deleteCurrentObject() {
 		this.deleteObject(this.currId)
 	}
-	loadObjects(objects: Array<any> = []) {
+	loadObjects(objects: any[] = []) {
 		this.objects = []
-		objects.forEach(element => {
-			this.addObject(element)
+		objects.forEach(object => {
+			this.objects.push(factoryElement(object) as never)
 		})
 	}
-	addObject(object) {
+	addObject(object: Record<string, any>) {
 		this.objects.push(factoryElement(object) as never)
 	}
 	private _loadTemplate(template) {
@@ -277,16 +282,16 @@ class StoreTemplate {
 		this.current?.setEnabled(value)
 		this.setCurrent(this.current)
 	}
-	setFontId(value: string | number) {
-		this.current?.setFontId(value)
-		this.setCurrent(this.current)
-	}
 	setData(value: string) {
 		this.current?.setData(value)
 		this.setCurrent(this.current)
 	}
-	setHumanReadable(rotation: string | number) {
-		this.current?.setHumanReadable(rotation)
+	setHumanReadable(value: string | number) {
+		this.current?.setHumanReadable(value)
+		this.setCurrent(this.current)
+	}
+	setFontId(value: string | number) {
+		this.current?.setFontId(value)
 		this.setCurrent(this.current)
 	}
 	setImageId(value: string | number) {
@@ -309,6 +314,9 @@ class StoreTemplate {
 		})
 	}
 	moveX(value: number) {
+		if (value === 0) {
+			return
+		}
 		this.selectedIndex.forEach(index => {
 			if (index > -1) {
 				this.objects[index].setPosX(round(this.objects[index].pos_x + value))
@@ -317,6 +325,9 @@ class StoreTemplate {
 		})
 	}
 	moveY(value: number) {
+		if (value === 0) {
+			return
+		}
 		this.selectedIndex.forEach(index => {
 			if (index > -1) {
 				this.objects[index].setPosY(round(this.objects[index].pos_y + value))

@@ -1,5 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { storeFonts } from '../../entites/fonts/store'
+import { histroyAppend } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useAppContext } from '../context'
 import styles from './Item.module.css'
@@ -16,6 +18,10 @@ export const ItemFontFamily = observer(({ font }) => {
 	}
 	const handleSelect = () => {
 		storeTemplate.setFontId(font.id)
+		histroyAppend(
+			storeTemplate.objects,
+			`Шрифт "${current?.name}" - ${storeFonts.findById(font.id)?.name}`
+		)
 		ctx?.setFontFamilyFlag(false)
 	}
 	return (

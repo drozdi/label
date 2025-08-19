@@ -4,6 +4,7 @@ import { storeTemplate } from '../../entites/template/store'
 import { minMax } from '../../shared/utils'
 import { useAppContext } from '../context'
 import classes from './element.module.css'
+import { resizeObject } from './utils/resize'
 
 function aspect(width: number, height: number): number {
 	return width / height
@@ -183,20 +184,9 @@ export const Element = observer(
 					  ) - sPosition.current.y
 			}
 
-			storeTemplate.setWidth(
-				minMax(
-					storeTemplate.current.width +
-						dx / storeTemplate.mm / storeTemplate.scale,
-					0.1
-				)
-			)
-
-			storeTemplate.setHeight(
-				minMax(
-					storeTemplate.current.height +
-						dy / storeTemplate.mm / storeTemplate.scale,
-					0.1
-				)
+			resizeObject(
+				dx / storeTemplate.mm / storeTemplate.scale,
+				dy / storeTemplate.mm / storeTemplate.scale
 			)
 
 			cloneElement.current?.remove()

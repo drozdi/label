@@ -3,7 +3,7 @@ import { Box, Group, Popover, SegmentedControl } from '@mantine/core'
 interface ItemOptionsProps {
 	label?: string
 	value?: string
-	onChange?: () => void
+	onChange?: (v: string) => void
 	options: any[]
 	unit?: string
 	labels?: {

@@ -6,6 +6,7 @@ import { useAppContext } from '../features/context'
 import { ContainerDataMatrix } from '../features/data-matrix/container-data-matrix'
 import { ContainerElement } from '../features/elements/container-element'
 import { ContainerFontFamily } from '../features/fonts/container-font-family'
+import { ListHistory } from '../features/history/list-history'
 import { ContainerImage } from '../features/images/container-image'
 import { ListLayers } from '../features/layers/list-layers'
 import { ListProperties } from '../features/properties/list-properties'
@@ -58,7 +59,7 @@ export const Editor = observer(() => {
 					) : imageFlag ? (
 						<ContainerImage />
 					) : (
-						<Tabs defaultValue='properties'>
+						<Tabs defaultValue='properties' h='100%'>
 							<Tabs.List>
 								<Tabs.Tab value='properties'>Свойства</Tabs.Tab>
 								<Tabs.Tab value='layers'>Слои</Tabs.Tab>
@@ -91,7 +92,7 @@ export const Editor = observer(() => {
 								)}
 							</Tabs.Panel>
 							<Tabs.Panel keepMounted value='histories' p='0.5rem'>
-								histories
+								<ListHistory />
 							</Tabs.Panel>
 						</Tabs>
 					)}

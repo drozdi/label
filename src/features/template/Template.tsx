@@ -3,13 +3,14 @@ import type React from 'react'
 import { useEffect, useRef } from 'react'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
-import { minMax } from '../../shared/utils'
-
+import { minMax, round } from '../../shared/utils'
 import { useAppContext } from '../context'
 import { Element } from '../element/element'
 import classes from '../element/element.module.css'
 import { BackgroundBg } from './background-bg'
 import { BackgroundGrid } from './background-grid'
+import { deleteObject } from './utils/delete'
+import { move, moveX, moveY } from './utils/move'
 
 export const Template = observer(() => {
 	const { objects, current } = storeTemplate
@@ -119,14 +120,14 @@ export const Template = observer(() => {
 				event.clientX,
 				sPosition.current?.minX ?? 0,
 				sPosition.current?.maxX ?? window.innerWidth
-			) - (sPosition.current.x ?? 0)
+			) - (sPosition.current?.x ?? 0)
 
 		const dy =
 			minMax(
 				event.clientY,
 				sPosition.current?.minY ?? 0,
 				sPosition.current?.maxY ?? window.innerHeight
-			) - (sPosition.current.y ?? 0)
+			) - (sPosition.current?.y ?? 0)
 
 		cloneElement.current.forEach(item => {
 			item.clone.style.left = item.left + dx + 'px'
@@ -149,8 +150,10 @@ export const Template = observer(() => {
 			minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) -
 			sPosition.current.y
 
-		storeTemplate.moveX(dx / storeTemplate.mm / storeTemplate.scale)
-		storeTemplate.moveY(dy / storeTemplate.mm / storeTemplate.scale)
+		move(
+			round(dx / storeTemplate.mm / storeTemplate.scale),
+			round(dy / storeTemplate.mm / storeTemplate.scale)
+		)
 
 		cloneElement.current.forEach(item => item.clone?.remove())
 
@@ -183,19 +186,19 @@ export const Template = observer(() => {
 			event.preventDefault()
 
 			if (event.key === 'Delete') {
-				storeTemplate.deleteSelectedObject()
+				deleteObject()
 			}
 			if (event.key === 'ArrowRight') {
-				storeTemplate.moveX(STEP)
+				moveX(STEP)
 			}
 			if (event.key === 'ArrowLeft') {
-				storeTemplate.moveX(-STEP)
+				moveX(-STEP)
 			}
 			if (event.key === 'ArrowUp') {
-				storeTemplate.moveY(-STEP)
+				moveY(-STEP)
 			}
 			if (event.key === 'ArrowDown') {
-				storeTemplate.moveY(STEP)
+				moveY(STEP)
 			}
 		}
 		document.addEventListener('keydown', pressKey)
@@ -256,6 +259,7 @@ export const Template = observer(() => {
 					borderRadius: storeTemplate.borderRadius,
 					marginLeft: storeTemplate.referenceX,
 					marginTop: storeTemplate.referenceY,
+					color: '#000000',
 				}}
 				onClick={handleClick}
 				onMouseDown={handleMouseDown}
