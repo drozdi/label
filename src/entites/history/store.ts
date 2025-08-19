@@ -50,10 +50,9 @@ class History {
 	append(objects: any[], label = '', props: Record<string, any> = {}) {
 		const t = dayjs().format('HH:mm:ss')
 		const tmp = JSON.stringify(this.fundById(this.curIndex)?.objects || [])
+		const last = JSON.stringify(this.histories[0]?.objects || [])
 		const items = JSON.stringify(objects)
-		console.log('tmp', tmp)
-		console.log('items', items)
-		if (tmp !== items) {
+		if (tmp !== items && last !== items) {
 			this.curIndex = this.histories.length
 			this.histories.unshift({
 				objects: JSON.parse(items),
@@ -62,6 +61,8 @@ class History {
 				props,
 				id: this.histories.length,
 			})
+		} else if (last === items) {
+			this.goTo(this.histories.length - 1)
 		}
 	}
 }
