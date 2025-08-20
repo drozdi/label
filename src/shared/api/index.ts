@@ -2,7 +2,7 @@ import axios from 'axios'
 import { URL_API } from '../constants'
 
 export const api = axios.create({
-	baseURL: URL_API,
+	baseURL: localStorage.getItem('api.host') || URL_API,
 	headers: {
 		'Content-Type': 'application/json',
 	},

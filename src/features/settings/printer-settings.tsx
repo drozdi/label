@@ -118,82 +118,77 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 	}
 
 	return (
-		<div className='setting_printing'>
-			<Group w='100%' justify='space-between' gap='2rem'>
-				<Stack w='65%'>
-					<ItemEditable
-						editable
-						type='text'
-						label='ip-адрес:'
-						value={host}
-						onChange={e => setValue(e, setHost)}
-					/>
-					<ItemEditable
-						editable
-						type='number'
-						label='Порт:'
-						value={port}
-						onChange={e => setValue(e, setPort)}
-					/>
-					<ItemEditable
-						editable
-						type='number'
-						label='Кол-во:'
-						value={count}
-						onChange={e => setValue(e, setCount)}
-					/>
-					<ItemOptions
-						label='Тип принтера:'
-						value={typePrinter}
-						options={['tspl', 'ezpl']}
-						onChange={setTypePrinter}
-					/>
-					<ItemOptions
-						label='dpi:'
-						value={printerResolution}
-						options={['200', '300']}
-						onChange={setPrinterResolution}
-					/>
-					<ItemEditable label='Версия ПО:' value={storePrinter.VERSION} />
-					<ItemEditable
-						editable
-						type='number'
-						label='Смещение ТПГ по X:'
-						value={shiftX}
-						onChange={e => setValue(e, setShiftX)}
-					/>
-					<ItemEditable
-						editable
-						type='number'
-						label='Смещение ТПГ по Y:'
-						value={shiftY}
-						onChange={e => setValue(e, setShiftY)}
-					/>
-					<ItemEditable
-						label='Плотность печати:'
-						value={storePrinter.DENSITY}
-					/>
-					<ItemEditable label='Скорость печати:' value={storePrinter.SPEED} />
-					<ItemEditable
-						label='Страница кодировки:'
-						value={storePrinter.CODEPAGE}
-					/>
-				</Stack>
-				<Stack align='stretch' justify='space-between' w='10rem' h='100%'>
-					<Stack align='stretch' justify='flex-start' gap='1rem'>
-						<Button variant='outline' onClick={handleCheckSettings}>
-							Считать настройки
-						</Button>
-						<Button variant='outline'>Калибровка</Button>
-						<Button variant='outline' onClick={handlePing}>
-							Проверка связи
-						</Button>
-					</Stack>
-					<Button variant='outline' onClick={handleSaveSettings}>
-						Сохранить
+		<Group w='100%' justify='space-between' gap='2rem'>
+			<Stack w='65%'>
+				<ItemEditable
+					editable
+					type='text'
+					label='ip-адрес:'
+					value={host}
+					onChange={e => setValue(e, setHost)}
+				/>
+				<ItemEditable
+					editable
+					type='number'
+					label='Порт:'
+					value={port}
+					onChange={e => setValue(e, setPort)}
+				/>
+				<ItemEditable
+					editable
+					type='number'
+					label='Кол-во:'
+					value={count}
+					onChange={e => setValue(e, setCount)}
+				/>
+				<ItemOptions
+					label='Тип принтера:'
+					value={typePrinter}
+					options={['tspl', 'ezpl']}
+					onChange={setTypePrinter}
+				/>
+				<ItemOptions
+					label='dpi:'
+					value={printerResolution}
+					options={['200', '300']}
+					onChange={setPrinterResolution}
+				/>
+				<ItemEditable label='Версия ПО:' value={storePrinter.VERSION} />
+				<ItemEditable
+					editable
+					type='number'
+					label='Смещение ТПГ по X:'
+					value={shiftX}
+					onChange={e => setValue(e, setShiftX)}
+				/>
+				<ItemEditable
+					editable
+					type='number'
+					label='Смещение ТПГ по Y:'
+					value={shiftY}
+					onChange={e => setValue(e, setShiftY)}
+				/>
+				<ItemEditable label='Плотность печати:' value={storePrinter.DENSITY} />
+				<ItemEditable label='Скорость печати:' value={storePrinter.SPEED} />
+				<ItemEditable
+					label='Страница кодировки:'
+					value={storePrinter.CODEPAGE}
+				/>
+			</Stack>
+			<Stack align='stretch' justify='space-between' w='10rem' h='100%'>
+				<Stack align='stretch' justify='flex-start' gap='1rem'>
+					<Button variant='outline' onClick={handleCheckSettings}>
+						Считать настройки
+					</Button>
+					<Button variant='outline'>Калибровка</Button>
+					<Button variant='outline' onClick={handlePing}>
+						Проверка связи
 					</Button>
 				</Stack>
-			</Group>
-		</div>
+				<Button variant='outline' onClick={handleSaveSettings}>
+					Сохранить
+				</Button>
+			</Stack>
+		</Group>
 	)
 })

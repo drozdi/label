@@ -70,7 +70,8 @@ export const storeHistory = new History()
 
 export const histroyAppendDebounce = debounce((...args: any[]) => {
 	storeHistory.append(...args)
-}, 200)
+}, 500)
+
 export const histroyAppend = (...args: any[]) => {
 	storeHistory.append(...args)
 }

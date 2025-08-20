@@ -59,6 +59,7 @@ export const ToolbarTools = observer(() => {
 						label={value => `${Math.round(value * 100)}`}
 						defaultValue={storeTemplate.scale}
 						marks={[
+							{ value: 1, label: '100%' },
 							{ value: 2, label: '200%' },
 							{ value: 3, label: '300%' },
 							{ value: 4, label: '400%' },

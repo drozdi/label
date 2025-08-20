@@ -267,7 +267,12 @@ export const Template = observer(() => {
 			>
 				<BackgroundBg />
 				{objects.map((object, index) => (
-					<Element key={object.id} index={index} object={object} />
+					<Element
+						key={object.id}
+						scale={storeTemplate.scale}
+						index={index}
+						object={object}
+					/>
 				))}
 			</div>
 		</div>

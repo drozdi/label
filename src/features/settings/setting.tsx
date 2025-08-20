@@ -13,7 +13,7 @@ export const Settings = observer(() => {
 			title='Настройки'
 			size='xl'
 		>
-			<Tabs defaultValue='printer'>
+			<Tabs defaultValue='app'>
 				<Tabs.List>
 					<Tabs.Tab value='app'>Приложение</Tabs.Tab>
 					<Tabs.Tab value='printer'>Принтер</Tabs.Tab>

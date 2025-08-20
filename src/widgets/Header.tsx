@@ -1,6 +1,5 @@
 import {
 	ActionIcon,
-	Button,
 	Group,
 	List,
 	Popover,
@@ -18,7 +17,6 @@ import {
 	TbSettings,
 	TbSun,
 } from 'react-icons/tb'
-import { storeTemplate } from '../entites/template/store'
 import { useAppContext } from '../features/context'
 import { HeaderMain } from '../features/header/header-main'
 import { HeaderPrint } from '../features/header/header-print'
@@ -88,7 +86,7 @@ export function Header() {
 						}}
 					/>
 				</ActionIcon>
-				<Button
+				{/* <Button
 					onClick={() =>
 						console.log({
 							...storeTemplate,
@@ -97,7 +95,7 @@ export function Header() {
 					}
 				>
 					check
-				</Button>
+				</Button> */}
 			</Group>
 		</Group>
 	)

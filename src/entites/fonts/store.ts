@@ -30,12 +30,12 @@ class StoreFonts {
 			const res = await requestFontsList()
 			this._list = res.data.response
 			this.isLoaded = true
-			this._list.forEach((item, index) => {
+			this._list.forEach(async (item, index) => {
 				const myFont = new FontFace(
 					item.name,
 					`url(data:application/octet-stream;base64,${item.data})`
 				)
-				myFont.load()
+				await myFont.load()
 				document.fonts.add(myFont)
 			})
 		} catch (e) {

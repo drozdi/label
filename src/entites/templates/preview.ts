@@ -28,8 +28,18 @@ export class Preview {
 	selected: Array<number | string> = []
 
 	constructor(tmp) {
-		for (const prop in tmp) {
-			if (tmp[prop] !== undefined && prop !== 'objects') {
+		for (const prop of [
+			'width_mm',
+			'height_mm',
+			'radius_label',
+			'gap_mm',
+			'direction_x',
+			'direction_y',
+			'reference_x',
+			'reference_y',
+			'scale',
+		]) {
+			if (tmp[prop] !== undefined) {
 				this[prop] = tmp[prop]
 			}
 		}
@@ -50,6 +60,12 @@ export class Preview {
 	get borderRadius() {
 		return this.radius_label
 	}
+	get referenceX() {
+		return this.reference_x * this.mm * this.scale
+	}
+	get referenceY() {
+		return this.reference_y * this.mm * this.scale
+	}
 	get space() {
 		return this.gap_mm * this.mm * this.scale
 	}
@@ -63,5 +79,8 @@ export class Preview {
 
 	addObject(object) {
 		this.objects.push(factoryElement(object) as never)
+	}
+	setScale(scale) {
+		this.scale = scale
 	}
 }

@@ -9,7 +9,7 @@ import { useAppContext } from '../context'
 
 export const HeaderMain = observer(() => {
 	const ctx = useAppContext()
-	const { importFlag } = ctx
+	const { importFlag, previewFlag } = ctx
 	const handleSave = async () => {
 		if (storeTemplate.name?.length < 3) {
 			serviceNotifications.error(
@@ -99,6 +99,13 @@ export const HeaderMain = observer(() => {
 				onClick={() => ctx?.setImportFlag(!importFlag)}
 			>
 				Импорт кода
+			</Button>
+			<Button
+				variant='outline'
+				color={previewFlag ? 'lime' : ''}
+				onClick={() => ctx?.setPreviewFlag?.(!importFlag)}
+			>
+				Предпросмотр
 			</Button>
 		</Group>
 	)

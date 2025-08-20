@@ -15,6 +15,7 @@ export const Element = observer(
 		object,
 		index,
 		preview,
+		scale = 1,
 	}: {
 		object: object
 		index: number
@@ -24,7 +25,7 @@ export const Element = observer(
 		const ctx = useAppContext()
 		const style = useMemo(
 			() => ({
-				...object.style(storeTemplate.scale, refParent.current),
+				...object.style(scale, refParent.current),
 				...(preview ? { outline: '0px' } : {}),
 			}),
 			[object, refParent.current]
@@ -184,10 +185,7 @@ export const Element = observer(
 					  ) - sPosition.current.y
 			}
 
-			resizeObject(
-				dx / storeTemplate.mm / storeTemplate.scale,
-				dy / storeTemplate.mm / storeTemplate.scale
-			)
+			resizeObject(dx / storeTemplate.mm / scale, dy / storeTemplate.mm / scale)
 
 			cloneElement.current?.remove()
 			sPosition.current = null
@@ -216,7 +214,7 @@ export const Element = observer(
 				onClick={handleClick}
 				data-draggable={!preview}
 			>
-				{object.render(storeTemplate.scale, preview)}
+				{object.render(scale, preview)}
 				{resize.map(dir => (
 					<div
 						key={dir}

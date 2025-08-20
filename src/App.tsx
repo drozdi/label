@@ -1,6 +1,7 @@
-import { LoadingOverlay, Stack } from '@mantine/core'
+import { Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
+import { requestFontsList } from './entites/fonts/api'
 import { storeFonts } from './entites/fonts/store'
 import { storeHistory } from './entites/history/store'
 import { storeImages } from './entites/images/store'
@@ -10,8 +11,11 @@ import { storeTemplates } from './entites/templates/store'
 import { storeVariables } from './entites/variables/store'
 import { AppContextProvider } from './features/context'
 import { Import } from './features/import/import'
+import { Loader } from './features/loader/Loader'
+import { Preview } from './features/preview/preview'
 import { Settings } from './features/settings/setting'
 import { Editor } from './widgets/Editor'
+import { ErrorServer } from './widgets/ErrorServer'
 import { Header } from './widgets/Header'
 import { Templates } from './widgets/Templates'
 
@@ -25,6 +29,8 @@ const App = observer(() => {
 	const [settingsFlag, setSettingsFlag] = useState(false)
 	const [importFlag, setImportFlag] = useState(false)
 	const [dataMatrixFlag, setDataMatrixFlag] = useState(false)
+	const [previewFlag, setPreviewFlag] = useState(false)
+	const [serverError, setServerError] = useState(false)
 
 	const visible = useMemo(
 		() =>
@@ -62,6 +68,10 @@ const App = observer(() => {
 			setGridFlag,
 			imageBg,
 			setImageBg,
+			previewFlag,
+			setPreviewFlag,
+			serverError,
+			setServerError,
 		}),
 		[
 			fontFamilyFlag,
@@ -73,28 +83,44 @@ const App = observer(() => {
 			importFlag,
 			gridFlag,
 			imageBg,
+			previewFlag,
+			serverError,
 		]
 	)
+
 	useEffect(() => {
+		const check = async () => {
+			try {
+				await requestFontsList()
+			} catch (e) {
+				if (e.code === 'ERR_NETWORK') {
+					setServerError(true)
+				}
+			}
+		}
 		storeHistory.fn = ({ objects }) => {
 			storeTemplate.loadObjects(JSON.parse(JSON.stringify(objects)))
 		}
 		storeTemplate.clear()
+		check()
 	}, [])
 
 	return (
 		<AppContextProvider value={context}>
 			<Stack h='100vh' w='100vw' align='stretch' justify='flex-start'>
-				<LoadingOverlay
-					visible={visible}
-					zIndex={1000}
-					overlayProps={{ radius: 'sm', blur: 2 }}
-				/>
-				<Header />
-				{loadTemplateFlag ? <Templates /> : <Editor />}
+				{serverError ? (
+					<ErrorServer />
+				) : (
+					<>
+						<Loader visible={visible} />
+						<Header />
+						{loadTemplateFlag ? <Templates /> : <Editor />}
+					</>
+				)}
 			</Stack>
 			<Settings />
 			<Import />
+			<Preview />
 		</AppContextProvider>
 	)
 })
