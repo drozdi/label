@@ -1,7 +1,7 @@
 import { Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
-import { URL_API } from '../../shared/constants'
+import { URL_API, VERSION } from '../../shared/constants'
 import { ItemEditable } from './item-editable'
 export const AppSettings = observer(() => {
 	const setThemeFunc = async () => {}
@@ -53,6 +53,7 @@ export const AppSettings = observer(() => {
 				onChange={value => handleApiHost(1, value)}
 				onClick={() => setApi()}
 			/>
+			<ItemEditable type='text' label='Версия:' value={VERSION} />
 		</Stack>
 	)
 })

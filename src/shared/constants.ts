@@ -6,6 +6,8 @@ export const MM_QR = 3.999575175750246
 export const STEP = 0.05
 export const ROUND = 100
 
+export const VERSION = '2.0.0:20252820'
+
 export const DEF_TEMPLATE = {
 	dpi: 12,
 	height_mm: 40,
