@@ -38,8 +38,8 @@ export class BoxElement extends BaseElement {
 				style={{
 					width: '100%',
 					height: '100%',
-					border: this.line_thickness / 2 + 'px solid',
-					borderRadius: this.radius / 2 + 'px',
+					border: this.line_thickness * this.mm + 'px solid',
+					borderRadius: this.radius + 'px',
 				}}
 			></div>
 		)

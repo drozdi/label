@@ -28,7 +28,7 @@ export class BarcodeElement extends BaseElement {
 		return props
 	}
 	render(scale = 1, preview = false): React.ReactNode {
-		const prefix = preview? '_preview': ''
+		const prefix = preview ? '_preview' : ''
 		const style = {
 			fontSize: this.font_size,
 			position: 'absolute',
@@ -43,7 +43,7 @@ export class BarcodeElement extends BaseElement {
 		useEffect(() => {
 			try {
 				if (this.code_type === 'ean13' || this.code_type === 'code128') {
-					bwipjs.toCanvas('mycanvas' + this.id+prefix, {
+					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						scaleX: this.width,
 						scaleY: 2,
 						bcid: this.code_type,
@@ -51,7 +51,7 @@ export class BarcodeElement extends BaseElement {
 						height: this.height * 2,
 					})
 				} else if (this.code_type === 'datamatrix') {
-					bwipjs.toCanvas('mycanvas' + this.id+prefix, {
+					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: 'datamatrix',
 						text: '^FNC1' + this.name,
 						height: this.height * this.min_size,
@@ -73,7 +73,7 @@ export class BarcodeElement extends BaseElement {
 		return (
 			<>
 				<canvas
-					id={'mycanvas' + this.id+prefix}
+					id={'mycanvas' + this.id + prefix}
 					style={{
 						height:
 							this.code_type === 'qrcode'

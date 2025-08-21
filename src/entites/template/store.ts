@@ -90,7 +90,7 @@ class StoreTemplate {
 		return this.objects[this.currIndex] || undefined
 	}
 	setActiveObject(id: number | string) {
-		this.currId = id
+		this.currId = String(id)
 		this.currIndex = this.objects.findIndex(
 			object => String(object.id) === String(this.currId)
 		)
@@ -305,8 +305,8 @@ class StoreTemplate {
 	isEmpty() {
 		return this.selected.length === 0
 	}
-	isSelected(id: number) {
-		return this.selected.includes(id)
+	isSelected(id: number | string) {
+		return this.selected.includes(String(id))
 	}
 	deleteSelectedObject() {
 		;[...this.selected].forEach(id => {

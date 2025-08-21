@@ -58,6 +58,7 @@ class StoreTemplates {
 		try {
 			const res = await requestTemplateId(id)
 			this.selected = new Preview(res)
+			console.log(this.selected)
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'

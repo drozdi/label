@@ -1,25 +1,49 @@
-import { Stack, Switch } from '@mantine/core'
+import { Box, Group, Stack, Switch, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../../entites/template/store'
 import classes from './Switch.module.css'
 
 export const ListLayers = observer(() => {
 	const { objects } = storeTemplate
+	const handleClick = (event: React.MouseEvent, element) => {
+		if (event.ctrlKey) {
+			storeTemplate.selectObject(element.id)
+		} else {
+			storeTemplate.setActiveObject(element.id)
+		}
+	}
 	return (
 		<Stack>
 			{objects.map((object, index) => (
-				<Switch
+				<Group
+					grow
+					justify='flex-end'
 					key={object.id}
-					color={
-						storeTemplate.selected.includes(String(object.id)) ? 'green' : ''
-					}
-					label={object.name}
-					labelPosition='left'
-					checked={object.enabled}
-					classNames={classes}
-					onClick={() => storeTemplate.setActiveObject(object.id)}
-					onChange={() => storeTemplate.toggleEnabled(object.id)}
-				/>
+					c={storeTemplate.isSelected(object.id) ? 'green' : ''}
+				>
+					<Text
+						truncate='end'
+						maw='75%'
+						onClick={event => handleClick(event, object)}
+						style={{
+							userSelect: 'none',
+							cursor: 'pointer',
+						}}
+					>
+						{object.name}
+					</Text>
+					<Box>
+						<Switch
+							color={storeTemplate.isSelected(object.id) ? 'green' : ''}
+							labelPosition='left'
+							checked={object.enabled}
+							classNames={classes}
+							onChange={event => {
+								storeTemplate.toggleEnabled(object.id)
+							}}
+						/>
+					</Box>
+				</Group>
 			))}
 		</Stack>
 	)

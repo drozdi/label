@@ -40,7 +40,6 @@ export const ToolbarTools = observer(() => {
 		<Stack align='center' justify='flex-start' maw='none'>
 			<Popover
 				width={300}
-				position='bottom'
 				shadow='md'
 				position='right'
 				offset={0}

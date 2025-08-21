@@ -29,6 +29,7 @@ export class Preview {
 
 	constructor(tmp) {
 		for (const prop of [
+			'name',
 			'width_mm',
 			'height_mm',
 			'radius_label',
@@ -38,6 +39,7 @@ export class Preview {
 			'reference_x',
 			'reference_y',
 			'scale',
+			'id',
 		]) {
 			if (tmp[prop] !== undefined) {
 				this[prop] = tmp[prop]

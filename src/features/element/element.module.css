@@ -5,6 +5,7 @@
 	cursor: default;
 	user-select: none;
 	z-index: 10;
+	line-height: 1;
 }
 
 .active {

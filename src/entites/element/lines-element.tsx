@@ -23,4 +23,8 @@ export class LinesElement extends BaseElement {
 			background: 'black',
 		}
 	}
+	setHeight(height: string | number) {
+		super.setHeight(height)
+		this.setLineThickness(height)
+	}
 }
