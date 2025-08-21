@@ -86,6 +86,7 @@ class StoreTemplates {
 		this.error = ''
 		try {
 			const res = await requestTemplateSave(template)
+			this.selectTemplate(res.data.id)
 			await this.load(true)
 			return res
 		} catch (e) {
