@@ -1,9 +1,9 @@
 import { Button, Group, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
-import { serviceNotifications } from '../../entites/notifications/service'
-import { servicePrinter } from '../../entites/printer/service'
 import { storePrinter } from '../../entites/printer/store'
+import { serviceNotifications } from '../../services/notifications/service'
+import { servicePrinter } from '../../services/printer/service'
 import { ItemEditable } from './item-editable'
 import { ItemOptions } from './item-options'
 

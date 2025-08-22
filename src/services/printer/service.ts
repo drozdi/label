@@ -1,4 +1,3 @@
-import { serviceNotifications } from '../notifications/service'
 import {
 	requestPrinterCode,
 	requestPrinterExample,
@@ -6,8 +5,9 @@ import {
 	requestPrinterSettings,
 	requestPrinterSettingsSave,
 	requestPrinterTrial,
-} from './api'
-import { storePrinter } from './store'
+} from '../../entites/printer/api'
+import { storePrinter } from '../../entites/printer/store'
+import { serviceNotifications } from '../notifications/service'
 
 const fakeVariable = {
 	barcode: "~10103665585002190215'hX%t7Ir8FMl93dGVz",

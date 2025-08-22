@@ -1,5 +1,6 @@
 import * as FileSaver from 'file-saver'
 import { makeAutoObservable } from 'mobx'
+import { Preview } from '../preview/preview'
 import {
 	requestObjectDelete,
 	requestObjectNew,
@@ -12,7 +13,6 @@ import {
 	requestTemplateSave,
 	requestTemplateUpdate,
 } from './api'
-import { Preview } from './preview'
 class StoreTemplates {
 	isLoaded = false
 	isLoading = false

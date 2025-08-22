@@ -15,7 +15,7 @@ import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { TbFilePlus } from 'react-icons/tb'
 import { storeImages } from '../../entites/images/store'
-import { serviceNotifications } from '../../entites/notifications/service'
+import { serviceNotifications } from '../../services/notifications/service'
 import { useAppContext } from '../context'
 import { ListImage } from './list-image'
 

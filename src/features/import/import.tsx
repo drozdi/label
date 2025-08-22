@@ -5,13 +5,14 @@ import {
 	Modal,
 	Stack,
 	Textarea,
+	Title,
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useRef, useState } from 'react'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
-import { serviceNotifications } from '../../entites/notifications/service'
 import { storeTemplate } from '../../entites/template/store'
+import { serviceNotifications } from '../../services/notifications/service'
 import { genId } from '../../shared/utils'
 import { useAppContext } from '../context'
 
@@ -397,7 +398,7 @@ export const Import = observer(() => {
 					this.parseContent(arr[i].replace(/^L/, ''))
 				} else {
 					unprocessed.push(arr[i])
-				}//*/
+				} //*/
 				i++
 			} //*/
 			setUnprocessed(v => ({ ...v, unprocessedKey: unprocessed }))
@@ -486,10 +487,10 @@ export const Import = observer(() => {
 			obj.height = 10
 
 			const arr = str.split(',').map(v => String(v).trim())
-			
+
 			obj.pos_x = (parseInt(arr[0], 10) * storeTemplate.mm) / storeTemplate.dpi
 			obj.pos_y = (parseInt(arr[1], 10) * storeTemplate.mm) / storeTemplate.dpi
-			
+
 			serviceNotifications.alert(
 				'Изображение не загружено, пожалуйста, передобавьте его вручную.'
 			)
@@ -523,7 +524,6 @@ export const Import = observer(() => {
 				y === 0 || dy === 0 ? dx : parseInt(arr[3], 10) / storeTemplate.dpi
 			obj.height =
 				x === 0 || dx === 0 ? dy : parseInt(arr[3], 10) / storeTemplate.dpi
-
 		},
 		barcodeElement(obj: Record<string, any>, str: string, type: string) {
 			const arr = parseSplit(str)
@@ -604,7 +604,12 @@ export const Import = observer(() => {
 			size='xl'
 		>
 			<Stack gap='sm'>
+				<Title order={6}>
+					<div>Необработанные ключи: {unprocessedKey.join(' ')}</div>
+					<div>Необработанное тело: {unprocessedBody.join(' ')}</div>
+				</Title>
 				<Textarea rows={20} ref={refText} />
+
 				<Group gap='sm'>
 					<Button variant='filled' onClick={handleParse}>
 						Импорт

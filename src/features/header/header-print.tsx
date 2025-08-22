@@ -1,10 +1,10 @@
 import { Button, Group, Textarea } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
-import { serviceNotifications } from '../../entites/notifications/service'
-import { servicePrinter } from '../../entites/printer/service'
 import { storePrinter } from '../../entites/printer/store'
 import { storeTemplates } from '../../entites/templates/store'
+import { serviceNotifications } from '../../services/notifications/service'
+import { servicePrinter } from '../../services/printer/service'
 import { useAppContext } from '../context'
 
 export const HeaderPrint = observer(() => {

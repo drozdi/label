@@ -1,9 +1,9 @@
 import { Button, Group, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeHistory } from '../../entites/history/store'
-import { serviceNotifications } from '../../entites/notifications/service'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
+import { serviceNotifications } from '../../services/notifications/service'
 import { DEF_TEMPLATE } from '../../shared/constants'
 import { useAppContext } from '../context'
 

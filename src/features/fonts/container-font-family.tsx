@@ -13,7 +13,7 @@ import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { TbFilePlus } from 'react-icons/tb'
 import { storeFonts } from '../../entites/fonts/store'
-import { serviceNotifications } from '../../entites/notifications/service'
+import { serviceNotifications } from '../../services/notifications/service'
 import { useAppContext } from '../context'
 import { ListFontFamily } from './list-font-family'
 
