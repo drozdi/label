@@ -1,20 +1,20 @@
-interface IFont {
+interface IImage {
 	id?: number
 	name: string
-	tag_fonts: string
+	tag_images: string
 	data: string
 }
 
-interface IRequestFont {
+interface IRequestImage {
 	size?: number
 	number?: number
 }
 
-interface IResponseFontList {
+interface IResponseImageList {
 	page: number
 	next_page: number
 	previous_page: number
 	size: number
 	total_records: number
-	response: IFont[]
+	response: IImage[]
 }

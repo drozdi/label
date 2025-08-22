@@ -1,5 +1,6 @@
 import {
 	ActionIcon,
+	Button,
 	Group,
 	List,
 	Popover,
@@ -24,7 +25,12 @@ import { HeaderTemplates } from '../features/header/header-templates'
 
 export function Header() {
 	const ctx = useAppContext()
-	const { loadTemplateFlag, settingsFlag } = ctx
+	const {
+		loadTemplateFlag,
+		settingsFlag,
+		managerFontFamilyFlag,
+		managerImagesFlag,
+	} = ctx
 	const [openedInfo, info] = useDisclosure(false)
 	const { setColorScheme } = useMantineColorScheme()
 	const computedColorScheme = useComputedColorScheme('light', {
@@ -34,6 +40,22 @@ export function Header() {
 		<Group justify='space-between' gap='xs' p='xs'>
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{loadTemplateFlag ? null : <HeaderPrint />}
+			<Group>
+				<Button
+					variant='outline'
+					color={managerFontFamilyFlag ? 'lime' : ''}
+					onClick={() => ctx.setManagerFontFamilyFlag(true)}
+				>
+					Шрифты
+				</Button>
+				<Button
+					variant='outline'
+					color={managerImagesFlag ? 'lime' : ''}
+					onClick={() => ctx.setManagerImagesFlag(true)}
+				>
+					Изображения
+				</Button>
+			</Group>
 			<Group>
 				<ActionIcon
 					color={settingsFlag ? 'lime' : ''}

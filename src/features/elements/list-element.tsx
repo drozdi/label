@@ -9,7 +9,7 @@ const elements = [
 		label: 'Текст (строка)',
 		type: 'text',
 		data: 'Какойто текст',
-		font_id: storeFonts.defaultFont?.id || 1,
+		font_id: storeFonts.default?.id || 1,
 		callback: ctx => {
 			ctx?.setFontFamilyFlag(true)
 		},
@@ -18,7 +18,7 @@ const elements = [
 		label: 'Текст (многострочный)',
 		type: 'block',
 		data: 'Какойто текст, много текста',
-		font_id: storeFonts.defaultFont?.id || 1,
+		font_id: storeFonts.default?.id || 1,
 		callback: ctx => {
 			ctx?.setFontFamilyFlag(true)
 		},
@@ -72,7 +72,7 @@ const elements = [
 	{
 		label: 'Изображение из бд',
 		type: 'img',
-		image_id: storeImages.defaultImage?.id || 1,
+		image_id: storeImages.default?.id || 1,
 		callback: ctx => {
 			ctx?.setImageFlag(true)
 		},

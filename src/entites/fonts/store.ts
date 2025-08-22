@@ -1,20 +1,22 @@
 import { makeAutoObservable } from 'mobx'
+import { KEY_FONT_DEFAULT } from '../../shared/constants'
 import { requestFontsAdd, requestFontsList } from './api'
+
 class StoreFonts {
-	isLoading = false
-	isLoaded = false
-	error = ''
-	_list = []
-	_default = -1
+	isLoading: boolean = false
+	isLoaded: boolean = false
+	error: string = ''
+	_list: IFont[] = []
+	id = Number(localStorage.getItem(KEY_FONT_DEFAULT) || 1)
 	constructor() {
 		makeAutoObservable(this)
 	}
-	get list() {
+	get list(): IFont[] {
 		this.load()
 		return this._list
 	}
-	get defaultFont() {
-		return this.list[this._default] || undefined
+	get default(): IFont | undefined {
+		return this.findById(this.id)
 	}
 	async load(reloading = false) {
 		if (reloading) {
@@ -30,7 +32,7 @@ class StoreFonts {
 			const res = await requestFontsList()
 			this._list = res.data.response
 			this.isLoaded = true
-			this._list.forEach(async (item, index) => {
+			this._list.forEach(async item => {
 				const myFont = new FontFace(
 					item.name,
 					`url(data:application/octet-stream;base64,${item.data})`
@@ -38,27 +40,47 @@ class StoreFonts {
 				await myFont.load()
 				document.fonts.add(myFont)
 			})
-		} catch (e) {
-			console.error(e)
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
-			this._default = 0
 			this.isLoading = false
 		}
 	}
-	async add(name, file) {
+	async add(name: string, data: string) {
+		this.isLoading = true
+		this.error = ''
 		try {
-			const res = await requestFontsAdd(name, file)
-		} catch (e) {
-			console.error(e)
+			const res = await requestFontsAdd(name, data)
+			const myFont = new FontFace(
+				res.data.name,
+				`url(data:application/octet-stream;base64,${res.data.data})`
+			)
+			await myFont.load()
+			document.fonts.add(myFont)
+			this._list.push(res.data)
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
-			this.load(true)
+			this.isLoading = false
 		}
 	}
-	default(index) {
-		this._default = index
+
+	setId(id: number) {
+		this.id = id
+		localStorage.setItem(KEY_FONT_DEFAULT, String(id))
 	}
-	findById(id) {
-		return this._list.find(item => item.id === id) || this.defaultFont
+	findById(id: number) {
+		return this._list.find(item => item.id === id)
+	}
+	findByName(name: string) {
+		return this._list.find(item => item.name === name)
+	}
+	findByTagFonts(tagFonts: string) {
+		return this._list.find(item => item.tag_fonts === tagFonts)
 	}
 }
 

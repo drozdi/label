@@ -5,6 +5,7 @@ import {
 	Input,
 	MantineProvider,
 	NumberInput,
+	Stack,
 	Textarea,
 	TextInput,
 } from '@mantine/core'
@@ -18,6 +19,12 @@ const theme = createTheme({
 		Group: Group.extend({
 			defaultProps: {
 				mih: 30,
+				gap: 'xs',
+			},
+		}),
+		Stack: Stack.extend({
+			defaultProps: {
+				gap: 'xs',
 			},
 		}),
 		Button: Button.extend({

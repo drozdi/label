@@ -10,6 +10,8 @@ import { storeTemplate } from './entites/template/store'
 import { storeTemplates } from './entites/templates/store'
 import { storeVariables } from './entites/variables/store'
 import { AppContextProvider } from './features/context'
+import { ManagerFontFamily } from './features/fonts/manager-font-family'
+import { ManagerImages } from './features/images/manager-images'
 import { Import } from './features/import/import'
 import { Loader } from './features/loader/Loader'
 import { Preview } from './features/preview/preview'
@@ -31,6 +33,8 @@ const App = observer(() => {
 	const [dataMatrixFlag, setDataMatrixFlag] = useState(false)
 	const [previewFlag, setPreviewFlag] = useState(false)
 	const [serverError, setServerError] = useState(false)
+	const [managerFontFamilyFlag, setManagerFontFamilyFlag] = useState(false)
+	const [managerImagesFlag, setManagerImagesFlag] = useState(false)
 
 	const visible = useMemo(
 		() =>
@@ -72,6 +76,10 @@ const App = observer(() => {
 			setPreviewFlag,
 			serverError,
 			setServerError,
+			managerFontFamilyFlag,
+			setManagerFontFamilyFlag,
+			managerImagesFlag,
+			setManagerImagesFlag,
 		}),
 		[
 			fontFamilyFlag,
@@ -85,6 +93,8 @@ const App = observer(() => {
 			imageBg,
 			previewFlag,
 			serverError,
+			managerFontFamilyFlag,
+			managerImagesFlag,
 		]
 	)
 
@@ -102,7 +112,7 @@ const App = observer(() => {
 			storeTemplate.loadObjects(JSON.parse(JSON.stringify(objects)))
 		}
 		storeTemplate.clear()
-		check()
+		//check()
 	}, [])
 
 	return (
@@ -121,6 +131,8 @@ const App = observer(() => {
 			<Settings />
 			<Import />
 			<Preview />
+			<ManagerFontFamily />
+			<ManagerImages />
 		</AppContextProvider>
 	)
 })

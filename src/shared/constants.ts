@@ -1,3 +1,6 @@
+export const KEY_FONT_DEFAULT = 'default.font'
+export const KEY_IMAGE_DEFAULT = 'default.image'
+
 export const URL_API = 'http://10.76.10.102:8033/api/v1/'
 
 export const MM = 3.709575175750246

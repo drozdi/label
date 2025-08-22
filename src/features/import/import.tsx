@@ -193,7 +193,7 @@ export const Import = observer(() => {
 				type: 'text',
 				width: 'fit-content',
 				height: 'fit-content',
-				font_id: storeFonts.defaultFont.id,
+				font_id: storeFonts.default.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
@@ -232,7 +232,7 @@ export const Import = observer(() => {
 			const obj = genObj({
 				name: 'block',
 				type: 'block',
-				font_id: storeFonts.defaultFont.id,
+				font_id: storeFonts.default.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
@@ -323,7 +323,7 @@ export const Import = observer(() => {
 				data: '',
 				width: 10,
 				height: 10,
-				image_id: storeImages.defaultImage.id,
+				image_id: storeImages.default.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
@@ -457,7 +457,7 @@ export const Import = observer(() => {
 			obj.typeObj = 'text'
 			obj.width = 'fit-content'
 			obj.height = 'fit-content'
-			obj.font_id = storeFonts.defaultFont?.id || 1
+			obj.font_id = storeFonts.default?.id || 1
 
 			const arr = parseSplit(str)
 
@@ -539,10 +539,10 @@ export const Import = observer(() => {
 				obj.human_readable === 1 || obj.human_readable === 2
 					? 1
 					: obj.human_readable === 3 || obj.human_readable === 4
-					? 2
-					: obj.human_readable === 5 || obj.human_readable === 6
-					? 3
-					: 0
+						? 2
+						: obj.human_readable === 5 || obj.human_readable === 6
+							? 3
+							: 0
 
 			obj.rotation = parseInt(arr[6], 10)
 			obj.data = arr[8]

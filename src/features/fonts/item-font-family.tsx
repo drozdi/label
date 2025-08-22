@@ -4,12 +4,13 @@ import { storeFonts } from '../../entites/fonts/store'
 import { histroyAppend } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useAppContext } from '../context'
-import styles from './Item.module.css'
+
+import { Item } from '../../shared/ui'
 
 export const ItemFontFamily = observer(({ font }) => {
 	const { current } = storeTemplate
 	const ctx = useAppContext()
-	const [oldId, setOldId] = useState(current?.font_id)
+	const [oldId] = useState(current?.font_id)
 	const handleMouseOver = () => {
 		storeTemplate.setFontId(font.id)
 	}
@@ -25,8 +26,8 @@ export const ItemFontFamily = observer(({ font }) => {
 		ctx?.setFontFamilyFlag(false)
 	}
 	return (
-		<div
-			className={styles.root + (oldId === font.id ? ' ' + styles.active : '')}
+		<Item
+			active={oldId === font.id}
 			style={{ fontFamily: font.name }}
 			onClick={handleSelect}
 			onMouseOver={handleMouseOver}
@@ -36,6 +37,6 @@ export const ItemFontFamily = observer(({ font }) => {
 			<br /> Это образец шрифта
 			<br /> This is a sample font
 			<br /> 0123456789
-		</div>
+		</Item>
 	)
 })

@@ -4,7 +4,7 @@ import { BaseElement } from './base-element'
 export class BlockElement extends BaseElement {
 	constructor(object: Record<string, any>) {
 		super({
-			font_id: storeFonts.defaultFont?.id,
+			font_id: storeFonts.default?.id,
 			width: 50,
 			height: 20,
 			font_size: 12,
