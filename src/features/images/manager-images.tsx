@@ -3,7 +3,6 @@ import {
 	FileButton,
 	Group,
 	Image,
-	Modal,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -27,14 +26,12 @@ export const ManagerImages = observer(() => {
 		ctx.setManagerImagesFlag(false)
 		cancel()
 	}
+	const handleRemove = async (id: number) => {
+		await storeImages.remove(id)
+	}
 	return (
-		<Modal
-			opened={managerImagesFlag}
-			onClose={handleClose}
-			title='Менеджер изображений'
-			size='xl'
-		>
-			<Stack>
+		<Stack>
+			<Group justify='space-between'>
 				<Text>
 					Изображения по умолчанию "
 					<span
@@ -46,42 +43,7 @@ export const ManagerImages = observer(() => {
 					</span>
 					"
 				</Text>
-				{file && (
-					<Stack gap={0}>
-						<Text size='xs'>
-							Загружен файл "{file?.name || 'unknow'}". Оставьте текущее
-							название или введите своё на латинице. Максимум 8 символов
-						</Text>
-						<TextInput
-							value={name}
-							onChange={({ target }) => writeName(target.value)}
-							required
-						/>
-						<Group justify='space-between'>
-							<Button onClick={save}>Сохранить</Button>
-							<Button onClick={cancel}>Отмена</Button>
-						</Group>
-					</Stack>
-				)}
-
-				<SimpleGrid cols={6}>
-					{list.map(image => (
-						<Item
-							key={image.id}
-							active={storeImages.id === image.id}
-							onClick={() => handleClick(image.id)}
-						>
-							<Image
-								src={'data:image/bmp;base64,' + image.data}
-								alt={image.tag_images}
-							/>
-							<Title ta='center' order={6}>
-								{image.name}
-							</Title>
-						</Item>
-					))}
-				</SimpleGrid>
-				<Group justify='flex-end' gap='xs'>
+				<Group justify='flex-end'>
 					<FileButton onChange={upload} accept='.bmp'>
 						{props => (
 							<Button {...props} variant='filled' color='green'>
@@ -93,7 +55,44 @@ export const ManagerImages = observer(() => {
 						Закрыть
 					</Button>
 				</Group>
-			</Stack>
-		</Modal>
+			</Group>
+
+			{file && (
+				<Stack gap={0}>
+					<Text size='xs'>
+						Загружен файл "{file?.name || 'unknow'}". Оставьте текущее название
+						или введите своё на латинице. Максимум 8 символов
+					</Text>
+					<TextInput
+						value={name}
+						onChange={({ target }) => writeName(target.value)}
+						required
+					/>
+					<Group justify='space-between'>
+						<Button onClick={save}>Сохранить</Button>
+						<Button onClick={cancel}>Отмена</Button>
+					</Group>
+				</Stack>
+			)}
+
+			<SimpleGrid cols={6}>
+				{list.map(image => (
+					<Item
+						key={image.id}
+						active={storeImages.id === image.id}
+						onClick={() => handleClick(image.id)}
+						onRemove={() => handleRemove(image.id)}
+					>
+						<Image
+							src={'data:image/bmp;base64,' + image.data}
+							alt={image.tag_images}
+						/>
+						<Title ta='center' order={6}>
+							{image.name}
+						</Title>
+					</Item>
+				))}
+			</SimpleGrid>
+		</Stack>
 	)
 })

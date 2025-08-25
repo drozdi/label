@@ -19,9 +19,11 @@ import {
 	TbSun,
 } from 'react-icons/tb'
 import { useAppContext } from '../features/context'
+import { ManagerFontFamily } from '../features/fonts/manager-font-family'
 import { HeaderMain } from '../features/header/header-main'
 import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
+import { ManagerImages } from '../features/images/manager-images'
 
 export function Header() {
 	const ctx = useAppContext()
@@ -41,20 +43,47 @@ export function Header() {
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{loadTemplateFlag ? null : <HeaderPrint />}
 			<Group>
-				<Button
-					variant='outline'
-					color={managerFontFamilyFlag ? 'lime' : ''}
-					onClick={() => ctx.setManagerFontFamilyFlag(true)}
+				<Popover
+					opened={managerFontFamilyFlag}
+					onChange={ctx.setManagerFontFamilyFlag}
+					withOverlay
+					width={600}
 				>
-					Шрифты
-				</Button>
-				<Button
-					variant='outline'
-					color={managerImagesFlag ? 'lime' : ''}
-					onClick={() => ctx.setManagerImagesFlag(true)}
+					<Popover.Target>
+						<Button
+							variant='outline'
+							color={managerFontFamilyFlag ? 'lime' : ''}
+							onClick={() =>
+								ctx.setManagerFontFamilyFlag(!managerFontFamilyFlag)
+							}
+						>
+							Шрифты
+						</Button>
+					</Popover.Target>
+					<Popover.Dropdown>
+						<ManagerFontFamily />
+					</Popover.Dropdown>
+				</Popover>
+
+				<Popover
+					opened={managerImagesFlag}
+					onChange={ctx.setManagerImagesFlag}
+					withOverlay
+					width={600}
 				>
-					Изображения
-				</Button>
+					<Popover.Target>
+						<Button
+							variant='outline'
+							color={managerImagesFlag ? 'lime' : ''}
+							onClick={() => ctx.setManagerImagesFlag(!managerImagesFlag)}
+						>
+							Изображения
+						</Button>
+					</Popover.Target>
+					<Popover.Dropdown>
+						<ManagerImages />
+					</Popover.Dropdown>
+				</Popover>
 			</Group>
 			<Group>
 				<ActionIcon

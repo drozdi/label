@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Box, Button, Group, Input } from '@mantine/core'
+import { Box, Button, Group, TextInput } from '@mantine/core'
 
 interface ItemEditableProps {
 	label?: string
@@ -29,28 +29,26 @@ export function ItemEditable({
 	return (
 		<Group gap={0} grow>
 			{editable && edit ? (
-				<>
-					<Box flex='auto' maw='100%'>
-						<Input
-							type={type}
-							placeholder={placeholder}
-							rightSection={unit}
-							value={value}
-							onChange={({ target }) => setValue(target.value)}
-						/>
-					</Box>
-					<Box flex='none' maw='100%'>
-						<Button
-							onClick={() => {
-								setEdit(false)
-								onChange?.(value)
-								onClick?.()
-							}}
-						>
-							Ок
-						</Button>
-					</Box>
-				</>
+				<TextInput
+					type={type}
+					placeholder={placeholder}
+					rightSection={
+						<Box flex='none' maw='100%'>
+							<Button
+								variant='filled'
+								onClick={() => {
+									setEdit(false)
+									onChange?.(value)
+									onClick?.()
+								}}
+							>
+								Ок
+							</Button>
+						</Box>
+					}
+					value={value}
+					onChange={({ target }) => setValue(target.value)}
+				/>
 			) : (
 				<>
 					<Box flex='auto' maw='50%'>
@@ -66,7 +64,7 @@ export function ItemEditable({
 								? {
 										cursor: 'pointer',
 										color: 'var(--mantine-color-blue-3)',
-								  }
+									}
 								: {}
 						}
 					>

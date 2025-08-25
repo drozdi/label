@@ -1,7 +1,7 @@
 import { LoadingOverlay } from '@mantine/core'
 import classes from './spin.module.css'
 
-export function Loader({ visible }) {
+export function Loader({ visible }: { visible: boolean }) {
 	return (
 		<LoadingOverlay
 			visible={visible}

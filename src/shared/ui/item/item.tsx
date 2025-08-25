@@ -1,10 +1,13 @@
+import { CloseButton } from '@mantine/core'
 import clsx from 'clsx'
+import { TbX } from 'react-icons/tb'
 import classes from './item.module.css'
 
 export const Item = ({
 	active,
 	children,
 	className,
+	onRemove,
 	...props
 }: Record<string, any>) => {
 	return (
@@ -18,6 +21,19 @@ export const Item = ({
 				className
 			)}
 		>
+			{onRemove && (
+				<CloseButton
+					pos='absolute'
+					right='0'
+					top='0'
+					color='red'
+					icon={<TbX color='red' />}
+					onClick={event => {
+						event.stopPropagation()
+						onRemove?.()
+					}}
+				></CloseButton>
+			)}
 			{children}
 		</div>
 	)

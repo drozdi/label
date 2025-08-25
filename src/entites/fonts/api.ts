@@ -52,7 +52,9 @@ export async function requestFontsDelete(id_fonts: number | number[]): Promise<{
 	data: string
 }> {
 	const res = await api.delete(`/fonts/`, {
-		id_fonts: [].concat(id_fonts as never),
+		data: {
+			id_fonts: [].concat(id_fonts as never),
+		},
 	})
 	return res.data
 }

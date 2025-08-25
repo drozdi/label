@@ -31,12 +31,10 @@ export const Templates = observer(() => {
 
 	const handleSelect = () => {
 		storeTemplate.loadTemplate(storeTemplates.selected)
-		storeTemplates.clear()
 		ctx?.setLoadTemplateFlag(false)
 	}
 	const handleCopy = () => {
 		storeTemplate.loadTemplate(storeTemplates.selected, true)
-		storeTemplates.clear()
 		ctx?.setLoadTemplateFlag(false)
 	}
 	const handleExport = async () => {
@@ -70,7 +68,7 @@ export const Templates = observer(() => {
 					<ListTemplate />
 				</ScrollArea>
 
-				<Box maw='50%' flex='auto' w='auto' h='100%'>
+				<ScrollArea maw='50%' flex='auto' w='auto' h='100%'>
 					<Box h='100%'>
 						{storeTemplates.selected ? (
 							<Band template={templateSelected}>
@@ -95,7 +93,7 @@ export const Templates = observer(() => {
 							</Center>
 						)}
 					</Box>
-				</Box>
+				</ScrollArea>
 				<Box
 					flex='none'
 					w='18rem'

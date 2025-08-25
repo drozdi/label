@@ -5,6 +5,7 @@
 	font-size: 0.85rem;
 	line-height: 1.15;
 	cursor: pointer;
+	position: relative;
 }
 .root:hover {
 	background-color: var(--mantine-primary-color-light-hover);

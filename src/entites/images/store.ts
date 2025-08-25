@@ -1,6 +1,10 @@
 import { makeAutoObservable } from 'mobx'
 import { KEY_IMAGE_DEFAULT } from '../../shared/constants'
-import { requestIimagesList, requestImagesAdd } from './api'
+import {
+	requestIimagesList,
+	requestImagesAdd,
+	requestImagesDelete,
+} from './api'
 
 class StoreImages {
 	isLoading: boolean = false
@@ -50,6 +54,23 @@ class StoreImages {
 			const res = await requestImagesAdd(name, data)
 			//????????????????????????
 			this._list.push(res.data)
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async remove(id: number) {
+		this.isLoading = true
+		this.error = ''
+		try {
+			await requestImagesDelete(id)
+			this._list = this._list.filter(item => item.id !== id)
+			if (!this.findById(this.id)) {
+				this.setId(this._list[0].id)
+			}
 		} catch (error) {
 			console.error(error)
 			this.error =

@@ -55,7 +55,9 @@ export async function requestImagesDelete(
 	data: string
 }> {
 	const res = await api.delete(`/images/`, {
-		id_images: [].concat(id_images as never),
+		data: {
+			id_images: [].concat(id_images as never),
+		},
 	})
 	return res.data
 }

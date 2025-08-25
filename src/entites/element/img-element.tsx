@@ -3,7 +3,7 @@ import { BaseElement } from './base-element'
 export class ImgElement extends BaseElement {
 	constructor(object: Record<string, any>) {
 		super({
-			image_id: storeImages.defaultImage?.id,
+			image_id: storeImages.default?.id,
 			width: 15,
 			height: 15,
 			...object,

@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { KEY_FONT_DEFAULT } from '../../shared/constants'
-import { requestFontsAdd, requestFontsList } from './api'
+import { requestFontsAdd, requestFontsDelete, requestFontsList } from './api'
 
 class StoreFonts {
 	isLoading: boolean = false
@@ -60,6 +60,23 @@ class StoreFonts {
 			await myFont.load()
 			document.fonts.add(myFont)
 			this._list.push(res.data)
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async remove(id: number) {
+		this.isLoading = true
+		this.error = ''
+		try {
+			await requestFontsDelete(id)
+			this._list = this._list.filter(item => item.id !== id)
+			if (!this.findById(this.id)) {
+				this.setId(this._list[0].id)
+			}
 		} catch (error) {
 			console.error(error)
 			this.error =

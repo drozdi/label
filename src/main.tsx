@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import { AppLoader } from './app/app-loader.tsx'
+import { App } from './app/app'
+import { AppLoader } from './app/app-loader'
 import { AppProvider } from './app/app-provider'
 
 createRoot(document.querySelector('body')!).render(

@@ -193,37 +193,35 @@ export const Import = observer(() => {
 				type: 'text',
 				width: 'fit-content',
 				height: 'fit-content',
-				font_id: storeFonts.default.id,
+				font_size: 12,
+				font_id: storeFonts.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			switch (parseInt(arr[2], 10)) {
-				case 1:
-					obj.font_size = 6
-					break
-				case 2:
-					obj.font_size = 7
-					break
-				case 3:
-					obj.font_size = 8
-					break
-				case 4:
-					obj.font_size = 10
-					break
-				case 5:
-					obj.font_size = 12
-					break
-				default:
-					obj.font_size = 6
+
+			let font
+			if ((font = storeFonts.findByTagFonts(removeQuote(arr[2])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findByName(removeQuote(arr[2])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findById(removeQuote(arr[2])))) {
+				obj.font_id = font.id
+			} else {
+				serviceNotifications.alert(
+					'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+				)
 			}
 
 			obj.rotation = parseInt(arr[3], 10)
-			obj.data = removeQuote(arr[7] || arr[6])
 
-			serviceNotifications.alert(
-				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
-			)
+			if (obj.rotation === 90 || obj.rotation === 270) {
+				obj.font_size = parseInt(arr[5], 10)
+			} else {
+				obj.font_size = parseInt(arr[4], 10)
+			}
+
+			obj.data = removeQuote(arr[7] || arr[6])
 
 			storeTemplate.addObject(obj)
 		},
@@ -232,39 +230,38 @@ export const Import = observer(() => {
 			const obj = genObj({
 				name: 'block',
 				type: 'block',
-				font_id: storeFonts.default.id,
+				font_size: 12,
+				font_id: storeFonts.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
 			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
 			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
-			switch (parseInt(arr[4], 10)) {
-				case 1:
-					obj.font_size = 6
-					break
-				case 2:
-					obj.font_size = 7
-					break
-				case 3:
-					obj.font_size = 8
-					break
-				case 4:
-					obj.font_size = 10
-					break
-				case 5:
-					obj.font_size = 12
-					break
-				default:
-					obj.font_size = 6
+
+			let font
+			if ((font = storeFonts.findByTagFonts(removeQuote(arr[4])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findByName(removeQuote(arr[4])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findById(removeQuote(arr[4])))) {
+				obj.font_id = font.id
+			} else {
+				serviceNotifications.alert(
+					'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+				)
 			}
+
 			obj.rotation = parseInt(arr[5], 10)
+
+			if (obj.rotation === 90 || obj.rotation === 270) {
+				obj.font_size = parseInt(arr[7], 10)
+			} else {
+				obj.font_size = parseInt(arr[6], 10)
+			}
+
 			obj.text_align = arr[8]
 			obj.data = removeQuote(arr[11] || arr[10] || arr[9] || arr[8])
-
-			serviceNotifications.alert(
-				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
-			)
 
 			storeTemplate.addObject(obj)
 		},
@@ -323,15 +320,24 @@ export const Import = observer(() => {
 				data: '',
 				width: 10,
 				height: 10,
-				image_id: storeImages.default.id,
+				image_id: storeImages.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
 
-			serviceNotifications.alert(
-				'Изображение не загружено, пожалуйста, передобавьте его вручную.'
-			)
+			let image
+			if ((image = storeImages.findByTagImages(removeQuote(arr[2])))) {
+				obj.image_id = image.id
+			} else if ((image = storeImages.findByName(removeQuote(arr[2])))) {
+				obj.image_id = image.id
+			} else if ((image = storeImages.findById(removeQuote(arr[2])))) {
+				obj.image_id = image.id
+			} else {
+				serviceNotifications.alert(
+					'Изображение не загружено, пожалуйста, передобавьте его вручную.'
+				)
+			}
 
 			storeTemplate.addObject(obj)
 		},
@@ -457,7 +463,7 @@ export const Import = observer(() => {
 			obj.typeObj = 'text'
 			obj.width = 'fit-content'
 			obj.height = 'fit-content'
-			obj.font_id = storeFonts.default?.id || 1
+			obj.font_id = storeFonts.id
 
 			const arr = parseSplit(str)
 

@@ -64,23 +64,27 @@ export const HeaderMain = observer(() => {
 	}
 	return (
 		<Group gap='xs'>
-			<TextInput
-				placeholder='Название'
-				value={storeTemplate.name}
-				onChange={({ target }) => storeTemplate.setTemplateName(target.value)}
-			/>
 			<Button
 				variant='outline'
 				onClick={() => {
+					storeTemplates.clear()
 					storeTemplate.clear()
 					storeHistory.clear()
 				}}
 			>
 				Создать
 			</Button>
-			<Button variant='outline' onClick={handleSave}>
-				Сохранить
-			</Button>
+			<TextInput
+				placeholder='Название'
+				value={storeTemplate.name}
+				onChange={({ target }) => storeTemplate.setTemplateName(target.value)}
+				rightSection={
+					<Button variant='filled' color='green' onClick={handleSave}>
+						Сохранить
+					</Button>
+				}
+			/>
+
 			<Button
 				variant='outline'
 				onClick={() => {
