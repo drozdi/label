@@ -6,7 +6,7 @@ export function Loader({ visible }: { visible: boolean }) {
 		<LoadingOverlay
 			visible={visible}
 			zIndex={1000}
-			overlayProps={{ radius: 'sm', blur: 2 }}
+			overlayProps={{ radius: 'xs', blur: 2 }}
 			loaderProps={{ children: <div className={classes.spinner}></div> }}
 		/>
 	)

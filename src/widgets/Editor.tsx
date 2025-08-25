@@ -29,7 +29,7 @@ export const Editor = observer(() => {
 						<Box flex='auto' h='100%'>
 							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
 						</Box>
-						<Box flex='none' w='3rem' maw='100%'>
+						<Box flex='none' w='3rem' maw='100%' h='100%'>
 							<ToolbarTools />
 						</Box>
 					</Group>

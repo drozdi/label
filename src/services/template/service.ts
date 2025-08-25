@@ -52,7 +52,6 @@ export const serviceTemplate = {
 		this._moveY(value)
 		histroyAppendDebounce(storeTemplate.objects, `Смещение элементов`)
 	},
-
 	deleteObject() {
 		;[...storeTemplate.selected].forEach(id => {
 			const object = storeTemplate.findById(id)
@@ -62,7 +61,6 @@ export const serviceTemplate = {
 			})
 		})
 	},
-
 	setName(v) {
 		const name = storeTemplate.current?.name
 		storeTemplate.current?.setName(v)

@@ -13,19 +13,18 @@ function aspect(width: number, height: number): number {
 export const Element = observer(
 	({
 		object,
-		index,
 		preview,
 		scale = 1,
 	}: {
 		object: object
-		index: number
 		preview: boolean
+		scale: number
 	}) => {
 		const refParent = useRef<HTMLDivElement>(null)
 		const ctx = useAppContext()
 		const style = useMemo(
 			() => ({
-				...object.style(scale, refParent.current),
+				...object.style?.(scale, refParent.current),
 				...(preview ? { outline: '0px' } : {}),
 			}),
 			[object, refParent.current]
@@ -34,26 +33,28 @@ export const Element = observer(
 			if (preview) {
 				return
 			}
-			const element = event.target.closest(`.${classes.element}`)
+			const element = (event.target as HTMLElement).closest(
+				`.${classes.element}`
+			)
 			if (element instanceof HTMLDivElement) {
 				event.preventDefault()
 				event.stopPropagation()
 			}
 
 			if (event.ctrlKey) {
-				storeTemplate.selectObject(element.id)
+				storeTemplate.selectObject(element?.id as string)
 			} else {
 				if (element instanceof HTMLDivElement) {
 					storeTemplate.setActiveObject(element.id)
 				}
 			}
 
-			ctx?.setFontFamilyFlag(false)
-			ctx?.setVariableFlag(false)
-			ctx?.setImageFlag(false)
+			ctx?.setFontFamilyFlag?.(false)
+			ctx?.setVariableFlag?.(false)
+			ctx?.setImageFlag?.(false)
 		}
 
-		const resize = object.resize
+		const resize = object?.resize as Array<'s' | 'e' | 'se'>
 		const sPosition = useRef(null)
 		const cloneElement = useRef(null)
 
@@ -64,7 +65,9 @@ export const Element = observer(
 			if (preview) {
 				return
 			}
-			const element = event.target.closest(`.${classes.element}`)
+			const element = (event.target as HTMLElement).closest(
+				`.${classes.element}`
+			)
 			if (element instanceof HTMLDivElement) {
 				event.preventDefault()
 				event.stopPropagation()
@@ -87,7 +90,7 @@ export const Element = observer(
 				dir,
 			}
 		}
-		const handleMouseMove = (event: React.MouseEvent) => {
+		const handleMouseMove = (event: MouseEvent) => {
 			if (!sPosition.current) {
 				return
 			}
@@ -131,13 +134,13 @@ export const Element = observer(
 							event.clientY,
 							sPosition.current.minY,
 							sPosition.current.maxY
-					  ) - sPosition.current.y
+						) - sPosition.current.y
 			}
 
 			cloneElement.current.style.width = sPosition.current.width + dx + 'px'
 			cloneElement.current.style.height = sPosition.current.height + dy + 'px'
 		}
-		const handleMouseUp = (event: React.MouseEvent) => {
+		const handleMouseUp = (event: MouseEvent) => {
 			if (!sPosition.current) {
 				return
 			}
@@ -182,7 +185,7 @@ export const Element = observer(
 							event.clientY,
 							sPosition.current.minY,
 							sPosition.current.maxY
-					  ) - sPosition.current.y
+						) - sPosition.current.y
 			}
 
 			resizeObject(dx / storeTemplate.mm / scale, dy / storeTemplate.mm / scale)
