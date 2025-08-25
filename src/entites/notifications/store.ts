@@ -1,5 +1,5 @@
-import { useNotifications as useNotificationsMantine } from '@mantine/notifications'
+import { notificationsStore } from '@mantine/notifications'
 
-export function useNotifications(...args) {
-	return useNotificationsMantine(...args)
+export function useNotifications() {
+	return notificationsStore.getState()
 }

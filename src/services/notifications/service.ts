@@ -1,24 +1,36 @@
 import { notifications } from '@mantine/notifications'
-
+import { useNotifications } from '../../entites/notifications/store'
 import classes from './Style.module.css'
 
-function send(item) {
-	notifications.cleanQueue()
-	/*if (notificationsStore.notifications.length) {
+function checkMessage(notifications, message: string) {
+	if (notifications.length) {
 		if (
-			notificationsStore.notifications.findIndex(notification => {
-				return notification.message === item.message
-			}) > -1
+			notifications.findIndex(
+				notification => notification.message === message
+			) > -1
 		) {
-			return
+			return false
 		}
-	}*/
+	}
+	return true
+}
+
+function send(item) {
+	const store = useNotifications()
+	if (false === checkMessage(store.notifications, item.message)) {
+		return
+	}
+	if (false === checkMessage(store.queue, item.message)) {
+		return
+	}
+
 	return notifications.show({
-		...item,
 		autoClose: 10000,
+		withBorder: true,
 		withCloseButton: true,
 		position: 'top-center',
 		classNames: classes,
+		...item,
 	})
 }
 
