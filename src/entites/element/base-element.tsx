@@ -133,13 +133,13 @@ export class BaseElement {
 		if (_width !== 'auto' && _height !== 'auto') {
 			if (this.rotation === 90) {
 				left -= (_width + _height) / 2
-				top += (_width - _height) / 2
+				top -= (_width - _height) / 2
 			} else if (this.rotation === 180) {
 				left -= _width
 				top -= _height
 			} else if (this.rotation === 270) {
-				left -= (_width - _height) / 2
-				top += (_width + _height) / 2
+				left -= (_height - _width) / 2
+				top -= (_width + _height) / 2
 			}
 		}
 

@@ -1,3 +1,4 @@
+import { Image } from '@mantine/core'
 import { storeImages } from '../images/store'
 import { BaseElement } from './base-element'
 export class ImgElement extends BaseElement {
@@ -27,7 +28,10 @@ export class ImgElement extends BaseElement {
 	}
 	render(scale = 1, preview = false): React.ReactNode {
 		return (
-			<img
+			<Image
+				mah='100%'
+				maw='100%'
+				fit='contain'
 				src={`data:image/bmp;base64,${this.imageData}`}
 				alt={this.imageName}
 			/>

@@ -137,8 +137,6 @@ class Printer {
 					printer_resolution: config.printer_resolution,
 				},
 			})
-			//Templates.setCodeTypeTemplate(res.data)
-			console.log(res)
 			return res.data
 		} catch (e) {
 			console.error(e)
@@ -185,9 +183,6 @@ class Printer {
 					printer_resolution: config.printer_resolution,
 				},
 			})
-
-			//Templates.setCodeTypeTemplate(res.data)
-			console.log(res)
 			return res.data
 		} catch (e) {
 			console.error(e)
