@@ -18,6 +18,7 @@ import {
 	TbSettings,
 	TbSun,
 } from 'react-icons/tb'
+import { storeTemplate } from '../entites/template/store'
 import { useAppContext } from '../features/context'
 import { ManagerFontFamily } from '../features/fonts/manager-font-family'
 import { HeaderMain } from '../features/header/header-main'
@@ -41,7 +42,7 @@ export function Header() {
 	return (
 		<Group justify='space-between' gap='xs' p='xs'>
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
-			{loadTemplateFlag ? null : <HeaderPrint />}
+			{!loadTemplateFlag && <HeaderPrint />}
 			<Group>
 				<Popover
 					opened={managerFontFamilyFlag}
@@ -64,7 +65,6 @@ export function Header() {
 						<ManagerFontFamily />
 					</Popover.Dropdown>
 				</Popover>
-
 				<Popover
 					opened={managerImagesFlag}
 					onChange={ctx.setManagerImagesFlag}
@@ -137,7 +137,7 @@ export function Header() {
 						}}
 					/>
 				</ActionIcon>
-				{/* <Button
+				<Button
 					onClick={() =>
 						console.log({
 							...storeTemplate,
@@ -146,7 +146,7 @@ export function Header() {
 					}
 				>
 					check
-				</Button> */}
+				</Button>
 			</Group>
 		</Group>
 	)

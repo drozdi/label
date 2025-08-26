@@ -1,5 +1,6 @@
 import { Button, Group, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { useState } from 'react'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
@@ -10,11 +11,13 @@ import { useAppContext } from '../context'
 export const HeaderMain = observer(() => {
 	const ctx = useAppContext()
 	const { importFlag, previewFlag } = ctx
+	const [errorName, setErrorName] = useState<boolean>(false)
 	const handleSave = async () => {
 		if (storeTemplate.name?.length < 3) {
 			serviceNotifications.error(
 				'Название шаблона должно быть не менее 3 символов'
 			)
+			setErrorName(true)
 			return
 		}
 		if (storeTemplate.objects.length === 0) {
@@ -77,13 +80,15 @@ export const HeaderMain = observer(() => {
 			<TextInput
 				placeholder='Название'
 				value={storeTemplate.name}
-				onChange={({ target }) => storeTemplate.setTemplateName(target.value)}
-				rightSection={
-					<Button variant='filled' color='green' onClick={handleSave}>
-						Сохранить
-					</Button>
-				}
+				error={errorName}
+				onChange={({ target }) => {
+					setErrorName(false)
+					storeTemplate.setTemplateName(target.value)
+				}}
 			/>
+			<Button variant='filled' color='green' onClick={handleSave}>
+				Сохранить
+			</Button>
 
 			<Button
 				variant='outline'

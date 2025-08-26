@@ -7,6 +7,7 @@ export const Item = ({
 	active,
 	children,
 	className,
+	disabled,
 	onRemove,
 	...props
 }: Record<string, any>) => {
@@ -17,6 +18,7 @@ export const Item = ({
 				classes.root,
 				{
 					[classes.active]: active,
+					[classes.disabled]: disabled,
 				},
 				className
 			)}

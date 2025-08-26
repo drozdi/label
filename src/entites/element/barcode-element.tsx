@@ -79,10 +79,10 @@ export class BarcodeElement extends BaseElement {
 							this.code_type === 'qrcode'
 								? this.height * this.mm_qr * scale + 'px'
 								: this.code_type === 'datamatrix' && this.min_size === 0
-								? this.height * 1.833 * this.mm * scale + 'px'
-								: this.code_type === 'datamatrix' && this.min_size !== 0
-								? this.height * this.min_size * this.mm * scale + 'px'
-								: this.height * this.mm * scale + 'px',
+									? this.height * 1.833 * this.mm * scale + 'px'
+									: this.code_type === 'datamatrix' && this.min_size !== 0
+										? this.height * this.min_size * this.mm * scale + 'px'
+										: this.height * this.mm * scale + 'px',
 					}}
 				></canvas>
 				{this.human_readable === 1 ? (

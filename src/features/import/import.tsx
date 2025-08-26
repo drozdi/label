@@ -169,7 +169,8 @@ export const Import = observer(() => {
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.width = parseInt(arr[2], 10)
+			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
+			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
 			if (/^x/.test(arr[5])) {
 				obj.width = parseInt(arr[5].replace(/^x/, ''), 10)
 			} else {
@@ -178,8 +179,12 @@ export const Import = observer(() => {
 			if (/^r/.test(arr[6])) {
 				obj.rotation = parseInt(arr[6], 10) || 0
 			}
-
-			obj.data = removeQuote(arr[8])
+			if (parseInt(arr[7], 10) > 0) {
+				//obj.width = parseInt(arr[7], 10)
+			}
+			obj.data = removeQuote(
+				arr[10] || arr[9] || arr[8] || arr[7] || arr[6] || arr[5] || arr[4]
+			)
 
 			obj.radius = obj.width / storeTemplate.dpi
 			obj.height = obj.width
@@ -595,6 +600,7 @@ export const Import = observer(() => {
 			} else if (tsplParser.test(refText.current.value)) {
 				tsplParser.parse(refText.current.value)
 			}
+			storeTemplate.loadObjects(storeTemplate.objects)
 			ctx.setImportFlag(false)
 		} catch (e) {
 			console.error(e)

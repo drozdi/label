@@ -1,6 +1,6 @@
 import { notifications } from '@mantine/notifications'
 import { useNotifications } from '../../entites/notifications/store'
-import classes from './Style.module.css'
+import classes from './notification.module.css'
 
 function checkMessage(notifications, message: string) {
 	if (notifications.length) {
@@ -23,7 +23,7 @@ function send(item) {
 	if (false === checkMessage(store.queue, item.message)) {
 		return
 	}
-
+	console.log(classes)
 	return notifications.show({
 		autoClose: 10000,
 		withBorder: true,
