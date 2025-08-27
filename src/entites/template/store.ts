@@ -86,6 +86,9 @@ class StoreTemplate {
 			this.objects.findIndex(object => String(object.id) === String(id))
 		)
 	}
+	get selectedObjects() {
+		return this.selected.map(id => this.findById(id))
+	}
 	getCurrent() {
 		return this.objects[this.currIndex] || undefined
 	}

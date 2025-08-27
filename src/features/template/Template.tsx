@@ -56,7 +56,7 @@ export const Template = observer(() => {
 
 		const pRect = refTemplate.current?.getBoundingClientRect()
 
-		storeTemplate.selected.forEach(id => {
+		storeTemplate.selectedObjects.forEach(({ id, rotation }) => {
 			const element = document.getElementById(id)
 			const rect = element?.getBoundingClientRect()
 			const clone = element?.cloneNode(true)
@@ -75,8 +75,19 @@ export const Template = observer(() => {
 				maxX: pRect.right - (rect.right - event.clientX),
 				minY: pRect.top - (rect.top - event.clientY),
 				maxY: pRect.bottom - (rect.bottom - event.clientY),
-				top: rect.top - pRect.top,
-				left: rect.left - pRect.left,
+				top:
+					rect.top -
+					pRect.top +
+					(rotation === 90 || rotation === 270
+						? (rect?.height - rect?.width) / 2
+						: 0),
+				left:
+					rect.left -
+					pRect.left -
+					(rotation === 90 || rotation === 270
+						? (rect?.height - rect?.width) / 2
+						: 0),
+				rotation,
 				clone,
 			})
 		})
@@ -270,7 +281,6 @@ export const Template = observer(() => {
 					<Element
 						key={object.id}
 						scale={storeTemplate.scale}
-						index={index}
 						object={object}
 					/>
 				))}

@@ -217,17 +217,7 @@ export const Element = observer(
 				onClick={handleClick}
 				data-draggable={!preview}
 			>
-				<div
-					style={{
-						position: 'absolute',
-						top: 0,
-						left: 0,
-						width: '100%',
-						height: '100%',
-					}}
-				>
-					{object.render(scale, preview)}
-				</div>
+				{object.render(scale, preview)}
 				{resize.map(dir => (
 					<div
 						key={dir}
