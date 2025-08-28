@@ -73,7 +73,10 @@ export const ListElement = observer(() => {
 			label: 'Линия',
 			type: 'lines',
 			width: 15,
+			pos_x: 0,
+			pos_y: 0,
 			height: 1,
+			line_thickness: 1,
 		},
 		{
 			label: 'Бокс',

@@ -47,6 +47,9 @@ export const Templates = observer(() => {
 			//onCancel: () => console.log('Cancel'),
 			onConfirm: async () => {
 				await storeTemplates.deleteTemplate(templateSelected.id)
+				if (storeTemplate.id === templateSelected.id) {
+					storeTemplate.id = 0
+				}
 			},
 			confirmProps: {
 				variant: 'filled',

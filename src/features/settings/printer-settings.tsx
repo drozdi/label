@@ -7,7 +7,7 @@ import { servicePrinter } from '../../services/printer/service'
 import { ItemEditable } from './item-editable'
 import { ItemOptions } from './item-options'
 
-export const PrinterSettings = observer(({ setPrinterSetting }) => {
+export const PrinterSettings = observer(() => {
 	const config = storePrinter.getConfig()
 	const [port, setPort] = useState(config.port)
 	const [host, setHost] = useState(config.host)
@@ -149,7 +149,7 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 				/>
 				<ItemOptions
 					label='dpi:'
-					value={printerResolution}
+					value={String(printerResolution)}
 					options={['200', '300']}
 					onChange={setPrinterResolution}
 				/>

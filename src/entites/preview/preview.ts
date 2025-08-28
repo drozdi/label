@@ -80,7 +80,9 @@ export class Preview {
 	}
 
 	addObject(object) {
-		this.objects.push(factoryElement(object) as never)
+		this.objects.push(
+			factoryElement(object.getCorrectProps?.() || object) as never
+		)
 	}
 	setScale(scale) {
 		this.scale = scale

@@ -1,20 +1,32 @@
-import { round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
 export class LinesElement extends BaseElement {
 	constructor(object: Record<string, any>) {
+		const parseObject = {
+			width: object.width - object.pos_x,
+			pos_y: object.height,
+			height: object.line_thickness,
+		}
+
 		super({
-			width: 15,
-			height: 1,
 			...object,
+			...parseObject,
 			type: 'lines',
 		})
 	}
 	get properties() {
-		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'rotation']
+		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height']
 	}
 	get resize() {
-		return ['e']
+		return ['e', 's', 'se']
+	}
+	getCorrectProps() {
+		return {
+			...super.getCorrectProps(),
+			width: this.pos_x + this.width,
+			height: this.pos_y,
+			line_thickness: this.height,
+		}
 	}
 	style(scale = 1, element) {
 		return {
@@ -23,22 +35,6 @@ export class LinesElement extends BaseElement {
 			borderRadius: 0,
 			background: 'black',
 			rotate: 0,
-		}
-	}
-	setHeight(height: string | number) {
-		super.setHeight(height)
-		this.setLineThickness(height)
-	}
-	setRotation(rotation: string | number) {
-		super.setRotation(rotation)
-		if (this.rotation === 0 || this.rotation === 180) {
-			this.setWidth(round(this.pos_x + this.width))
-			this.setHeight(round(this.pos_y))
-			this.line_thickness = round(this.height)
-		} else {
-			this.setWidth(round(this.pos_x))
-			this.setHeight(round(this.pos_y + this.height))
-			this.line_thickness = round(this.width)
 		}
 	}
 }

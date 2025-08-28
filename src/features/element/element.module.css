@@ -11,7 +11,10 @@
 .active {
 	z-index: 11;
 }
-
+.clone {
+	opacity: 0.5;
+	z-index: 20;
+}
 .active:not(.clone)::before {
 	content: '';
 	position: absolute;
@@ -22,9 +25,9 @@
 	border: 1px dashed #12db1290;
 }
 
-.clone {
-	opacity: 0.5;
-	z-index: 20;
+.element:not(.active) .size,
+.element.clone .size {
+	display: none;
 }
 
 .res {

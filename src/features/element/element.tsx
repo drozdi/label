@@ -1,3 +1,4 @@
+import { Button, Stack } from '@mantine/core'
 import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useRef } from 'react'
@@ -55,7 +56,7 @@ export const Element = observer(
 			ctx?.setImageFlag?.(false)
 		}
 
-		const resize = object?.resize as Array<'s' | 'e' | 'se'>
+		const resize = preview ? [] : (object?.resize as Array<'s' | 'e' | 'se'>)
 		const sPosition = useRef(null)
 		const cloneElement = useRef(null)
 
@@ -234,6 +235,32 @@ export const Element = observer(
 				onClick={handleClick}
 				data-draggable={!preview}
 			>
+				{object.type === 'barcode' &&
+					['datamatrix', 'qrcode'].includes(object.code_type) && (
+						<Stack
+							className={classes.size}
+							pos='absolute'
+							left='100%'
+							top='0'
+							gap={1}
+						>
+							<Button
+								size='compact-xs'
+								variant='filled'
+								onClick={() => storeTemplate.setWidth(object.width + 1)}
+							>
+								+
+							</Button>
+							<Button
+								size='compact-xs'
+								variant='filled'
+								onClick={() => storeTemplate.setWidth(object.width - 1)}
+							>
+								-
+							</Button>
+						</Stack>
+					)}
+
 				{object.render(scale, preview)}
 				{resize.map(dir => (
 					<div

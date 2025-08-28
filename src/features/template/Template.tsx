@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import type React from 'react'
 import { useEffect, useRef } from 'react'
+import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
 import { minMax, round } from '../../shared/utils'
@@ -175,41 +176,55 @@ export const Template = observer(() => {
 
 	useEffect(() => {
 		const pressKey = (event: KeyboardEvent) => {
-			if (event.key === 'F5') {
+			if (event.code === 'F5') {
 				return
 			}
-			if (event.key === 'Escape') {
+			if (event.code === 'Escape') {
 				storeTemplate.setActiveObject(0)
 			}
-
 			if (!storeTemplate.current && !storeTemplate.isOne) {
 				return
 			}
 			if (
 				['input', 'textarea'].includes(event.target?.localName) ||
-				!['Delete', 'ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(
-					event.key
-				)
+				![
+					'Delete',
+					'ArrowRight',
+					'ArrowLeft',
+					'ArrowUp',
+					'ArrowDown',
+					'KeyZ',
+					'KeyY',
+				].includes(event.code)
 			) {
 				return
 			}
 			event.stopPropagation()
 			event.preventDefault()
 
-			if (event.key === 'Delete') {
+			if (event.code === 'Delete') {
 				deleteObject()
 			}
-			if (event.key === 'ArrowRight') {
+			if (event.code === 'ArrowRight') {
 				moveX(STEP)
 			}
-			if (event.key === 'ArrowLeft') {
+			if (event.code === 'ArrowLeft') {
 				moveX(-STEP)
 			}
-			if (event.key === 'ArrowUp') {
+			if (event.code === 'ArrowUp') {
 				moveY(-STEP)
 			}
-			if (event.key === 'ArrowDown') {
+			if (event.code === 'ArrowDown') {
 				moveY(STEP)
+			}
+
+			if (event.ctrlKey) {
+				if (event.code === 'KeyZ') {
+					storeHistory.back()
+				}
+				if (event.code === 'KeyY') {
+					storeHistory.forward()
+				}
 			}
 		}
 		document.addEventListener('keydown', pressKey)

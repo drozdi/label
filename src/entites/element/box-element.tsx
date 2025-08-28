@@ -17,7 +17,6 @@ export class BoxElement extends BaseElement {
 			'pos_y',
 			'width',
 			'height',
-			'rotation',
 			'radius',
 			'line_thickness',
 		]
@@ -38,7 +37,7 @@ export class BoxElement extends BaseElement {
 				style={{
 					width: '100%',
 					height: '100%',
-					border: this.line_thickness * this.mm + 'px solid',
+					border: this.line_thickness * scale * this.mm + 'px solid',
 					borderRadius: this.radius + 'px',
 				}}
 			></div>

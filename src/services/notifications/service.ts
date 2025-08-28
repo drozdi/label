@@ -23,7 +23,6 @@ function send(item) {
 	if (false === checkMessage(store.queue, item.message)) {
 		return
 	}
-	console.log(classes)
 	return notifications.show({
 		autoClose: 10000,
 		withBorder: true,

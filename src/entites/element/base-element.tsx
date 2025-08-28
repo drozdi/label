@@ -93,9 +93,12 @@ export class BaseElement {
 	get resize(): number[] {
 		return []
 	}
+	getCorrectProps() {
+		return this
+	}
 	getProps() {
 		return {
-			...this,
+			...this.getCorrectProps(),
 			id: parseInt(this.id) > 0 ? this.id : undefined,
 			font_id: parseInt(this.font_id) > 0 ? this.font_id : undefined,
 			image_id: parseInt(this.image_id) > 0 ? this.image_id : undefined,

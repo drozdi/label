@@ -1,4 +1,4 @@
-import { Box, Group, ScrollArea, Tabs, Text } from '@mantine/core'
+import { Box, Group, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
@@ -23,7 +23,7 @@ export const Editor = observer(() => {
 			<Box>
 				<LabelTolbar />
 			</Box>
-			<Group grow h='100%' gap={0}>
+			<Group grow h='100%' gap='0'>
 				<Box flex='none' w='18rem' maw='100%' h='100%' px='xs'>
 					<Group h='100%' gap={0}>
 						<Box flex='auto' h='100%'>
@@ -34,12 +34,18 @@ export const Editor = observer(() => {
 						</Box>
 					</Group>
 				</Box>
-				<Box flex='auto' w='auto' maw='100%' h='100%'>
-					<ScrollArea h='100%'>
-						<Band>
-							<Template />
-						</Band>
-					</ScrollArea>
+				<Box
+					flex='auto'
+					maw='100%'
+					h='100%'
+					style={{
+						overflowX: 'auto',
+						overflowY: 'auto',
+					}}
+				>
+					<Band>
+						<Template />
+					</Band>
 				</Box>
 				<Box
 					flex='none'
