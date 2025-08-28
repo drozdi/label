@@ -64,3 +64,88 @@
 .clone .res {
 	display: none;
 }
+
+.rotation-90 {
+	.res_s {
+		height: 100%;
+		width: 8px;
+		top: auto;
+		left: auto;
+		bottom: 0;
+		right: -4px;
+	}
+	.res_e {
+		width: 100%;
+		height: 8px;
+		top: -4px;
+		left: 0;
+		bottom: auto;
+		right: auto;
+	}
+	.res_se {
+		top: -4px;
+		left: auto;
+		bottom: auto;
+		right: -4px;
+	}
+	&:has(.res_se) {
+		.res_e {
+			width: calc(100% - 4px);
+		}
+		.res_s {
+			height: calc(100% - 4px);
+		}
+	}
+}
+.rotation-180 {
+	.res_s {
+		top: -4px;
+		right: 0;
+		left: auto;
+		bottom: auto;
+	}
+	.res_e {
+		bottom: 0;
+		right: auto;
+		left: -4px;
+		top: auto;
+	}
+	.res_se {
+		right: auto;
+		bottom: auto;
+		left: -4px;
+		top: -4px;
+	}
+}
+.rotation-270 {
+	.res_e {
+		width: 100%;
+		height: 8px;
+		top: auto;
+		left: auto;
+		bottom: -4px;
+		right: 0;
+	}
+	.res_s {
+		height: 100%;
+		width: 8px;
+		top: 0;
+		left: -4px;
+		bottom: auto;
+		right: auto;
+	}
+	.res_se {
+		top: auto;
+		left: -4px;
+		bottom: -4px;
+		right: auto;
+	}
+	&:has(.res_se) {
+		.res_e {
+			width: calc(100% - 4px);
+		}
+		.res_s {
+			height: calc(100% - 4px);
+		}
+	}
+}

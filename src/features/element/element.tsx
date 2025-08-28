@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useRef } from 'react'
 import { storeTemplate } from '../../entites/template/store'
@@ -137,8 +138,14 @@ export const Element = observer(
 						) - sPosition.current.y
 			}
 
-			cloneElement.current.style.width = sPosition.current.width + dx + 'px'
-			cloneElement.current.style.height = sPosition.current.height + dy + 'px'
+			if (object.rotation === 90 || object.rotation === 270) {
+				cloneElement.current.style.height = sPosition.current.width + dx + 'px'
+				cloneElement.current.style.width = sPosition.current.height + dy + 'px'
+				cloneElement.current.style.translate = `${-(dy - dx) / 2}px ${(dy - dx) / 2}px`
+			} else {
+				cloneElement.current.style.width = sPosition.current.width + dx + 'px'
+				cloneElement.current.style.height = sPosition.current.height + dy + 'px'
+			}
 		}
 		const handleMouseUp = (event: MouseEvent) => {
 			if (!sPosition.current) {
@@ -188,12 +195,23 @@ export const Element = observer(
 						) - sPosition.current.y
 			}
 
-			resizeObject(dx / storeTemplate.mm / scale, dy / storeTemplate.mm / scale)
+			const ddx = dx / storeTemplate.mm / scale
+			const ddy = dy / storeTemplate.mm / scale
+
+			if (object.rotation === 90 || object.rotation === 270) {
+				resizeObject(ddy, ddx)
+				object.rotation === 270 && storeTemplate.moveY(ddy)
+			} else {
+				resizeObject(ddx, ddy)
+				object.rotation === 180 && storeTemplate.moveY(ddy)
+				object.rotation === 180 && storeTemplate.moveX(ddx)
+			}
 
 			cloneElement.current?.remove()
 			sPosition.current = null
 			cloneElement.current = null
 		}
+
 		useEffect(() => {
 			document.addEventListener('mousemove', handleMouseMove)
 			document.addEventListener('mouseup', handleMouseUp)
@@ -201,19 +219,18 @@ export const Element = observer(
 				document.removeEventListener('mousemove', handleMouseMove)
 				document.removeEventListener('mouseup', handleMouseUp)
 			}
-		}, [])
+		}, [object])
 
 		return (
 			<div
 				id={object.id}
 				style={style}
 				ref={refParent}
-				className={
-					classes.element +
-					(!preview && storeTemplate.selected.includes(String(object.id))
-						? ' ' + classes.active
-						: '')
-				}
+				className={clsx(classes.element, {
+					[classes.active]:
+						!preview && storeTemplate.selected.includes(String(object.id)),
+					[classes[`rotation-${object.rotation}`]]: object.rotation,
+				})}
 				onClick={handleClick}
 				data-draggable={!preview}
 			>
