@@ -8,6 +8,10 @@ import {
 	TbX,
 } from 'react-icons/tb'
 import {
+	labelsHumanReadable,
+	labelsTextAlign,
+} from '../../entites/element/constants'
+import {
 	histroyAppend,
 	histroyAppendDebounce,
 } from '../../entites/history/store'
@@ -20,18 +24,6 @@ import { ItemNumber } from './item-number'
 import { ItemOptions } from './item-options'
 import { ItemSwitch } from './item-switch'
 import { ItemText } from './item-text'
-
-const labelsTextAlign = {
-	1: 'Слева',
-	2: 'В центре',
-	3: 'Справа',
-}
-const labelsHumanReadable = {
-	0: 'Скрытый',
-	1: 'Слева',
-	2: 'В центре',
-	3: 'Справа',
-}
 
 export const ListProperties = observer(() => {
 	const { current } = storeTemplate

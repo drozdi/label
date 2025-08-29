@@ -4,7 +4,7 @@ import { BaseElement } from './base-element'
 export class TextElement extends BaseElement {
 	constructor(object: Record<string, any>) {
 		super({
-			font_id: storeFonts.defaultFont?.id,
+			font_id: storeFonts.id,
 			font_size: 12,
 			...object,
 			type: 'text',

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import type React from 'react'
 import { useEffect, useRef } from 'react'
+import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
 import { minMax, round } from '../../shared/utils'
@@ -56,7 +57,7 @@ export const Template = observer(() => {
 
 		const pRect = refTemplate.current?.getBoundingClientRect()
 
-		storeTemplate.selected.forEach(id => {
+		storeTemplate.selectedObjects.forEach(({ id, rotation }) => {
 			const element = document.getElementById(id)
 			const rect = element?.getBoundingClientRect()
 			const clone = element?.cloneNode(true)
@@ -75,8 +76,19 @@ export const Template = observer(() => {
 				maxX: pRect.right - (rect.right - event.clientX),
 				minY: pRect.top - (rect.top - event.clientY),
 				maxY: pRect.bottom - (rect.bottom - event.clientY),
-				top: rect.top - pRect.top,
-				left: rect.left - pRect.left,
+				top:
+					rect.top -
+					pRect.top +
+					(rotation === 90 || rotation === 270
+						? (rect?.height - rect?.width) / 2
+						: 0),
+				left:
+					rect.left -
+					pRect.left -
+					(rotation === 90 || rotation === 270
+						? (rect?.height - rect?.width) / 2
+						: 0),
+				rotation,
 				clone,
 			})
 		})
@@ -164,41 +176,55 @@ export const Template = observer(() => {
 
 	useEffect(() => {
 		const pressKey = (event: KeyboardEvent) => {
-			if (event.key === 'F5') {
+			if (event.code === 'F5') {
 				return
 			}
-			if (event.key === 'Escape') {
+			if (event.code === 'Escape') {
 				storeTemplate.setActiveObject(0)
 			}
-
 			if (!storeTemplate.current && !storeTemplate.isOne) {
 				return
 			}
 			if (
 				['input', 'textarea'].includes(event.target?.localName) ||
-				!['Delete', 'ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(
-					event.key
-				)
+				![
+					'Delete',
+					'ArrowRight',
+					'ArrowLeft',
+					'ArrowUp',
+					'ArrowDown',
+					'KeyZ',
+					'KeyY',
+				].includes(event.code)
 			) {
 				return
 			}
 			event.stopPropagation()
 			event.preventDefault()
 
-			if (event.key === 'Delete') {
+			if (event.code === 'Delete') {
 				deleteObject()
 			}
-			if (event.key === 'ArrowRight') {
+			if (event.code === 'ArrowRight') {
 				moveX(STEP)
 			}
-			if (event.key === 'ArrowLeft') {
+			if (event.code === 'ArrowLeft') {
 				moveX(-STEP)
 			}
-			if (event.key === 'ArrowUp') {
+			if (event.code === 'ArrowUp') {
 				moveY(-STEP)
 			}
-			if (event.key === 'ArrowDown') {
+			if (event.code === 'ArrowDown') {
 				moveY(STEP)
+			}
+
+			if (event.ctrlKey) {
+				if (event.code === 'KeyZ') {
+					storeHistory.back()
+				}
+				if (event.code === 'KeyY') {
+					storeHistory.forward()
+				}
 			}
 		}
 		document.addEventListener('keydown', pressKey)
@@ -270,7 +296,6 @@ export const Template = observer(() => {
 					<Element
 						key={object.id}
 						scale={storeTemplate.scale}
-						index={index}
 						object={object}
 					/>
 				))}

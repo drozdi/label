@@ -1,8 +1,8 @@
 import { Group, Modal, NumberInput, Slider } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { Preview as PreviewClass } from '../../entites/preview/preview'
 import { storeTemplate } from '../../entites/template/store'
-import { Preview as PreviewClass } from '../../entites/templates/preview'
 import { useAppContext } from '../context'
 import { Element } from '../element/element'
 

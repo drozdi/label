@@ -26,8 +26,10 @@ class StoreVariables {
 			const res = await requestVariablesList()
 			this._list = res
 			this.isLoaded = true
-		} catch (e) {
-			console.error(e)
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

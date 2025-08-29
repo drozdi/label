@@ -1,5 +1,6 @@
 import bwipjs from 'bwip-js'
 import { useEffect, useState } from 'react'
+import { minMax } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
 export class BarcodeElement extends BaseElement {
@@ -59,7 +60,7 @@ export class BarcodeElement extends BaseElement {
 						parsefnc: true,
 					})
 				} else {
-					bwipjs.toCanvas('mycanvas' + this.idprefix, {
+					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: this.code_type,
 						text: this.data,
 						height: this.height,
@@ -70,6 +71,7 @@ export class BarcodeElement extends BaseElement {
 				console.error('Error generating barcode:', e)
 			}
 		}, [this, prefix, body])
+
 		return (
 			<>
 				<canvas
@@ -79,10 +81,10 @@ export class BarcodeElement extends BaseElement {
 							this.code_type === 'qrcode'
 								? this.height * this.mm_qr * scale + 'px'
 								: this.code_type === 'datamatrix' && this.min_size === 0
-								? this.height * 1.833 * this.mm * scale + 'px'
-								: this.code_type === 'datamatrix' && this.min_size !== 0
-								? this.height * this.min_size * this.mm * scale + 'px'
-								: this.height * this.mm * scale + 'px',
+									? this.height * 1.833 * this.mm * scale + 'px'
+									: this.code_type === 'datamatrix' && this.min_size !== 0
+										? this.height * this.min_size * this.mm * scale + 'px'
+										: this.height * this.mm * scale + 'px',
 					}}
 				></canvas>
 				{this.human_readable === 1 ? (
@@ -143,16 +145,18 @@ export class BarcodeElement extends BaseElement {
 		if (typeof width === 'string') {
 			width = parseInt(width, 10)
 		}
-		this.width = width
 		if (this.code_type !== 'ean13' && this.code_type !== 'code128') {
+			width = minMax(width, 3)
 			this.height = width
 		}
+		this.width = width
 	}
 	setHeight(height: string | number) {
 		if (typeof height === 'string') {
 			height = parseInt(height, 10)
 		}
 		if (this.code_type !== 'ean13' && this.code_type !== 'code128') {
+			height = minMax(height, 3)
 			this.width = height
 		}
 		this.height = height

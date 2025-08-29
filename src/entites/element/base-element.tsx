@@ -93,9 +93,12 @@ export class BaseElement {
 	get resize(): number[] {
 		return []
 	}
+	getCorrectProps() {
+		return this
+	}
 	getProps() {
 		return {
-			...this,
+			...this.getCorrectProps(),
 			id: parseInt(this.id) > 0 ? this.id : undefined,
 			font_id: parseInt(this.font_id) > 0 ? this.font_id : undefined,
 			image_id: parseInt(this.image_id) > 0 ? this.image_id : undefined,
@@ -132,13 +135,14 @@ export class BaseElement {
 		_height ??= height
 		if (_width !== 'auto' && _height !== 'auto') {
 			if (this.rotation === 90) {
-				;[_width, _height] = [_height, _width]
-				left -= (_width - _height) / 2
-				top += (_width - _height) / 2
+				left -= (_width + _height) / 2
+				top -= (_width - _height) / 2
+			} else if (this.rotation === 180) {
+				left -= _width
+				top -= _height
 			} else if (this.rotation === 270) {
-				;[_width, _height] = [_height, _width]
-				left -= (_width - _height) / 2
-				top += (_width - _height) / 2
+				left -= (_height - _width) / 2
+				top -= (_width + _height) / 2
 			}
 		}
 
@@ -152,8 +156,8 @@ export class BaseElement {
 				this.text_align === 2
 					? 'center'
 					: this.text_align === 3
-					? 'flex-end'
-					: 'flex-start',
+						? 'flex-end'
+						: 'flex-start',
 			rotate: this.rotation + 'deg',
 			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,

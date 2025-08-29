@@ -18,7 +18,7 @@ export function LabelTolbarInput({
 	onChange,
 }: LabelTolbarInputProps) {
 	return (
-		<Group component='label' gap='xs'>
+		<Group component='label'>
 			{label}
 			<NumberInput
 				min={0}

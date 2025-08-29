@@ -31,12 +31,10 @@ export const Templates = observer(() => {
 
 	const handleSelect = () => {
 		storeTemplate.loadTemplate(storeTemplates.selected)
-		storeTemplates.clear()
 		ctx?.setLoadTemplateFlag(false)
 	}
 	const handleCopy = () => {
 		storeTemplate.loadTemplate(storeTemplates.selected, true)
-		storeTemplates.clear()
 		ctx?.setLoadTemplateFlag(false)
 	}
 	const handleExport = async () => {
@@ -49,6 +47,9 @@ export const Templates = observer(() => {
 			//onCancel: () => console.log('Cancel'),
 			onConfirm: async () => {
 				await storeTemplates.deleteTemplate(templateSelected.id)
+				if (storeTemplate.id === templateSelected.id) {
+					storeTemplate.id = 0
+				}
 			},
 			confirmProps: {
 				variant: 'filled',
@@ -66,11 +67,11 @@ export const Templates = observer(() => {
 				<LabelTolbar template={templateSelected} />
 			</Box>
 			<Group grow justify='space-between' h='100%'>
-				<ScrollArea h='100%' flex='none' w='18rem' px='sm'>
+				<ScrollArea h='100%' flex='none' w='18rem' p='xs'>
 					<ListTemplate />
 				</ScrollArea>
 
-				<Box maw='50%' flex='auto' w='auto' h='100%'>
+				<ScrollArea maw='50%' flex='auto' w='auto' h='100%'>
 					<Box h='100%'>
 						{storeTemplates.selected ? (
 							<Band template={templateSelected}>
@@ -95,13 +96,13 @@ export const Templates = observer(() => {
 							</Center>
 						)}
 					</Box>
-				</Box>
+				</ScrollArea>
 				<Box
 					flex='none'
 					w='18rem'
 					maw='100%'
 					h='100%'
-					px='xs'
+					p='xs'
 					style={{
 						overflowX: 'hidden',
 						overflowY: 'auto',

@@ -2,9 +2,9 @@ import { observer } from 'mobx-react-lite'
 import { factoryElement } from '../../entites/element'
 import { histroyAppend } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
+import { Item } from '../../shared/ui'
 import { genId } from '../../shared/utils'
 import { useAppContext } from '../context'
-import classes from './Item.module.css'
 
 export const ItemElement = observer(({ label, callback, element }) => {
 	const ctx = useAppContext()
@@ -22,9 +22,5 @@ export const ItemElement = observer(({ label, callback, element }) => {
 		})
 		callback?.(ctx)
 	}
-	return (
-		<div className={classes.root} onClick={handleSelect}>
-			{label}
-		</div>
-	)
+	return <Item onClick={handleSelect}>{label}</Item>
 })

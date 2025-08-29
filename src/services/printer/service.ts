@@ -1,4 +1,3 @@
-import { serviceNotifications } from '../notifications/service'
 import {
 	requestPrinterCode,
 	requestPrinterExample,
@@ -6,8 +5,9 @@ import {
 	requestPrinterSettings,
 	requestPrinterSettingsSave,
 	requestPrinterTrial,
-} from './api'
-import { storePrinter } from './store'
+} from '../../entites/printer/api'
+import { storePrinter } from '../../entites/printer/store'
+import { serviceNotifications } from '../notifications/service'
 
 const fakeVariable = {
 	barcode: "~10103665585002190215'hX%t7Ir8FMl93dGVz",
@@ -46,7 +46,17 @@ const fakeVariable = {
 	taskid: '15',
 }
 
-class Printer {
+class ServicePrinter {
+	get settingPrinter() {
+		const config = storePrinter.getConfig()
+		return {
+			host: config.host,
+			port: config.port,
+			type_printer: config.type_printer,
+			number_labels: config.number_labels,
+			printer_resolution: config.printer_resolution,
+		}
+	}
 	async ping(trial = false) {
 		const config = storePrinter.getConfig()
 		storePrinter.setLoading(true)
@@ -83,14 +93,13 @@ class Printer {
 		})
 	}
 	async setSettings(data) {
-		const res = await requestPrinterSettingsSave(data)
+		return await requestPrinterSettingsSave(data)
 	}
 	async codePrint(template_id) {
 		const ping = await this.ping(true)
 		if (!ping) {
 			return
 		}
-		const config = storePrinter.getConfig()
 		storePrinter.setLoading(true)
 		try {
 			const res = await requestPrinterCode({
@@ -98,13 +107,7 @@ class Printer {
 					id_template: template_id,
 					is_update: true,
 				},
-				setting_printer: {
-					host: config.host,
-					port: config.port,
-					type_printer: config.type_printer,
-					number_labels: config.number_labels,
-					printer_resolution: config.printer_resolution,
-				},
+				setting_printer: this.settingPrinter,
 			})
 			return res.data
 		} catch (e) {
@@ -121,7 +124,6 @@ class Printer {
 	async trialPrint(template_id) {
 		const ping = await this.ping(true)
 		if (!ping) return
-		const config = storePrinter.getConfig()
 		storePrinter.setLoading(true)
 		try {
 			const res = await requestPrinterTrial({
@@ -129,16 +131,8 @@ class Printer {
 					id_template: template_id,
 					is_update: true,
 				},
-				setting_printer: {
-					host: config.host,
-					port: config.port,
-					type_printer: config.type_printer,
-					number_labels: config.number_labels,
-					printer_resolution: config.printer_resolution,
-				},
+				setting_printer: this.settingPrinter,
 			})
-			//Templates.setCodeTypeTemplate(res.data)
-			console.log(res)
 			return res.data
 		} catch (e) {
 			console.error(e)
@@ -153,9 +147,9 @@ class Printer {
 	}
 	async examplePrint(template_id) {
 		const ping = await this.ping(true)
-		if (!ping) return
-
-		const config = storePrinter.getConfig()
+		if (!ping) {
+			return
+		}
 		storePrinter.setLoading(true)
 		try {
 			const resTmp = await requestPrinterCode({
@@ -163,13 +157,7 @@ class Printer {
 					id_template: template_id,
 					is_update: true,
 				},
-				setting_printer: {
-					host: config.host,
-					port: config.port,
-					type_printer: config.type_printer,
-					number_labels: config.number_labels,
-					printer_resolution: config.printer_resolution,
-				},
+				setting_printer: this.settingPrinter,
 			})
 
 			const res = await requestPrinterExample({
@@ -177,17 +165,8 @@ class Printer {
 					template: resTmp.data,
 					variable: fakeVariable,
 				},
-				setting_printer: {
-					host: config.host,
-					port: config.port,
-					type_printer: config.type_printer,
-					number_labels: config.number_labels,
-					printer_resolution: config.printer_resolution,
-				},
+				setting_printer: this.settingPrinter,
 			})
-
-			//Templates.setCodeTypeTemplate(res.data)
-			console.log(res)
 			return res.data
 		} catch (e) {
 			console.error(e)
@@ -202,4 +181,4 @@ class Printer {
 	}
 }
 
-export const servicePrinter = new Printer()
+export const servicePrinter = new ServicePrinter()

@@ -1,20 +1,26 @@
 import { makeAutoObservable } from 'mobx'
-import { requestIimagesAdd, requestIimagesList } from './api'
+import { KEY_IMAGE_DEFAULT } from '../../shared/constants'
+import {
+	requestIimagesList,
+	requestImagesAdd,
+	requestImagesDelete,
+} from './api'
+
 class StoreImages {
-	isLoading = false
-	isLoaded = false
-	error = ''
-	_list = []
-	_default = 0
+	isLoading: boolean = false
+	isLoaded: boolean = false
+	error: string = ''
+	_list: IImage[] = []
+	id: number = Number(localStorage.getItem(KEY_IMAGE_DEFAULT) || 1)
 	constructor() {
 		makeAutoObservable(this)
 	}
-	get list() {
+	get list(): IImage[] {
 		this.load()
 		return this._list
 	}
-	get defaultImage() {
-		return this.list[this._default] || undefined
+	get default(): IImage | undefined {
+		return this.findById(this.id)
 	}
 	async load(reloading = false) {
 		if (reloading) {
@@ -32,28 +38,60 @@ class StoreImages {
 				...item,
 				data: atob(item.data),
 			}))
-			this._default = 0
 			this.isLoaded = true
-		} catch (e) {
-			console.error(e)
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
 	}
-	async add(name, file) {
+	async add(name: string, data: string) {
+		this.isLoading = true
+		this.error = ''
 		try {
-			const res = await requestIimagesAdd(name, file)
-		} catch (e) {
-			console.error(e)
+			const res = await requestImagesAdd(name, data)
+			//????????????????????????
+			this._list.push(res.data)
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
-			this.load(true)
+			this.isLoading = false
 		}
 	}
-	default(index) {
-		this._default = index
+	async remove(id: number) {
+		this.isLoading = true
+		this.error = ''
+		try {
+			await requestImagesDelete(id)
+			this._list = this._list.filter(item => item.id !== id)
+			if (!this.findById(this.id)) {
+				this.setId(this._list[0].id)
+			}
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+		} finally {
+			this.isLoading = false
+		}
 	}
-	findById(id) {
+
+	setId(id: number) {
+		this.id = id
+		localStorage.setItem(KEY_IMAGE_DEFAULT, String(id))
+	}
+	findById(id: number) {
 		return this._list.find(item => item.id === id)
+	}
+	findByName(name: string) {
+		return this._list.find(item => item.name === name)
+	}
+	findByTagImages(tagImages: string) {
+		return this._list.find(item => item.tag_images === tagImages)
 	}
 }
 

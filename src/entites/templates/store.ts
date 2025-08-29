@@ -1,5 +1,6 @@
 import * as FileSaver from 'file-saver'
 import { makeAutoObservable } from 'mobx'
+import { Preview } from '../preview/preview'
 import {
 	requestObjectDelete,
 	requestObjectNew,
@@ -12,7 +13,6 @@ import {
 	requestTemplateSave,
 	requestTemplateUpdate,
 } from './api'
-import { Preview } from './preview'
 class StoreTemplates {
 	isLoaded = false
 	isLoading = false
@@ -58,7 +58,6 @@ class StoreTemplates {
 		try {
 			const res = await requestTemplateId(id)
 			this.selected = new Preview(res)
-			console.log(this.selected)
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'

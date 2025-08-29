@@ -5,6 +5,7 @@ import {
 	Input,
 	MantineProvider,
 	NumberInput,
+	Stack,
 	Textarea,
 	TextInput,
 } from '@mantine/core'
@@ -18,6 +19,12 @@ const theme = createTheme({
 		Group: Group.extend({
 			defaultProps: {
 				mih: 30,
+				gap: 'xs',
+			},
+		}),
+		Stack: Stack.extend({
+			defaultProps: {
+				gap: 'xs',
 			},
 		}),
 		Button: Button.extend({
@@ -32,6 +39,7 @@ const theme = createTheme({
 				variant: 'filled',
 				size: 'xs',
 				radius: 0,
+				rightSectionWidth: 'auto',
 			},
 		}),
 		Textarea: Textarea.extend({
@@ -40,6 +48,7 @@ const theme = createTheme({
 				size: 'xs',
 				rows: 3,
 				radius: 0,
+				rightSectionWidth: 'auto',
 				rightSectionProps: {
 					style: {
 						alignItems: 'flex-start',
@@ -52,6 +61,7 @@ const theme = createTheme({
 				variant: 'filled',
 				size: 'xs',
 				radius: 0,
+				rightSectionWidth: 'auto',
 			},
 		}),
 		NumberInput: NumberInput.extend({
@@ -59,6 +69,7 @@ const theme = createTheme({
 				variant: 'filled',
 				size: 'xs',
 				radius: 0,
+				rightSectionWidth: 'auto',
 			},
 		}),
 	},

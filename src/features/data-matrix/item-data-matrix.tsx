@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite'
 import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeTemplate } from '../../entites/template/store'
+import { Item } from '../../shared/ui'
 import { useAppContext } from '../context'
-import styles from './Item.module.css'
 
 export const ItemDataMatrix = observer(({ dataMatrix }) => {
 	const { current } = storeTemplate
@@ -13,9 +13,5 @@ export const ItemDataMatrix = observer(({ dataMatrix }) => {
 		storeTemplate.setRadius(dm.size / storeTemplate.dpi)
 		ctx?.setDataMatrixFlag(false)
 	}
-	return (
-		<div className={styles.root} onClick={handleSelect}>
-			{dataMatrix.name}
-		</div>
-	)
+	return <Item onClick={handleSelect}>{dataMatrix.name}</Item>
 })

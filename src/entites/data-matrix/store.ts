@@ -204,8 +204,10 @@ class StoreDataMatrix {
 			const res = await requestDataMatrixList()
 			this._sizes = res
 			this.isLoaded = true
-		} catch (e) {
-			this.error = e.message || e.toString() || 'Unknown error'
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

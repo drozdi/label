@@ -12,64 +12,21 @@ import {
 	Title,
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
 import { TbFilePlus } from 'react-icons/tb'
-import { storeImages } from '../../entites/images/store'
-import { serviceNotifications } from '../../entites/notifications/service'
 import { useAppContext } from '../context'
+import { useImagesUpload } from './hooks/use-images-upload'
 import { ListImage } from './list-image'
 
 export const ContainerImage = observer(() => {
-	const [file, setFile] = useState<any>(null)
-	const [image, setImage] = useState<any>(null)
-	const [name, setName] = useState('')
+	const { file, image, name, upload, cancel, save, writeName } =
+		useImagesUpload()
 	const ctx = useAppContext()
-	const handleClose = () => {
-		ctx?.setImageFlag(false)
-	}
-	const handleFile = (file: any) => {
-		const name = file.name
 
-		if (file.type !== 'image/bmp') {
-			serviceNotifications.error(
-				`Вы пытаетесь добавить файл ${file.type}. Вы можете загрузить только изображение с форматом .bmp`
-			)
-			return
-		}
-		if (file.size > 512000) {
-			serviceNotifications.error(
-				'Превышен максимальный размер файла. Максимальный разрешённый размер 515 Кб'
-			)
-			return
-		}
-		const reader = new FileReader()
-		reader.onload = () => {
-			setImage(reader.result.replace(/data:image\/bmp;base64,/g, ''))
-		}
-		reader.readAsDataURL(file)
-
-		setName(name.replace(/(\.)|(...$)/g, ''))
-		setFile(file)
-	}
-	const handleSave = async () => {
-		await storeImages.add(name, image)
-		setImage(null)
-		setFile(null)
-		setName('')
-	}
-	const handleCancel = () => {
-		setFile(null)
-	}
-	const writeName = ({ target }) => {
-		setName(
-			target.value.replace(/[!@#№%^:$&?*()_\-=+<>\.,;:а-яёйА-ЯЁЙ\s]/g, '')
-		)
-	}
 	return (
 		<Stack h='100%'>
 			<Group justify='space-between'>
 				Изображения
-				<CloseButton onClick={handleClose} />
+				<CloseButton onClick={() => ctx?.setImageFlag(false)} />
 			</Group>
 			{file ? (
 				<>
@@ -82,19 +39,23 @@ export const ContainerImage = observer(() => {
 							Загружен файл "{file?.name || 'unknow'}". Оставьте текущее
 							название или введите своё на латинице. Максимум 8 символов
 						</Text>
-						<TextInput value={name} onChange={writeName} required />
+						<TextInput
+							value={name}
+							onChange={({ target }) => writeName(target.value)}
+							required
+						/>
 						<Group justify='space-between'>
-							<Button variant='filled' onClick={handleSave}>
+							<Button variant='filled' onClick={save}>
 								Сохранить
 							</Button>
-							<Button variant='filled' onClick={handleCancel}>
+							<Button variant='filled' onClick={cancel}>
 								Отмена
 							</Button>
 						</Group>
 					</Stack>
 				</>
 			) : (
-				<FileButton onChange={handleFile} accept='.bmp'>
+				<FileButton onChange={upload} accept='.bmp'>
 					{props => (
 						<Group justify='space-between'>
 							Загрузить

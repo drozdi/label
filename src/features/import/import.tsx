@@ -5,13 +5,14 @@ import {
 	Modal,
 	Stack,
 	Textarea,
+	Title,
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useRef, useState } from 'react'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
-import { serviceNotifications } from '../../entites/notifications/service'
 import { storeTemplate } from '../../entites/template/store'
+import { serviceNotifications } from '../../services/notifications/service'
 import { genId } from '../../shared/utils'
 import { useAppContext } from '../context'
 
@@ -168,7 +169,8 @@ export const Import = observer(() => {
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.width = parseInt(arr[2], 10)
+			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
+			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
 			if (/^x/.test(arr[5])) {
 				obj.width = parseInt(arr[5].replace(/^x/, ''), 10)
 			} else {
@@ -177,8 +179,12 @@ export const Import = observer(() => {
 			if (/^r/.test(arr[6])) {
 				obj.rotation = parseInt(arr[6], 10) || 0
 			}
-
-			obj.data = removeQuote(arr[8])
+			if (parseInt(arr[7], 10) > 0) {
+				//obj.width = parseInt(arr[7], 10)
+			}
+			obj.data = removeQuote(
+				arr[10] || arr[9] || arr[8] || arr[7] || arr[6] || arr[5] || arr[4]
+			)
 
 			obj.radius = obj.width / storeTemplate.dpi
 			obj.height = obj.width
@@ -192,37 +198,35 @@ export const Import = observer(() => {
 				type: 'text',
 				width: 'fit-content',
 				height: 'fit-content',
-				font_id: storeFonts.defaultFont.id,
+				font_size: 12,
+				font_id: storeFonts.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			switch (parseInt(arr[2], 10)) {
-				case 1:
-					obj.font_size = 6
-					break
-				case 2:
-					obj.font_size = 7
-					break
-				case 3:
-					obj.font_size = 8
-					break
-				case 4:
-					obj.font_size = 10
-					break
-				case 5:
-					obj.font_size = 12
-					break
-				default:
-					obj.font_size = 6
+
+			let font
+			if ((font = storeFonts.findByTagFonts(removeQuote(arr[2])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findByName(removeQuote(arr[2])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findById(removeQuote(arr[2])))) {
+				obj.font_id = font.id
+			} else {
+				serviceNotifications.alert(
+					'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+				)
 			}
 
 			obj.rotation = parseInt(arr[3], 10)
-			obj.data = removeQuote(arr[7] || arr[6])
 
-			serviceNotifications.alert(
-				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
-			)
+			if (obj.rotation === 90 || obj.rotation === 270) {
+				obj.font_size = parseInt(arr[5], 10)
+			} else {
+				obj.font_size = parseInt(arr[4], 10)
+			}
+
+			obj.data = removeQuote(arr[7] || arr[6])
 
 			storeTemplate.addObject(obj)
 		},
@@ -231,39 +235,38 @@ export const Import = observer(() => {
 			const obj = genObj({
 				name: 'block',
 				type: 'block',
-				font_id: storeFonts.defaultFont.id,
+				font_size: 12,
+				font_id: storeFonts.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
 			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
 			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
-			switch (parseInt(arr[4], 10)) {
-				case 1:
-					obj.font_size = 6
-					break
-				case 2:
-					obj.font_size = 7
-					break
-				case 3:
-					obj.font_size = 8
-					break
-				case 4:
-					obj.font_size = 10
-					break
-				case 5:
-					obj.font_size = 12
-					break
-				default:
-					obj.font_size = 6
+
+			let font
+			if ((font = storeFonts.findByTagFonts(removeQuote(arr[4])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findByName(removeQuote(arr[4])))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findById(removeQuote(arr[4])))) {
+				obj.font_id = font.id
+			} else {
+				serviceNotifications.alert(
+					'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+				)
 			}
+
 			obj.rotation = parseInt(arr[5], 10)
+
+			if (obj.rotation === 90 || obj.rotation === 270) {
+				obj.font_size = parseInt(arr[7], 10)
+			} else {
+				obj.font_size = parseInt(arr[6], 10)
+			}
+
 			obj.text_align = arr[8]
 			obj.data = removeQuote(arr[11] || arr[10] || arr[9] || arr[8])
-
-			serviceNotifications.alert(
-				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
-			)
 
 			storeTemplate.addObject(obj)
 		},
@@ -322,15 +325,24 @@ export const Import = observer(() => {
 				data: '',
 				width: 10,
 				height: 10,
-				image_id: storeImages.defaultImage.id,
+				image_id: storeImages.id,
 			})
 
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
 
-			serviceNotifications.alert(
-				'Изображение не загружено, пожалуйста, передобавьте его вручную.'
-			)
+			let image
+			if ((image = storeImages.findByTagImages(removeQuote(arr[2])))) {
+				obj.image_id = image.id
+			} else if ((image = storeImages.findByName(removeQuote(arr[2])))) {
+				obj.image_id = image.id
+			} else if ((image = storeImages.findById(removeQuote(arr[2])))) {
+				obj.image_id = image.id
+			} else {
+				serviceNotifications.alert(
+					'Изображение не загружено, пожалуйста, передобавьте его вручную.'
+				)
+			}
 
 			storeTemplate.addObject(obj)
 		},
@@ -397,7 +409,7 @@ export const Import = observer(() => {
 					this.parseContent(arr[i].replace(/^L/, ''))
 				} else {
 					unprocessed.push(arr[i])
-				}//*/
+				} //*/
 				i++
 			} //*/
 			setUnprocessed(v => ({ ...v, unprocessedKey: unprocessed }))
@@ -456,7 +468,7 @@ export const Import = observer(() => {
 			obj.typeObj = 'text'
 			obj.width = 'fit-content'
 			obj.height = 'fit-content'
-			obj.font_id = storeFonts.defaultFont?.id || 1
+			obj.font_id = storeFonts.id
 
 			const arr = parseSplit(str)
 
@@ -486,10 +498,10 @@ export const Import = observer(() => {
 			obj.height = 10
 
 			const arr = str.split(',').map(v => String(v).trim())
-			
+
 			obj.pos_x = (parseInt(arr[0], 10) * storeTemplate.mm) / storeTemplate.dpi
 			obj.pos_y = (parseInt(arr[1], 10) * storeTemplate.mm) / storeTemplate.dpi
-			
+
 			serviceNotifications.alert(
 				'Изображение не загружено, пожалуйста, передобавьте его вручную.'
 			)
@@ -523,7 +535,6 @@ export const Import = observer(() => {
 				y === 0 || dy === 0 ? dx : parseInt(arr[3], 10) / storeTemplate.dpi
 			obj.height =
 				x === 0 || dx === 0 ? dy : parseInt(arr[3], 10) / storeTemplate.dpi
-
 		},
 		barcodeElement(obj: Record<string, any>, str: string, type: string) {
 			const arr = parseSplit(str)
@@ -539,10 +550,10 @@ export const Import = observer(() => {
 				obj.human_readable === 1 || obj.human_readable === 2
 					? 1
 					: obj.human_readable === 3 || obj.human_readable === 4
-					? 2
-					: obj.human_readable === 5 || obj.human_readable === 6
-					? 3
-					: 0
+						? 2
+						: obj.human_readable === 5 || obj.human_readable === 6
+							? 3
+							: 0
 
 			obj.rotation = parseInt(arr[6], 10)
 			obj.data = arr[8]
@@ -589,6 +600,7 @@ export const Import = observer(() => {
 			} else if (tsplParser.test(refText.current.value)) {
 				tsplParser.parse(refText.current.value)
 			}
+			storeTemplate.loadObjects(storeTemplate.objects)
 			ctx.setImportFlag(false)
 		} catch (e) {
 			console.error(e)
@@ -604,7 +616,12 @@ export const Import = observer(() => {
 			size='xl'
 		>
 			<Stack gap='sm'>
+				<Title order={6}>
+					<div>Необработанные ключи: {unprocessedKey.join(' ')}</div>
+					<div>Необработанное тело: {unprocessedBody.join(' ')}</div>
+				</Title>
 				<Textarea rows={20} ref={refText} />
+
 				<Group gap='sm'>
 					<Button variant='filled' onClick={handleParse}>
 						Импорт

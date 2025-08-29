@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
 import { debounce } from '../../shared/utils'
 
-class History {
+class StoreHistory {
 	histories = []
 	curIndex = -1
 	fn?: Function = undefined
@@ -66,7 +66,7 @@ class History {
 		}
 	}
 }
-export const storeHistory = new History()
+export const storeHistory = new StoreHistory()
 
 export const histroyAppendDebounce = debounce((...args: any[]) => {
 	storeHistory.append(...args)
