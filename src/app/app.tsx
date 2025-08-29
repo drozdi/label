@@ -94,7 +94,7 @@ export const App = observer(() => {
 
 	return (
 		<AppContextProvider value={context}>
-			<Stack h='100vh' w='100vw' align='stretch' justify='flex-start'>
+			<Stack h='100vh' w='100vw' gap='0' align='stretch' justify='flex-start'>
 				{serverError ? (
 					<ErrorServer />
 				) : (

@@ -39,7 +39,7 @@ export function Header() {
 		getInitialValueInEffect: true,
 	})
 	return (
-		<Group justify='space-between' gap='xs' p='xs'>
+		<Group justify='space-between' p='xs'>
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{!loadTemplateFlag && <HeaderPrint />}
 			<Group>

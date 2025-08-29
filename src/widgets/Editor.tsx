@@ -1,4 +1,4 @@
-import { Box, Group, Tabs, Text } from '@mantine/core'
+import { Box, Group, ScrollArea, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
@@ -20,42 +20,43 @@ export const Editor = observer(() => {
 		useAppContext()
 	return (
 		<>
-			<Box>
-				<LabelTolbar />
-			</Box>
-			<Group grow h='100%' gap='0'>
-				<Box flex='none' w='18rem' maw='100%' h='100%' px='xs'>
-					<Group h='100%' gap={0}>
-						<Box flex='auto' h='100%'>
-							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
-						</Box>
-						<Box flex='none' w='3rem' maw='100%' h='100%'>
-							<ToolbarTools />
-						</Box>
-					</Group>
-				</Box>
-				<Box
-					flex='auto'
-					maw='100%'
+			<LabelTolbar />
+			<Box
+				h='100%'
+				style={{
+					display: 'grid',
+					gridTemplateColumns: '18rem 1fr 18rem',
+					gridTemplateRows: '1fr',
+					overflow: 'hidden',
+				}}
+			>
+				<Group
+					justify='space-between'
 					h='100%'
+					gap='0'
 					style={{
-						overflowX: 'auto',
-						overflowY: 'auto',
+						borderRight: '1px solid var(--mantine-color-default-border)',
 					}}
 				>
+					<Box flex='auto' h='100%' px='xs'>
+						{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
+					</Box>
+					<Box flex='auto' h='100%' w='2rem' p='xs'>
+						<ToolbarTools />
+					</Box>
+				</Group>
+				<ScrollArea h='100%' p='xs'>
 					<Band>
 						<Template />
 					</Band>
-				</Box>
+				</ScrollArea>
 				<Box
-					flex='none'
-					w='18rem'
-					maw='100%'
 					h='100%'
 					px='xs'
 					style={{
 						overflowX: 'hidden',
 						overflowY: 'auto',
+						borderLeft: '1px solid var(--mantine-color-default-border)',
 					}}
 				>
 					{fontFamilyFlag ? (
@@ -103,7 +104,7 @@ export const Editor = observer(() => {
 						</Tabs>
 					)}
 				</Box>
-			</Group>
+			</Box>
 		</>
 	)
 })

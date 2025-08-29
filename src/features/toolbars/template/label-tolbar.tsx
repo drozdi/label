@@ -9,7 +9,15 @@ const w = 60
 export const LabelTolbar = observer(({ template, disabled }) => {
 	template = template || storeTemplate
 	return (
-		<Group fz={13} gap={0} px='sm' justify='space-between'>
+		<Group
+			fz={12}
+			p='xs'
+			align='flex-start'
+			justify='space-between'
+			style={{
+				borderBottom: '1px solid var(--mantine-color-default-border)',
+			}}
+		>
 			<LabelTolbarSelect
 				disabled={disabled}
 				w={w * 1.5}

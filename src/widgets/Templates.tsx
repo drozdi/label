@@ -67,7 +67,7 @@ export const Templates = observer(() => {
 				<LabelTolbar template={templateSelected} />
 			</Box>
 			<Group grow justify='space-between' h='100%'>
-				<ScrollArea h='100%' flex='none' w='18rem' px='sm'>
+				<ScrollArea h='100%' flex='none' w='18rem' p='xs'>
 					<ListTemplate />
 				</ScrollArea>
 
@@ -102,7 +102,7 @@ export const Templates = observer(() => {
 					w='18rem'
 					maw='100%'
 					h='100%'
-					px='xs'
+					p='xs'
 					style={{
 						overflowX: 'hidden',
 						overflowY: 'auto',

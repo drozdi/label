@@ -19,9 +19,9 @@ export function LabelTolbarSelect({
 	...props
 }: LabelTolbarSelectProps) {
 	return (
-		<Group component='label' gap='xs'>
+		<Group component='label'>
 			{label}
-			<Select disabled={disabled} {...props} data={options} w={w} />
+			<Select size='xs' disabled={disabled} {...props} data={options} w={w} />
 		</Group>
 	)
 }
