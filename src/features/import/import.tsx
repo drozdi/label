@@ -13,7 +13,7 @@ import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
 import { storeTemplate } from '../../entites/template/store'
 import { serviceNotifications } from '../../services/notifications/service'
-import { genId } from '../../shared/utils'
+import { genId, round } from '../../shared/utils'
 import { useAppContext } from '../context'
 
 const fakeBodyDM = '0104603721020607215>(egukLfdK5r93zoJf'
@@ -89,6 +89,13 @@ const setGap = (gap: number) => {
 const setReference = (x: number, y: number) => {
 	storeTemplate.changeRefX(x)
 	storeTemplate.changeRefY(y)
+}
+
+const regParse = (reg: RegExp, str: string, def = {}) => {
+	if (reg.test(str)) {
+		return { ...def, ...str.match(reg).groups }
+	}
+	return { ...def }
 }
 
 export const Import = observer(() => {
@@ -328,15 +335,25 @@ export const Import = observer(() => {
 				image_id: storeImages.id,
 			})
 
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
+			const res = regParse(
+				/(?:PUTBMP)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*"(?<data>.*)"(?:\s*,\s*(?<bpp>[0-9]*))?(?:\s*,\s*(?<contract>[0-9]*))?/,
+				str,
+				{
+					pos_x: 0,
+					pos_y: 0,
+					data: '',
+				}
+			)
+
+			obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
+			obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
 
 			let image
-			if ((image = storeImages.findByTagImages(removeQuote(arr[2])))) {
+			if ((image = storeImages.findByTagImages(res.data))) {
 				obj.image_id = image.id
-			} else if ((image = storeImages.findByName(removeQuote(arr[2])))) {
+			} else if ((image = storeImages.findByName(res.data))) {
 				obj.image_id = image.id
-			} else if ((image = storeImages.findById(removeQuote(arr[2])))) {
+			} else if ((image = storeImages.findById(res.data))) {
 				obj.image_id = image.id
 			} else {
 				serviceNotifications.alert(
@@ -347,35 +364,55 @@ export const Import = observer(() => {
 			storeTemplate.addObject(obj)
 		},
 		parseBOX(str: string) {
-			const arr = parseSplit(str)
 			const obj = genObj({
 				name: 'Бокс',
 				typej: 'box',
 			})
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.width =
-				Math.abs(parseInt(arr[0], 10) - parseInt(arr[2], 10)) /
-				storeTemplate.dpi
-			obj.height =
-				Math.abs(parseInt(arr[1], 10) - parseInt(arr[3], 10)) /
-				storeTemplate.dpi
-			obj.line_thickness = parseInt(arr[4], 10) / storeTemplate.dpi
-			obj.radius = parseInt(arr[5], 10)
+
+			const res = regParse(
+				/(?:BOX)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<x_end>[0-9]*)\s*,\s*(?<y_end>[0-9]*)\s*,\s*(?<line_thickness>[0-9]*)\s*(?:,\s*(?<radius>[0-9]*))?/,
+				str,
+				{ pos_x: 0, pos_y: 0, x_end: 0, y_end: 0, line_thickness: 1, radius: 0 }
+			)
+
+			console.log(res)
+
+			obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
+			obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
+			obj.width = round(
+				Math.abs(parseInt(res.pos_x, 10) - parseInt(res.x_end, 10)) /
+					storeTemplate.dpi
+			)
+			obj.height = round(
+				Math.abs(parseInt(res.pos_y, 10) - parseInt(res.y_end, 10)) /
+					storeTemplate.dpi
+			)
+			obj.line_thickness = round(
+				parseInt(res.line_thickness, 10) / storeTemplate.dpi
+			)
+			obj.radius = parseInt(res.radius ?? 0, 10)
+
+			console.log(obj)
 
 			storeTemplate.addObject(obj)
 		},
 		parseBAR(str: string) {
-			const arr = parseSplit(str)
 			const obj = genObj({
 				name: 'Линия',
 				type: 'lines',
 			})
 
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
-			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
+			const res = regParse(
+				/(?:BAR)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<width>[0-9]*)\s*,\s*(?<height>[0-9]*)/,
+				str,
+				{ pos_x: 0, pos_y: 0, width: 0, height: 0 }
+			)
+
+			obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
+			obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
+			obj.width = obj.pos_x + round(parseInt(res.width, 10) / storeTemplate.dpi)
+			obj.height = obj.pos_y
+			obj.line_thickness = round(parseInt(res.height, 10) / storeTemplate.dpi)
 
 			storeTemplate.addObject(obj)
 		},
@@ -550,10 +587,10 @@ export const Import = observer(() => {
 				obj.human_readable === 1 || obj.human_readable === 2
 					? 1
 					: obj.human_readable === 3 || obj.human_readable === 4
-						? 2
-						: obj.human_readable === 5 || obj.human_readable === 6
-							? 3
-							: 0
+					? 2
+					: obj.human_readable === 5 || obj.human_readable === 6
+					? 3
+					: 0
 
 			obj.rotation = parseInt(arr[6], 10)
 			obj.data = arr[8]
