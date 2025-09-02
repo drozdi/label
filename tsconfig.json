@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -22,4 +23,11 @@
   },
   "include": ["src", "electron"],
   "references": [{ "path": "./tsconfig.node.json" }]
+=======
+	"files": [],
+	"references": [
+		{ "path": "./tsconfig.app.json" },
+		{ "path": "./tsconfig.node.json" }
+	]
+>>>>>>> 6e5fbc1f56f57aca0e00f3a65a9f76b0bdf11157
 }

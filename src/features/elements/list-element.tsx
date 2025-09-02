@@ -1,5 +1,6 @@
 import { Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
 import { ItemElement } from './item-element'
@@ -20,7 +21,7 @@ export const ListElement = observer(() => {
 		},
 		{
 			label: 'Data Matrix',
-			name: '0104603721020607215>(egerf3ukLfdK5r\u001d93zoJf',
+			name: storeDataMatrix.fakeBodyDM,
 			type: 'barcode',
 			code_type: 'datamatrix',
 			data: '{barcode}',

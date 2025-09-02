@@ -92,6 +92,13 @@ export const App = observer(() => {
 		//check()
 	}, [])
 
+	/*const str = 'BAR 80,80,300,100'
+	const p =
+		/(?:BAR)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<width>[0-9]*)\s*,\s*(?<height>[0-9]*)/
+	const resM = str.match(p)
+	const resE = p.exec(str)
+	console.log(resM)
+	console.log(resE)//*/
 	return (
 		<AppContextProvider value={context}>
 			<Stack h='100vh' w='100vw' gap='0' align='stretch' justify='flex-start'>

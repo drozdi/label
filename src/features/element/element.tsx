@@ -136,13 +136,15 @@ export const Element = observer(
 							event.clientY,
 							sPosition.current.minY,
 							sPosition.current.maxY
-						) - sPosition.current.y
+					  ) - sPosition.current.y
 			}
 
 			if (object.rotation === 90 || object.rotation === 270) {
 				cloneElement.current.style.height = sPosition.current.width + dx + 'px'
 				cloneElement.current.style.width = sPosition.current.height + dy + 'px'
-				cloneElement.current.style.translate = `${-(dy - dx) / 2}px ${(dy - dx) / 2}px`
+				cloneElement.current.style.translate = `${-(dy - dx) / 2}px ${
+					(dy - dx) / 2
+				}px`
 			} else {
 				cloneElement.current.style.width = sPosition.current.width + dx + 'px'
 				cloneElement.current.style.height = sPosition.current.height + dy + 'px'
@@ -193,7 +195,7 @@ export const Element = observer(
 							event.clientY,
 							sPosition.current.minY,
 							sPosition.current.maxY
-						) - sPosition.current.y
+					  ) - sPosition.current.y
 			}
 
 			const ddx = dx / storeTemplate.mm / scale
@@ -240,7 +242,7 @@ export const Element = observer(
 						<Stack
 							className={classes.size}
 							pos='absolute'
-							left='100%'
+							right='100%'
 							top='0'
 							gap={1}
 						>

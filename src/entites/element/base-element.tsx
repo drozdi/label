@@ -8,6 +8,7 @@ export class BaseElement {
 	mm = MM
 	cm = CM
 	mm_qr = MM_QR
+	temp = false
 	/////
 	name: null | string = null
 	text_align = 1
@@ -107,6 +108,7 @@ export class BaseElement {
 			mm_qr: undefined,
 			font_rel: undefined,
 			image_rel: undefined,
+			temp: undefined,
 		}
 	}
 	copy() {
@@ -156,8 +158,8 @@ export class BaseElement {
 				this.text_align === 2
 					? 'center'
 					: this.text_align === 3
-						? 'flex-end'
-						: 'flex-start',
+					? 'flex-end'
+					: 'flex-start',
 			rotate: this.rotation + 'deg',
 			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,
