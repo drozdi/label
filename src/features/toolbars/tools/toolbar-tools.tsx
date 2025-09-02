@@ -6,7 +6,7 @@ import {
 	TbArrowForward,
 	TbBackground,
 	TbGrid3X3,
-	TbZoom,
+	TbZoomIn,
 } from 'react-icons/tb'
 import { storeHistory } from '../../../entites/history/store'
 import { storeTemplate } from '../../../entites/template/store'
@@ -47,7 +47,7 @@ export const ToolbarTools = observer(() => {
 			>
 				<Popover.Target>
 					<ActionIcon onMouseEnter={open} onMouseLeave={close}>
-						<TbZoom />
+						<TbZoomIn />
 					</ActionIcon>
 				</Popover.Target>
 				<Popover.Dropdown onMouseEnter={open} onMouseLeave={close}>

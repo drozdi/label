@@ -2,6 +2,13 @@ import { makeAutoObservable } from 'mobx'
 import { KEY_FONT_DEFAULT } from '../../shared/constants'
 import { requestFontsAdd, requestFontsDelete, requestFontsList } from './api'
 
+const map = {
+	'ARIALB00.TTF': 'ARIALB00.TTF',
+	'ARIALB01.TTF': 'ARIALB01.TTF',
+	'ARIALI02.TTF': 'ARIALI02.TTF',
+	'ARIALI04.TTF': 'ARIALI04.TTF',
+}
+
 class StoreFonts {
 	isLoading: boolean = false
 	isLoaded: boolean = false

@@ -9,14 +9,13 @@ import {
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useRef, useState } from 'react'
+import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
 import { storeTemplate } from '../../entites/template/store'
 import { serviceNotifications } from '../../services/notifications/service'
 import { genId, round } from '../../shared/utils'
 import { useAppContext } from '../context'
-
-const fakeBodyDM = '0104603721020607215>(egukLfdK5r93zoJf'
 
 function genObj(def = {}) {
 	return {
@@ -167,15 +166,18 @@ export const Import = observer(() => {
 			setReference(...arr)
 		},
 		parseDMATRIX(str: string) {
-			const arr = parseSplit(str)
+			//ctx.setDataMatrixFlag(true)
 			const obj = genObj({
-				name: fakeBodyDM,
+				name: storeDataMatrix.fakeBodyDM,
 				type: 'barcode',
 				code_type: 'datamatrix',
+				radius: 1.8333333333333333,
+				temp: true,
+				width: 6,
 			})
 
 			const res = regParse(
-				/(?:DMATRIX)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<width>[0-9]*)\s*,\s*(?<height>[0-9]*)(?:\s*,\s*[cC](?<c>[0-9]*))?(?:\s*,\s*[xX](?<x>[0-9]*))?(?:\s*,\s*[rR](?<r>[0-9]*))?(?:\s*,\s*[aA](?<a>[01]*))?(?:\s*,\s*(?<row>[0-9]*))?(?:\s*,\s*(?<col>[0-9]*))?,\s*"(?<data>.*)"/,
+				/(?:DMATRIX)?\s*(?<pos_x>-?[0-9]*)\s*,\s*(?<pos_y>-?[0-9]*)\s*,\s*(?<width>-?[0-9]*)\s*,\s*(?<height>-?[0-9]*)(?:\s*,\s*[cC](?<c>[0-9]*))?(?:\s*,\s*[xX](?<x>[0-9]*))?(?:\s*,\s*[rR](?<r>[0-9]*))?(?:\s*,\s*[aA](?<a>[01]*))?(?:\s*,\s*(?<row>[0-9]*))?(?:\s*,\s*(?<col>[0-9]*))?,\s*"(?<data>.*)"/,
 				str,
 				{
 					pos_x: 0,
@@ -192,26 +194,28 @@ export const Import = observer(() => {
 				}
 			)
 
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
-			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
-			if (/^x/.test(arr[5])) {
-				obj.width = parseInt(arr[5].replace(/^x/, ''), 10)
+			obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
+			obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
+			obj.width = parseInt(res.width, 10) / storeTemplate.dpi
+			obj.height = parseInt(res.height, 10) / storeTemplate.dpi
+
+			if (res.x) {
+				obj.width = parseInt(res.x, 10)
 			} else {
 				obj.width = 6
 			}
-			if (/^r/.test(arr[6])) {
-				obj.rotation = parseInt(arr[6], 10) || 0
+			if (res.r) {
+				obj.rotation = parseInt(res.r, 10) || 0
 			}
-			if (parseInt(arr[7], 10) > 0) {
-				//obj.width = parseInt(arr[7], 10)
+			if (res.row) {
+				obj.width = parseInt(res.row, 10)
 			}
-			obj.data = removeQuote(
-				arr[10] || arr[9] || arr[8] || arr[7] || arr[6] || arr[5] || arr[4]
-			)
 
-			obj.radius = obj.width / storeTemplate.dpi
+			obj.data = res.data
+
+			const dm = storeDataMatrix._selectedDM(storeDataMatrix.findByDM(obj.name))
+
+			obj.radius = dm.size / storeTemplate.dpi
 			obj.height = obj.width
 
 			storeTemplate.addObject(obj)
@@ -323,34 +327,49 @@ export const Import = observer(() => {
 			storeTemplate.addObject(obj)
 		},
 		parseBARCODE(str: string) {
-			const arr = parseSplit(str)
 			const obj = genObj({
 				name: 'barcode',
 				type: 'barcode',
 			})
-			if (str.match(/EAN13/)) {
+			const res = regParse(
+				/(?:BARCODE)?\s*(?<pos_x>-?[0-9]*)\s*,\s*(?<pos_y>-?[0-9]*)\s*,\s*"(?<type>.*)"\s*,\s*(?<height>[0-9]*)\s*,\s*(?<human_readable>[0123]*)\s*,\s*(?<rotation>[0-9]*)\s*,\s*(?<narrow>[0-9]*)\s*,\s*(?<wide>[0-9]*)(?:\s*,\s*(?<alignment>[0123]*))?\s*,\s*"(?<data>.*)"/,
+				str,
+				{
+					pos_x: 0,
+					pos_y: 0,
+					type: '',
+					height: 0,
+					human_readable: 0,
+					rotation: 0,
+					narrow: 2,
+					wide: 2,
+					alignment: 0,
+					data: '',
+				}
+			)
+
+			if (res.type.toUpperCase() === 'EAN13') {
 				obj.code_type = 'ean13'
 				obj.data = '978020137962'
-			} else if (str.match(/128/)) {
+			} else if (res.type.match(/128/)) {
 				obj.code_type = 'code128'
 				obj.data = 'barcode046037210206'
 			} else {
 				throw new Error('Найдена ошибка в типе barcode')
 			}
 
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
-			obj.human_readable = parseInt(arr[4], 10)
-			obj.rotation = parseInt(arr[5], 10)
-			obj.width = parseInt(arr[6], 10)
+			obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi //0
+			obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi //1
+			obj.height = parseInt(res.height, 10) / storeTemplate.dpi //3
+			obj.human_readable = parseInt(res.human_readable, 10)
+			obj.rotation = parseInt(res.rotation, 10) //5
+			obj.width = parseInt(res.wide, 10) //7
 
-			obj.data = removeQuote(arr[9] || arr[8])
+			obj.data = res.data
 
 			storeTemplate.addObject(obj)
 		},
 		parseQRCODE(str: string) {
-			const arr = parseSplit(str)
 			const obj = genObj({
 				name: 'qrcode',
 				type: 'barcode',
@@ -360,12 +379,29 @@ export const Import = observer(() => {
 				data: 'barcode046037210206',
 			})
 
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
+			const res = regParse(
+				/(?:QRCODE)?\s*(?<pos_x>-?[0-9]*)\s*,\s*(?<pos_y>-?[0-9]*)\s*,\s*(?<level>[LMQH]*)\s*,\s*(?<cell>[0-9]*)\s*,\s*(?<mode>[AM]*)\s*,\s*(?<rotation>[0-9]*)(?:\s*,\s*(?<model>M[0123]*))?(?:\s*,\s*(?<mask>[sS][012345678]*))?\s*,\s*"(?<data>.*)"/,
+				str,
+				{
+					pos_x: 0,
+					pos_y: 0,
+					level: 'M',
+					cell: 6,
+					mode: 'A',
+					rotation: 0,
+					model: 'M1',
+					mask: 'S7',
+				}
+			)
 
-			obj.rotation = parseInt(arr[5], 10)
+			obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
+			obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
+			obj.width = parseInt(res.cell, 10) + 4
+			obj.height = obj.width
 
-			obj.data = removeQuote(arr[8])
+			obj.rotation = parseInt(res.rotation, 10)
+
+			obj.data = res.data
 
 			storeTemplate.addObject(obj)
 		},
@@ -559,7 +595,7 @@ export const Import = observer(() => {
 			obj.data = arr[9]
 		},
 		datamatrixElement(obj: Record<string, any>, str: string, body: string) {
-			obj.name = fakeBodyDM
+			obj.name = storeDataMatrix.fakeBodyDM
 			obj.type = 'barcode'
 			obj.code_type = 'datamatrix'
 			const arr = parseSplit(str)

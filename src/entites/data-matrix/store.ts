@@ -185,6 +185,7 @@ class StoreDataMatrix {
 	isLoaded = false
 	isLoading = false
 	error = ''
+	fakeBodyDM = '0104603721020607215>(egukLfdK5r93zoJf'
 
 	get sizes() {
 		this.load()
@@ -225,6 +226,29 @@ class StoreDataMatrix {
 			}
 		}
 		return dm_element
+	}
+	_selectedDM(dm) {
+		this.load()
+		const dm_element = {
+			dm: dm.dm,
+			length: dm.length,
+		}
+		for (let i = 0; i < this._sizes.length; i++) {
+			if (this._sizes[i].max_data_alpha_num >= dm_element.length) {
+				dm_element.size = this._sizes[i].row_sym_size
+				break
+			}
+		}
+		return dm_element
+	}
+	findById(dm) {
+		return this.list.find(item => item.id === dm)
+	}
+	findByDM(dm) {
+		return this.list.find(item => item.dm === dm)
+	}
+	findByName(dm) {
+		return this.list.find(item => item.name === dm)
 	}
 }
 

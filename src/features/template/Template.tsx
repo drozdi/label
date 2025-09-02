@@ -117,9 +117,9 @@ export const Template = observer(() => {
 			x: event?.clientX,
 			y: event?.clientY,
 		}
-		isDrag.current = true
+		isDrag.current = storeTemplate.selected.length > 0
 	}
-	const handleMouseMove = (event: React.MouseEvent) => {
+	const handleMouseMove = (event: MouseEvent) => {
 		if (!isDrag.current) {
 			return
 		}
@@ -145,8 +145,9 @@ export const Template = observer(() => {
 			item.clone.style.left = item.left + dx + 'px'
 			item.clone.style.top = item.top + dy + 'px'
 		})
+		console.log(cloneElement.current)
 	}
-	const handleMouseUp = (event: React.MouseEvent) => {
+	const handleMouseUp = (event: MouseEvent) => {
 		if (!isDrag.current) {
 			return
 		}

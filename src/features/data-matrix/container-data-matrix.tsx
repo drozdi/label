@@ -1,4 +1,4 @@
-import { CloseButton, Group, ScrollArea, Stack } from '@mantine/core'
+import { Group, ScrollArea, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useAppContext } from '../context'
 import { ListDataMatrix } from './list-data-matrix'
@@ -12,7 +12,7 @@ export const ContainerDataMatrix = observer(() => {
 		<Stack h='100%'>
 			<Group justify='space-between'>
 				Выбирите ДМ
-				<CloseButton onClick={handleClose} />
+				{/* <CloseButton onClick={handleClose} /> */}
 			</Group>
 			<ScrollArea h='100%'>
 				<ListDataMatrix />

@@ -18,7 +18,7 @@ export class LinesElement extends BaseElement {
 		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height']
 	}
 	get resize() {
-		return ['e', 's', 'se']
+		return ['se']
 	}
 	getCorrectProps() {
 		return {
