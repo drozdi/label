@@ -174,6 +174,24 @@ export const Import = observer(() => {
 				code_type: 'datamatrix',
 			})
 
+			const res = regParse(
+				/(?:DMATRIX)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<width>[0-9]*)\s*,\s*(?<height>[0-9]*)(?:\s*,\s*[cC](?<c>[0-9]*))?(?:\s*,\s*[xX](?<x>[0-9]*))?(?:\s*,\s*[rR](?<r>[0-9]*))?(?:\s*,\s*[aA](?<a>[01]*))?(?:\s*,\s*(?<row>[0-9]*))?(?:\s*,\s*(?<col>[0-9]*))?,\s*"(?<data>.*)"/,
+				str,
+				{
+					pos_x: 0,
+					pos_y: 0,
+					width: 0,
+					height: 0,
+					c: 0,
+					x: 0,
+					r: 0,
+					a: 0,
+					row: 0,
+					col: 0,
+					data: '',
+				}
+			)
+
 			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
 			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
@@ -199,7 +217,6 @@ export const Import = observer(() => {
 			storeTemplate.addObject(obj)
 		},
 		parseTEXT(str: string) {
-			const arr = parseSplit(str)
 			const obj = genObj({
 				name: 'text',
 				type: 'text',
@@ -209,15 +226,27 @@ export const Import = observer(() => {
 				font_id: storeFonts.id,
 			})
 
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
+			const res = regParse(
+				/(?:TEXT)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*"(?<font>.*)"\s*,\s*(?<rotation>[0-9]*)\s*,\s*(?<x_multiplication>[0-9]*)\s*,\s*(?<y_multiplication>[0-9]*)(?:\s*,\s*(?<alignment>[0123]*))?\s*,\s*"(?<data>.*)"/,
+				str,
+				{
+					pos_x: 0,
+					pos_y: 0,
+					x_multiplication: 12,
+					y_multiplication: 12,
+					data: '',
+				}
+			)
+
+			obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
+			obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
 
 			let font
-			if ((font = storeFonts.findByTagFonts(removeQuote(arr[2])))) {
+			if ((font = storeFonts.findByTagFonts(res.font))) {
 				obj.font_id = font.id
-			} else if ((font = storeFonts.findByName(removeQuote(arr[2])))) {
+			} else if ((font = storeFonts.findByName(res.font))) {
 				obj.font_id = font.id
-			} else if ((font = storeFonts.findById(removeQuote(arr[2])))) {
+			} else if ((font = storeFonts.findById(res.font))) {
 				obj.font_id = font.id
 			} else {
 				serviceNotifications.alert(
@@ -225,20 +254,19 @@ export const Import = observer(() => {
 				)
 			}
 
-			obj.rotation = parseInt(arr[3], 10)
+			obj.rotation = parseInt(res.rotation, 10)
 
 			if (obj.rotation === 90 || obj.rotation === 270) {
-				obj.font_size = parseInt(arr[5], 10)
+				obj.font_size = parseInt(res.y_multiplication, 10)
 			} else {
-				obj.font_size = parseInt(arr[4], 10)
+				obj.font_size = parseInt(res.x_multiplication, 10)
 			}
 
-			obj.data = removeQuote(arr[7] || arr[6])
+			obj.data = res.data
 
 			storeTemplate.addObject(obj)
 		},
 		parseBLOCK(str: string) {
-			const arr = parseSplit(str)
 			const obj = genObj({
 				name: 'block',
 				type: 'block',
@@ -246,17 +274,34 @@ export const Import = observer(() => {
 				font_id: storeFonts.id,
 			})
 
-			obj.pos_x = parseInt(arr[0], 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(arr[1], 10) / storeTemplate.dpi
-			obj.width = parseInt(arr[2], 10) / storeTemplate.dpi
-			obj.height = parseInt(arr[3], 10) / storeTemplate.dpi
+			const res = regParse(
+				/(?:BLOCK)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<width>[0-9]*)\s*,\s*(?<height>[0-9]*)\s*,\s*"(?<font>.*)"\s*,\s*(?<rotation>[0-9]*)\s*,\s*(?<x_multiplication>[0-9]*)\s*,\s*(?<y_multiplication>[0-9]*)(?:\s*,\s*(?<space>[0-9]*))?(?:\s*,\s*(?<alignment>[0123]))?\s*,\s*"(?<data>.*)"/,
+				str,
+				{
+					pos_x: 0,
+					pos_y: 0,
+					width: 0,
+					height: 0,
+					rotation: 0,
+					x_multiplication: 12,
+					y_multiplication: 12,
+					alignment: 0,
+					space: 0,
+					data: '',
+				}
+			)
+
+			obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
+			obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
+			obj.width = parseInt(res.width, 10) / storeTemplate.dpi
+			obj.height = parseInt(res.height, 10) / storeTemplate.dpi
 
 			let font
-			if ((font = storeFonts.findByTagFonts(removeQuote(arr[4])))) {
+			if ((font = storeFonts.findByTagFonts(res.font))) {
 				obj.font_id = font.id
-			} else if ((font = storeFonts.findByName(removeQuote(arr[4])))) {
+			} else if ((font = storeFonts.findByName(res.font))) {
 				obj.font_id = font.id
-			} else if ((font = storeFonts.findById(removeQuote(arr[4])))) {
+			} else if ((font = storeFonts.findById(res.font))) {
 				obj.font_id = font.id
 			} else {
 				serviceNotifications.alert(
@@ -264,16 +309,16 @@ export const Import = observer(() => {
 				)
 			}
 
-			obj.rotation = parseInt(arr[5], 10)
+			obj.rotation = parseInt(res.rotation ?? 0, 10)
 
 			if (obj.rotation === 90 || obj.rotation === 270) {
-				obj.font_size = parseInt(arr[7], 10)
+				obj.font_size = parseInt(res.y_multiplication, 10)
 			} else {
-				obj.font_size = parseInt(arr[6], 10)
+				obj.font_size = parseInt(res.x_multiplication, 10)
 			}
 
-			obj.text_align = arr[8]
-			obj.data = removeQuote(arr[11] || arr[10] || arr[9] || arr[8])
+			obj.text_align = parseInt(res.alignment ?? 0, 10)
+			obj.data = res.data
 
 			storeTemplate.addObject(obj)
 		},
@@ -325,7 +370,6 @@ export const Import = observer(() => {
 			storeTemplate.addObject(obj)
 		},
 		parsePUTBMP(str: string) {
-			const arr = parseSplit(str)
 			const obj = genObj({
 				name: 'img',
 				type: 'img',
