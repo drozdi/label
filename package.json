@@ -5,15 +5,9 @@
 		"name": "MAST SOFT",
 		"email": "support1@mact.ru"
 	},
-<<<<<<< HEAD
-	"version": "0.1.0",
+	"version": "2.0.0",
 	"private": true,
 	"main": "main.js",
-=======
-	"private": true,
-	"version": "0.1.0",
-	"type": "module",
->>>>>>> 6e5fbc1f56f57aca0e00f3a65a9f76b0bdf11157
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
