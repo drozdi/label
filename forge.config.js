@@ -4,7 +4,12 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
+    dir: 'DMCLabelEditor',
+    name: 'dmc_label_edit_desktop',
+    executableName: 'dmc_label_edit_desktop',
+    overwrite: true
   },
+  packagerConfig: {}
   rebuildConfig: {},
   makers: [
     {
