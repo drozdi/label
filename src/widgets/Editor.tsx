@@ -1,4 +1,4 @@
-import { Box, Group, ScrollArea, Tabs, Text } from '@mantine/core'
+import { Box, ScrollArea, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
@@ -28,24 +28,30 @@ export const Editor = observer(() => {
 					gridTemplateColumns: '18rem 1fr 18rem',
 					gridTemplateRows: '1fr',
 					overflow: 'hidden',
+					width: '100%',
+					maxWidth: 'var(--mantine-breakpoint-xl)',
+					margin: '0 auto',
 				}}
 			>
-				<Group
-					justify='space-between'
+				<Box
 					h='100%'
-					gap='0'
+					px='xs'
 					style={{
+						display: 'grid',
+						gridTemplateColumns: '1fr 2rem',
+						gridTemplateRows: '1fr',
+						gap: 'var(--mantine-spacing-xs)',
 						borderRight: '1px solid var(--mantine-color-default-border)',
 					}}
 				>
-					<Box flex='auto' h='100%' px='xs'>
+					<Box>
 						{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
 					</Box>
-					<Box flex='auto' h='100%' w='2rem' p='xs'>
+					<Box pt='xs'>
 						<ToolbarTools />
 					</Box>
-				</Group>
-				<ScrollArea h='100%' p='xs'>
+				</Box>
+				<ScrollArea h='100%' p='xs' pt='0'>
 					<Band>
 						<Template />
 					</Band>
@@ -67,7 +73,14 @@ export const Editor = observer(() => {
 						<ContainerImage />
 					) : (
 						<Tabs defaultValue='properties' h='100%'>
-							<Tabs.List>
+							<Tabs.List
+								pos='sticky'
+								top={0}
+								bg='var(--mantine-color-body)'
+								style={{
+									zIndex: 10,
+								}}
+							>
 								<Tabs.Tab value='properties'>Свойства</Tabs.Tab>
 								<Tabs.Tab value='layers'>Слои</Tabs.Tab>
 								<Tabs.Tab value='histories'>История</Tabs.Tab>

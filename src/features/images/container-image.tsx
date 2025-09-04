@@ -24,7 +24,7 @@ export const ContainerImage = observer(() => {
 
 	return (
 		<Stack h='100%'>
-			<Group justify='space-between'>
+			<Group mt='xs' justify='space-between'>
 				Изображения
 				<CloseButton onClick={() => ctx?.setImageFlag(false)} />
 			</Group>

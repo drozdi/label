@@ -1,5 +1,7 @@
-import { CloseButton, Group, ScrollArea, Stack } from '@mantine/core'
+import { CloseButton, Group, ScrollArea, Stack, TextInput } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { observer } from 'mobx-react-lite'
+import { useState } from 'react'
 import { useAppContext } from '../context'
 import { ListVariable } from './list-variable'
 
@@ -8,14 +10,21 @@ export const ContainerVariable = observer(() => {
 	const handleClose = () => {
 		ctx?.setVariableFlag(false)
 	}
+	const [search, setSearch] = useState('')
+	const [query] = useDebouncedValue(search, 300)
 	return (
 		<Stack h='100%'>
-			<Group justify='space-between'>
+			<Group mt='xs' justify='space-between'>
 				Переменные
 				<CloseButton onClick={handleClose} />
 			</Group>
+			<TextInput
+				value={search}
+				onChange={({ target }) => setSearch(target.value)}
+				required
+			/>
 			<ScrollArea h='100%'>
-				<ListVariable />
+				<ListVariable query={query} />
 			</ScrollArea>
 		</Stack>
 	)

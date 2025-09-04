@@ -10,7 +10,7 @@ export const ContainerDataMatrix = observer(() => {
 	}
 	return (
 		<Stack h='100%'>
-			<Group justify='space-between'>
+			<Group mt='xs' justify='space-between'>
 				Выбирите ДМ
 				{/* <CloseButton onClick={handleClose} /> */}
 			</Group>

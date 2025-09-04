@@ -5,7 +5,9 @@ import { ListElement } from './list-element'
 export const ContainerElement = observer(() => {
 	return (
 		<Stack h='100%'>
-			<Title order={5}>Добавить элемент</Title>
+			<Title mt='xs' order={5}>
+				Добавить элемент
+			</Title>
 			<ScrollArea h='100%'>
 				<ListElement />
 			</ScrollArea>
