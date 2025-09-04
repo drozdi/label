@@ -29,11 +29,6 @@ export const HeaderMain = observer(() => {
 			...storeTemplate,
 			objects: storeTemplate.objects.map(item => ({
 				...item.getProps(),
-				mm: undefined,
-				cm: undefined,
-				mm_qr: undefined,
-				font_rel: undefined,
-				image_rel: undefined,
 			})),
 			scale: undefined,
 			dpi: undefined,
@@ -53,16 +48,18 @@ export const HeaderMain = observer(() => {
 	const handleUpdate = async template => {
 		try {
 			await storeTemplates.updateTemplate(template)
+			serviceNotifications.success('Шаблон успешно изменён')
 		} catch (e) {
-			serviceNotifications.error(e.message)
+			serviceNotifications.error('Не удалось изменить шаблон.')
 		}
 	}
 	const handleNew = async template => {
 		try {
 			const res = await storeTemplates.newTemplate(template)
 			storeTemplate.loadTemplate(res.data)
+			serviceNotifications.success('Шаблон успешно сохранён')
 		} catch (e) {
-			serviceNotifications.error(e.message)
+			serviceNotifications.error('Не удалось сохранить шаблон.')
 		}
 	}
 	return (

@@ -88,9 +88,9 @@ class StoreTemplates {
 			this.selectTemplate(res.data.id)
 			await this.load(true)
 			return res
-		} catch (e) {
-			console.error(e)
-			this.error = e.message || e.toString() || 'Unknown error'
+		} catch (error) {
+			console.error(error)
+			this.error = error.message || error.toString() || 'Unknown error'
 			throw this.error
 		} finally {
 			this.isLoading = false
