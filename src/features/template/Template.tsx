@@ -145,7 +145,6 @@ export const Template = observer(() => {
 			item.clone.style.left = item.left + dx + 'px'
 			item.clone.style.top = item.top + dy + 'px'
 		})
-		console.log(cloneElement.current)
 	}
 	const handleMouseUp = (event: MouseEvent) => {
 		if (!isDrag.current) {

@@ -18,7 +18,6 @@ import {
 	TbSettings,
 	TbSun,
 } from 'react-icons/tb'
-import { storeTemplate } from '../entites/template/store'
 import { useAppContext } from '../features/context'
 import { ManagerFontFamily } from '../features/fonts/manager-font-family'
 import { HeaderMain } from '../features/header/header-main'
@@ -137,7 +136,7 @@ export function Header() {
 						}}
 					/>
 				</ActionIcon>
-				<Button
+				{/* <Button
 					onClick={() =>
 						console.log({
 							...storeTemplate,
@@ -146,7 +145,7 @@ export function Header() {
 					}
 				>
 					check
-				</Button>
+				</Button> */}
 			</Group>
 		</Group>
 	)

@@ -32,6 +32,7 @@ const theme = createTheme({
 				size: 'xs',
 				radius: 0,
 				variant: 'subtle',
+				px: '0.25rem',
 			},
 		}),
 		Input: Input.extend({

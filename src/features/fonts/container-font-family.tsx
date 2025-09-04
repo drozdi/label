@@ -21,7 +21,7 @@ export const ContainerFontFamily = observer(() => {
 
 	return (
 		<Stack h='100%'>
-			<Group justify='space-between'>
+			<Group mt='xs' justify='space-between'>
 				Шрифты
 				<CloseButton onClick={() => ctx?.setFontFamilyFlag(false)} />
 			</Group>
@@ -52,7 +52,7 @@ export const ContainerFontFamily = observer(() => {
 						</Group>
 					)}
 				</FileButton>
-			)}{' '}
+			)}
 			<ScrollArea h='100%'>
 				<ListFontFamily />
 			</ScrollArea>
