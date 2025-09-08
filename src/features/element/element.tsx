@@ -22,6 +22,9 @@ export const Element = observer(
 		preview: boolean
 		scale: number
 	}) => {
+		if (preview && !object.enabled) {
+			return ''
+		}
 		const refParent = useRef<HTMLDivElement>(null)
 		const ctx = useAppContext()
 		const style = useMemo(
@@ -136,7 +139,7 @@ export const Element = observer(
 							event.clientY,
 							sPosition.current.minY,
 							sPosition.current.maxY
-					  ) - sPosition.current.y
+						) - sPosition.current.y
 			}
 
 			if (object.rotation === 90 || object.rotation === 270) {
@@ -195,7 +198,7 @@ export const Element = observer(
 							event.clientY,
 							sPosition.current.minY,
 							sPosition.current.maxY
-					  ) - sPosition.current.y
+						) - sPosition.current.y
 			}
 
 			const ddx = dx / storeTemplate.mm / scale
