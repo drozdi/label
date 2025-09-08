@@ -29,11 +29,6 @@ export const HeaderMain = observer(() => {
 			...storeTemplate,
 			objects: storeTemplate.objects.map(item => ({
 				...item.getProps(),
-				mm: undefined,
-				cm: undefined,
-				mm_qr: undefined,
-				font_rel: undefined,
-				image_rel: undefined,
 			})),
 			scale: undefined,
 			dpi: undefined,
@@ -53,16 +48,18 @@ export const HeaderMain = observer(() => {
 	const handleUpdate = async template => {
 		try {
 			await storeTemplates.updateTemplate(template)
-		} catch (e) {
-			serviceNotifications.error(e.message)
+			serviceNotifications.success('Шаблон успешно изменён')
+		} catch (error) {
+			serviceNotifications.error(error)
 		}
 	}
 	const handleNew = async template => {
 		try {
 			const res = await storeTemplates.newTemplate(template)
 			storeTemplate.loadTemplate(res.data)
-		} catch (e) {
-			serviceNotifications.error(e.message)
+			serviceNotifications.success('Шаблон успешно сохранён')
+		} catch (error) {
+			serviceNotifications.error(error)
 		}
 	}
 	return (
@@ -112,7 +109,7 @@ export const HeaderMain = observer(() => {
 			<Button
 				variant='outline'
 				color={previewFlag ? 'lime' : ''}
-				onClick={() => ctx?.setPreviewFlag?.(!importFlag)}
+				onClick={() => ctx?.setPreviewFlag?.(!previewFlag)}
 			>
 				Предпросмотр
 			</Button>

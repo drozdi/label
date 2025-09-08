@@ -34,7 +34,7 @@ class StoreImages {
 		this.error = ''
 		try {
 			const res = await requestIimagesList()
-			this._list = res.data.response.map(item => ({
+			this._list = res.data?.response?.map(item => ({
 				...item,
 				data: atob(item.data),
 			}))

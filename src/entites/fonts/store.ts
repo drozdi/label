@@ -40,12 +40,14 @@ class StoreFonts {
 			this._list = res.data.response
 			this.isLoaded = true
 			this._list.forEach(async item => {
-				const myFont = new FontFace(
-					item.name,
-					`url(data:application/octet-stream;base64,${item.data})`
-				)
-				await myFont.load()
-				document.fonts.add(myFont)
+				try {
+					const myFont = new FontFace(
+						item.name,
+						`url(data:application/octet-stream;base64,${item.data})`
+					)
+					await myFont.load()
+					document.fonts.add(myFont)
+				} catch (e) {}
 			})
 		} catch (error) {
 			console.error(error)

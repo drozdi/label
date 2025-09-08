@@ -88,9 +88,13 @@ class StoreTemplates {
 			this.selectTemplate(res.data.id)
 			await this.load(true)
 			return res
-		} catch (e) {
-			console.error(e)
-			this.error = e.message || e.toString() || 'Unknown error'
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.data ||
+				error.message ||
+				error.toString() ||
+				'Unknown error'
 			throw this.error
 		} finally {
 			this.isLoading = false
@@ -143,9 +147,13 @@ class StoreTemplates {
 			await this.load(true)
 			await this.selectTemplate(template.id)
 			return res
-		} catch (e) {
-			console.error(e)
-			this.error = e.message || e.toString() || 'Unknown error'
+		} catch (error) {
+			console.error(error)
+			this.error =
+				error.response?.data?.data ||
+				error.message ||
+				error.toString() ||
+				'Unknown error'
 			throw this.error
 		} finally {
 			this.isLoading = false
