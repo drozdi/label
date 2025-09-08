@@ -49,8 +49,8 @@ export const HeaderMain = observer(() => {
 		try {
 			await storeTemplates.updateTemplate(template)
 			serviceNotifications.success('Шаблон успешно изменён')
-		} catch (e) {
-			serviceNotifications.error('Не удалось изменить шаблон.')
+		} catch (error) {
+			serviceNotifications.error(error)
 		}
 	}
 	const handleNew = async template => {
@@ -58,8 +58,8 @@ export const HeaderMain = observer(() => {
 			const res = await storeTemplates.newTemplate(template)
 			storeTemplate.loadTemplate(res.data)
 			serviceNotifications.success('Шаблон успешно сохранён')
-		} catch (e) {
-			serviceNotifications.error('Не удалось сохранить шаблон.')
+		} catch (error) {
+			serviceNotifications.error(error)
 		}
 	}
 	return (
@@ -109,7 +109,7 @@ export const HeaderMain = observer(() => {
 			<Button
 				variant='outline'
 				color={previewFlag ? 'lime' : ''}
-				onClick={() => ctx?.setPreviewFlag?.(!importFlag)}
+				onClick={() => ctx?.setPreviewFlag?.(!previewFlag)}
 			>
 				Предпросмотр
 			</Button>

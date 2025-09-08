@@ -6,10 +6,10 @@ export const URL_API = 'http://10.76.10.102:8033/api/v1/'
 export const MM = 3.709575175750246
 export const CM = 37.09575175750246
 export const MM_QR = 3.999575175750246
-export const STEP = 0.01
+export const STEP = 1 / 12
 export const ROUND = 100
 
-export const VERSION = '2.0.0:20252820'
+export const VERSION = '2.0.0'
 
 export const DEF_TEMPLATE = {
 	dpi: 12,
