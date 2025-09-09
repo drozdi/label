@@ -1,11 +1,12 @@
 import { observer } from 'mobx-react-lite'
 import type React from 'react'
 import { useEffect, useRef } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
+import { serviceTemplate } from '../../services/template/service'
 import { STEP } from '../../shared/constants'
 import { minMax, round } from '../../shared/utils'
-import { useAppContext } from '../context'
 import { Element } from '../element/element'
 import classes from '../element/element.module.css'
 import { BackgroundBg } from './background-bg'
@@ -15,17 +16,16 @@ import { move, moveX, moveY } from './utils/move'
 
 export const Template = observer(() => {
 	const { objects, current } = storeTemplate
-	const ctx = useAppContext()
 	const refTemplate = useRef<HTMLDivElement>(null)
 	const isDrag = useRef(false)
 
 	useEffect(() => {
 		if (!current) {
-			ctx.setFontFamilyFlag(false)
-			ctx.setVariableFlag(false)
-			ctx.setImageFlag(false)
-			ctx.setLoadTemplateFlag(false)
-			ctx.setDataMatrixFlag(false)
+			storeApp.setFontFamilyFlag(false)
+			storeApp.setVariableFlag(false)
+			storeApp.setImageFlag(false)
+			storeApp.setLoadTemplateFlag(false)
+			storeApp.setDataMatrixFlag(false)
 		}
 	}, [current])
 
@@ -177,7 +177,7 @@ export const Template = observer(() => {
 	}
 
 	useEffect(() => {
-		const pressKey = (event: KeyboardEvent) => {
+		const pressKey = async (event: KeyboardEvent) => {
 			if (event.code === 'F5') {
 				return
 			}
@@ -197,6 +197,7 @@ export const Template = observer(() => {
 					'ArrowDown',
 					'KeyZ',
 					'KeyY',
+					'KeyS',
 				].includes(event.code)
 			) {
 				return
@@ -226,6 +227,9 @@ export const Template = observer(() => {
 				}
 				if (event.code === 'KeyY') {
 					storeHistory.forward()
+				}
+				if (event.code === 'KeyS') {
+					await serviceTemplate.handleSave()
 				}
 			}
 		}

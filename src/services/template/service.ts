@@ -1,6 +1,10 @@
+import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
+import { storeTemplates } from '../../entites/templates/store'
+import { DEF_TEMPLATE } from '../../shared/constants'
 import { debounce, round } from '../../shared/utils'
+import { serviceNotifications } from '../notifications/service'
 
 const histroyAppendDebounce = debounce((...args: any[]) => {
 	storeHistory.append(...args)
@@ -65,5 +69,56 @@ export const serviceTemplate = {
 		const name = storeTemplate.current?.name
 		storeTemplate.current?.setName(v)
 		histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
+	},
+
+	async handleSave() {
+		if (storeTemplate.name?.length < 3) {
+			serviceNotifications.error(
+				'Название шаблона должно быть не менее 3 символов'
+			)
+			storeApp.setErrorName(true)
+			return
+		}
+		if (storeTemplate.objects.length === 0) {
+			serviceNotifications.error('Шаблон не может быть пустым')
+			return
+		}
+		const template = {
+			...DEF_TEMPLATE,
+			...storeTemplate,
+			objects: storeTemplate.objects.map(item => ({
+				...item.getProps(),
+			})),
+			scale: undefined,
+			dpi: undefined,
+			mm: undefined,
+			cm: undefined,
+			mm_qr: undefined,
+			currId: undefined,
+			currIndex: undefined,
+			selected: undefined,
+		}
+		if (storeTemplate.id > 0) {
+			await this.handleUpdate(template)
+		} else {
+			await this.handleNew(template)
+		}
+	},
+	async handleUpdate(template) {
+		try {
+			await storeTemplates.updateTemplate(template)
+			serviceNotifications.success('Шаблон успешно изменён')
+		} catch (error) {
+			serviceNotifications.error(error)
+		}
+	},
+	async handleNew(template) {
+		try {
+			const res = await storeTemplates.newTemplate(template)
+			storeTemplate.loadTemplate(res.data)
+			serviceNotifications.success('Шаблон успешно сохранён')
+		} catch (error) {
+			serviceNotifications.error(error)
+		}
 	},
 }

@@ -9,13 +9,13 @@ import {
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useRef, useState } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
 import { storeTemplate } from '../../entites/template/store'
 import { serviceNotifications } from '../../services/notifications/service'
 import { genId, round } from '../../shared/utils'
-import { useAppContext } from '../context'
 
 function genObj(def = {}) {
 	return {
@@ -98,7 +98,6 @@ const regParse = (reg: RegExp, str: string, def = {}) => {
 }
 
 export const Import = observer(() => {
-	const ctx = useAppContext()
 	const refText = useRef<HTMLTextAreaElement>(null)
 	const handleFile = (file: any) => {
 		if (!file.name.toLowerCase().match(/\.txt$/g)) {
@@ -166,7 +165,7 @@ export const Import = observer(() => {
 			setReference(...arr)
 		},
 		parseDMATRIX(str: string) {
-			//ctx.setDataMatrixFlag(true)
+			//storeApp.setDataMatrixFlag(true)
 			const obj = genObj({
 				name: storeDataMatrix.fakeBodyDM,
 				type: 'barcode',
@@ -873,7 +872,7 @@ export const Import = observer(() => {
 				tsplParser.parse(refText.current.value)
 			}
 			storeTemplate.loadObjects(storeTemplate.objects)
-			ctx.setImportFlag(false)
+			storeApp.setImportFlag(false)
 		} catch (e) {
 			console.error(e)
 			serviceNotifications.error(e.message)
@@ -882,8 +881,8 @@ export const Import = observer(() => {
 
 	return (
 		<Modal
-			opened={ctx.importFlag}
-			onClose={() => ctx.setImportFlag(false)}
+			opened={storeApp.importFlag}
+			onClose={() => storeApp.setImportFlag(false)}
 			title='Импорт кода по строкам'
 			size='xl'
 		>
@@ -898,7 +897,10 @@ export const Import = observer(() => {
 					<Button variant='filled' onClick={handleParse}>
 						Импорт
 					</Button>
-					<Button variant='filled' onClick={() => ctx.setImportFlag(false)}>
+					<Button
+						variant='filled'
+						onClick={() => storeApp.setImportFlag(false)}
+					>
 						Закрыть
 					</Button>
 					<FileButton onChange={handleFile} accept='.txt'>

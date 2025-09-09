@@ -5,11 +5,8 @@ import { storePrinter } from '../../entites/printer/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { serviceNotifications } from '../../services/notifications/service'
 import { servicePrinter } from '../../services/printer/service'
-import { useAppContext } from '../context'
 
 export const HeaderPrint = observer(() => {
-	const ctx = useAppContext()
-
 	const handlePrintCode = async () => {
 		if (!storeTemplates.selected) {
 			serviceNotifications.alert('Сохраните шаблон или выберите из БД')

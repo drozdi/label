@@ -10,20 +10,19 @@ import {
 	Title,
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { storeApp } from '../../entites/app/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
 import { Item } from '../../shared/ui'
-import { useAppContext } from '../context'
 import { useImagesUpload } from './hooks/use-images-upload'
 
 export const ManagerImages = observer(() => {
-	const ctx = useAppContext()
 	const { file, name, save, cancel, upload, writeName } = useImagesUpload()
-	const { managerImagesFlag } = ctx
+	const { managerImagesFlag } = storeApp
 	const { list } = storeImages
 	const handleClick = (id: number) => storeImages.setId(id)
 	const handleClose = () => {
-		ctx.setManagerImagesFlag(false)
+		storeApp.setManagerImagesFlag(false)
 		cancel()
 	}
 	const handleRemove = async (id: number) => {

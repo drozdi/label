@@ -11,19 +11,18 @@ import {
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { TbFilePlus } from 'react-icons/tb'
-import { useAppContext } from '../context'
+import { storeApp } from '../../entites/app/store'
 import { useFontsUpload } from './hooks/use-fonts-upload'
 import { ListFontFamily } from './list-font-family'
 
 export const ContainerFontFamily = observer(() => {
 	const { name, file, save, cancel, upload, writeName } = useFontsUpload()
-	const ctx = useAppContext()
 
 	return (
 		<Stack h='100%'>
 			<Group mt='xs' justify='space-between'>
 				Шрифты
-				<CloseButton onClick={() => ctx?.setFontFamilyFlag(false)} />
+				<CloseButton onClick={() => storeApp?.setFontFamilyFlag(false)} />
 			</Group>
 			{file ? (
 				<Stack>

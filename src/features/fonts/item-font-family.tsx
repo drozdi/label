@@ -1,15 +1,14 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { histroyAppend } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
-import { useAppContext } from '../context'
 
 import { Item } from '../../shared/ui'
 
 export const ItemFontFamily = observer(({ font }) => {
 	const { current } = storeTemplate
-	const ctx = useAppContext()
 	const [oldId] = useState(current?.font_id)
 	const handleMouseOver = () => {
 		storeTemplate.setFontId(font.id)
@@ -23,7 +22,7 @@ export const ItemFontFamily = observer(({ font }) => {
 			storeTemplate.objects,
 			`Шрифт "${current?.name}" - ${storeFonts.findById(font.id)?.name}`
 		)
-		ctx?.setFontFamilyFlag(false)
+		storeApp?.setFontFamilyFlag(false)
 	}
 	return (
 		<Item

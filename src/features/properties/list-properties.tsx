@@ -7,6 +7,7 @@ import {
 	TbBaselineDensitySmall,
 	TbX,
 } from 'react-icons/tb'
+import { storeApp } from '../../entites/app/store'
 import {
 	labelsHumanReadable,
 	labelsTextAlign,
@@ -17,7 +18,6 @@ import {
 } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
-import { useAppContext } from '../context'
 import { ItemAction } from './item-action'
 import { ItemEditable } from './item-editable'
 import { ItemNumber } from './item-number'
@@ -30,7 +30,6 @@ export const ListProperties = observer(() => {
 	if (!current) {
 		return 'Нужно выбрать елемент'
 	}
-	const ctx = useAppContext()
 	const properties = current.properties || []
 	const allowProp = (prop: string) => {
 		return properties.includes(prop)
@@ -228,7 +227,7 @@ export const ListProperties = observer(() => {
 					label='Шрифт:'
 					value={current.fontFamily}
 					onClick={() => {
-						ctx.setFontFamilyFlag(true)
+						storeApp.setFontFamilyFlag(true)
 					}}
 				/>
 			)}
@@ -237,7 +236,10 @@ export const ListProperties = observer(() => {
 					type={current?.type === 'block' ? 'textarea' : 'text'}
 					edit
 					icon={
-						<ActionIcon radius={0} onClick={() => ctx.setVariableFlag(true)}>
+						<ActionIcon
+							radius={0}
+							onClick={() => storeApp.setVariableFlag(true)}
+						>
 							<TbBaselineDensitySmall />
 						</ActionIcon>
 					}
@@ -290,7 +292,7 @@ export const ListProperties = observer(() => {
 					label='Изображение:'
 					value={current.imageName}
 					onClick={() => {
-						ctx.setImageFlag(true)
+						storeApp.setImageFlag(true)
 					}}
 				/>
 			)}

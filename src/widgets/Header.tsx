@@ -8,6 +8,7 @@ import {
 	useMantineColorScheme,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { observer } from 'mobx-react-lite'
 import {
 	TbArrowDown,
 	TbArrowLeft,
@@ -18,21 +19,20 @@ import {
 	TbSettings,
 	TbSun,
 } from 'react-icons/tb'
-import { useAppContext } from '../features/context'
+import { storeApp } from '../entites/app/store'
 import { ManagerFontFamily } from '../features/fonts/manager-font-family'
 import { HeaderMain } from '../features/header/header-main'
 import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
 import { ManagerImages } from '../features/images/manager-images'
 
-export function Header() {
-	const ctx = useAppContext()
+export const Header = observer(() => {
 	const {
 		loadTemplateFlag,
 		settingsFlag,
 		managerFontFamilyFlag,
 		managerImagesFlag,
-	} = ctx
+	} = storeApp
 	const [openedInfo, info] = useDisclosure(false)
 	const { setColorScheme } = useMantineColorScheme()
 	const computedColorScheme = useComputedColorScheme('light', {
@@ -45,7 +45,7 @@ export function Header() {
 			<Group>
 				<Popover
 					opened={managerFontFamilyFlag}
-					onChange={ctx.setManagerFontFamilyFlag}
+					onChange={v => storeApp.setManagerFontFamilyFlag(v)}
 					withOverlay
 					width={600}
 				>
@@ -54,7 +54,7 @@ export function Header() {
 							variant='outline'
 							color={managerFontFamilyFlag ? 'lime' : ''}
 							onClick={() =>
-								ctx.setManagerFontFamilyFlag(!managerFontFamilyFlag)
+								storeApp.setManagerFontFamilyFlag(!managerFontFamilyFlag)
 							}
 						>
 							Шрифты
@@ -66,7 +66,7 @@ export function Header() {
 				</Popover>
 				<Popover
 					opened={managerImagesFlag}
-					onChange={ctx.setManagerImagesFlag}
+					onChange={v => storeApp.setManagerImagesFlag(v)}
 					withOverlay
 					width={600}
 				>
@@ -74,7 +74,7 @@ export function Header() {
 						<Button
 							variant='outline'
 							color={managerImagesFlag ? 'lime' : ''}
-							onClick={() => ctx.setManagerImagesFlag(!managerImagesFlag)}
+							onClick={() => storeApp.setManagerImagesFlag(!managerImagesFlag)}
 						>
 							Изображения
 						</Button>
@@ -87,7 +87,7 @@ export function Header() {
 			<Group>
 				<ActionIcon
 					color={settingsFlag ? 'lime' : ''}
-					onClick={() => ctx.setSettingsFlag(!settingsFlag)}
+					onClick={() => storeApp.setSettingsFlag(!settingsFlag)}
 				>
 					<TbSettings />
 				</ActionIcon>
@@ -149,4 +149,4 @@ export function Header() {
 			</Group>
 		</Group>
 	)
-}
+})

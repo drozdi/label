@@ -1,8 +1,8 @@
 import { Box, Button, ScrollArea, Stack, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
-import { useAppContext } from '../features/context'
 import { ContainerDataMatrix } from '../features/data-matrix/container-data-matrix'
 import { ContainerElement } from '../features/elements/container-element'
 import { ContainerFontFamily } from '../features/fonts/container-font-family'
@@ -16,8 +16,7 @@ import { ToolbarTools } from '../features/toolbars/tools/toolbar-tools'
 import { ContainerVariable } from '../features/variables/container-variable'
 
 export const Editor = observer(() => {
-	const ctx = useAppContext()
-	const { fontFamilyFlag, variableFlag, imageFlag, dataMatrixFlag } = ctx
+	const { fontFamilyFlag, variableFlag, imageFlag, dataMatrixFlag } = storeApp
 	return (
 		<>
 			<LabelTolbar />
@@ -47,7 +46,7 @@ export const Editor = observer(() => {
 					<Stack justify='space-between'>
 						{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
 						<Box>
-							<Button fullWidth onClick={() => ctx.setJsonCodeFlag(true)}>
+							<Button fullWidth onClick={() => storeApp.setJsonCodeFlag(true)}>
 								JsonCode
 							</Button>
 						</Box>

@@ -1,15 +1,14 @@
 import { Modal, Tabs } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { useAppContext } from '../context'
+import { storeApp } from '../../entites/app/store'
 import { AppSettings } from './app-settings'
 import { PrinterSettings } from './printer-settings'
 
 export const Settings = observer(() => {
-	const ctx = useAppContext()
 	return (
 		<Modal
-			opened={ctx.settingsFlag}
-			onClose={() => ctx.setSettingsFlag(false)}
+			opened={storeApp.settingsFlag}
+			onClose={() => storeApp.setSettingsFlag(false)}
 			title='Настройки'
 			size='xl'
 		>

@@ -2,9 +2,9 @@ import { Button, Stack } from '@mantine/core'
 import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useRef } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { minMax } from '../../shared/utils'
-import { useAppContext } from '../context'
 import classes from './element.module.css'
 import { resizeObject } from './utils/resize'
 
@@ -26,7 +26,6 @@ export const Element = observer(
 			return ''
 		}
 		const refParent = useRef<HTMLDivElement>(null)
-		const ctx = useAppContext()
 		const style = useMemo(
 			() => ({
 				...object.style?.(scale, refParent.current),
@@ -54,9 +53,9 @@ export const Element = observer(
 				}
 			}
 
-			ctx?.setFontFamilyFlag?.(false)
-			ctx?.setVariableFlag?.(false)
-			ctx?.setImageFlag?.(false)
+			storeApp?.setFontFamilyFlag?.(false)
+			storeApp?.setVariableFlag?.(false)
+			storeApp?.setImageFlag?.(false)
 		}
 
 		const resize = preview ? [] : (object?.resize as Array<'s' | 'e' | 'se'>)
