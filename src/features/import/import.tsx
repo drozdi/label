@@ -143,7 +143,7 @@ export const Import = observer(() => {
 				'BOX',
 				'BAR',
 			].forEach(v => {
-				const reg = new RegExp(`^${v}`)
+				const reg = new RegExp(`^${v}\\s{1,}`)
 				if (reg.test(line)) {
 					this[`parse${v}`]?.(line.replace(reg, ''))
 				}
@@ -516,8 +516,6 @@ export const Import = observer(() => {
 					let s = parseSplit(arr[i].replace(/^Q/, ''))
 					s[0] && storeTemplate.changeHeight(parseInt(s[0], 10))
 					s[1] && storeTemplate.changeGap(parseInt(s[1], 10))
-				} else if (/^H/.test(arr[i])) {
-					storeTemplate.changeHeight(parseInt(arr[i].replace(/^H/, ''), 10))
 				} else if (/^W/.test(arr[i])) {
 					storeTemplate.changeWidth(parseInt(arr[i].replace(/^W/, ''), 10))
 				} else if (/^R/.test(arr[i])) {
