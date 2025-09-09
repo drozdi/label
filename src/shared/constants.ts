@@ -8,6 +8,7 @@ export const CM = 37.09575175750246
 export const MM_QR = 3.999575175750246
 export const STEP = 1 / 12
 export const ROUND = 100
+export const VICINITY = 2
 
 export const VERSION = '2.0.0'
 

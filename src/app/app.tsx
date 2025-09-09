@@ -6,6 +6,7 @@ import { storeHistory } from '../entites/history/store'
 import { storeTemplate } from '../entites/template/store'
 import { AppContextProvider } from '../features/context'
 import { Import } from '../features/import/import'
+import { JsonCode } from '../features/json-code/json-code'
 import { Preview } from '../features/preview/preview'
 import { Settings } from '../features/settings/setting'
 import { Editor } from '../widgets/Editor'
@@ -28,6 +29,7 @@ export const App = observer(() => {
 	const [managerFontFamilyFlag, setManagerFontFamilyFlag] =
 		useState<boolean>(false)
 	const [managerImagesFlag, setManagerImagesFlag] = useState<boolean>(false)
+	const [jsonCodeFlag, setJsonCodeFlag] = useState<boolean>(false)
 
 	const context = useMemo<AppContext>(
 		() => ({
@@ -57,6 +59,8 @@ export const App = observer(() => {
 			setManagerFontFamilyFlag,
 			managerImagesFlag,
 			setManagerImagesFlag,
+			jsonCodeFlag,
+			setJsonCodeFlag,
 		}),
 		[
 			fontFamilyFlag,
@@ -72,6 +76,7 @@ export const App = observer(() => {
 			serverError,
 			managerFontFamilyFlag,
 			managerImagesFlag,
+			jsonCodeFlag,
 		]
 	)
 
@@ -114,6 +119,7 @@ export const App = observer(() => {
 			<Settings />
 			<Import />
 			<Preview />
+			<JsonCode />
 		</AppContextProvider>
 	)
 })

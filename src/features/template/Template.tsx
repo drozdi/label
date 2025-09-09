@@ -90,6 +90,8 @@ export const Template = observer(() => {
 						: 0),
 				rotation,
 				clone,
+				offsetX: event.clientX - rect.left,
+				offsetY: event.clientY - rect.top,
 			})
 		})
 
