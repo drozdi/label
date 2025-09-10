@@ -5,6 +5,7 @@ import { storeApp } from '../entites/app/store'
 import { requestFontsList } from '../entites/fonts/api'
 import { storeHistory } from '../entites/history/store'
 import { storeTemplate } from '../entites/template/store'
+import { AutoSave } from '../features/auto-save/auto-save'
 import { Import } from '../features/import/import'
 import { JsonCode } from '../features/json-code/json-code'
 import { Preview } from '../features/preview/preview'
@@ -44,6 +45,7 @@ export const App = observer(() => {
 					</>
 				)}
 			</Stack>
+			<AutoSave />
 			<Settings />
 			<Import />
 			<Preview />

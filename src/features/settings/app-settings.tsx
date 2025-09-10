@@ -1,12 +1,14 @@
 import { Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { URL_API, VERSION } from '../../shared/constants'
 import { ItemEditable } from './item-editable'
 export const AppSettings = observer(() => {
 	const setThemeFunc = async () => {}
 	const [apiHostFlag, setApiHostFlag] = useState(false)
 	const [apiPortFlag, setApiPortFlag] = useState(false)
+	const [timeAutoSave, setTimeAutoSave] = useState(storeApp.timeAutoSave)
 	const [apiHost, setApiHost] = useState(
 		localStorage.getItem('api.host') || URL_API
 	)
@@ -35,6 +37,7 @@ export const AppSettings = observer(() => {
 		localStorage.setItem('api.host', newApiHost)
 		window.location.reload()
 	}
+
 	return (
 		<Stack>
 			<ItemEditable
@@ -52,6 +55,14 @@ export const AppSettings = observer(() => {
 				value={apiSplit[1]}
 				onChange={value => handleApiHost(1, value)}
 				onClick={() => setApi()}
+			/>
+			<ItemEditable
+				editable
+				type='text'
+				label='Время автосохранения (с):'
+				value={timeAutoSave}
+				onChange={value => setTimeAutoSave(value)}
+				onClick={() => storeApp.setTimeAutoSave(timeAutoSave)}
 			/>
 			<ItemEditable type='text' label='Версия:' value={VERSION} />
 		</Stack>

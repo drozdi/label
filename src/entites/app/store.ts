@@ -1,6 +1,9 @@
 import { makeAutoObservable } from 'mobx'
+import { KEY_TIME_AUTO_SAVE } from '../../shared/constants'
 
 class StoreApp {
+	timeAutoSave = Number(localStorage.getItem(KEY_TIME_AUTO_SAVE) || 10)
+	showAppLoader = true
 	fontFamilyFlag = false
 	variableFlag = false
 	imageFlag = false
@@ -18,6 +21,19 @@ class StoreApp {
 	errorName = false
 	constructor() {
 		makeAutoObservable(this)
+	}
+	async silent(fn: Function) {
+		const old = this.showAppLoader
+		this.showAppLoader = false
+		await fn?.()
+		this.showAppLoader = old
+	}
+	setShowAppLoader(val: boolean) {
+		this.showAppLoader = val
+	}
+	setTimeAutoSave(val: number) {
+		localStorage.setItem(KEY_TIME_AUTO_SAVE, val.toString())
+		this.timeAutoSave = Number(val)
 	}
 	setFontFamilyFlag(val: boolean) {
 		this.fontFamilyFlag = val

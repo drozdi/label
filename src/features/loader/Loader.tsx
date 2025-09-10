@@ -1,7 +1,12 @@
 import { LoadingOverlay } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
+import { storeApp } from '../../entites/app/store'
 import classes from './spin.module.css'
 
-export function Loader({ visible }: { visible: boolean }) {
+export const Loader = observer(({ visible }: { visible: boolean }) => {
+	if (!storeApp.showAppLoader) {
+		return ''
+	}
 	return (
 		<LoadingOverlay
 			visible={visible}
@@ -10,4 +15,4 @@ export function Loader({ visible }: { visible: boolean }) {
 			loaderProps={{ children: <div className={classes.spinner}></div> }}
 		/>
 	)
-}
+})
