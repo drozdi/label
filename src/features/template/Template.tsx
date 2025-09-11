@@ -4,7 +4,7 @@ import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { serviceTemplate } from '../../services/template/service'
-import { STEP } from '../../shared/constants'
+import { SNAP_THRESHOLD, STEP } from '../../shared/constants'
 import { minMax, round } from '../../shared/utils'
 import { Element } from '../element/element'
 import classes from '../element/element.module.css'
@@ -36,6 +36,8 @@ export const Template = observer(() => {
 		zIndex: 1000,
 		border: '1px dashed #00000077',
 	})
+	const verticalLine = useRef<HTMLElement>(null)
+	const horizontalLine = useRef<HTMLElement>(null)
 
 	const sPosition = useRef<{
 		minX?: number
@@ -60,17 +62,45 @@ export const Template = observer(() => {
 			maxY: number
 			top: number
 			left: number
+			width: number
+			height: number
 			rotation: number
 			clone: HTMLElement
+			element: HTMLElement
 			offsetX: number
 			offsetY: number
 		}[]
 	>([])
 
+	const guideElements = useRef<HTMLElement[]>([])
+
+	SNAP_THRESHOLD
 	const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
 		const element = (event.target as HTMLElement).closest(`.${classes.element}`)
 		if (!isDrag.current && element instanceof HTMLDivElement) {
 			storeTemplate.setActiveObject(element.id ?? 0)
+		}
+	}, [])
+	const showVerticalLine = useCallback((left: number) => {
+		if (verticalLine.current) {
+			verticalLine.current.style.left = `${left - 1}px`
+			verticalLine.current.style.display = 'block'
+		}
+	}, [])
+	const showHorizontalLine = useCallback((top: number) => {
+		if (horizontalLine.current) {
+			horizontalLine.current.style.top = `${top - 1}px`
+			horizontalLine.current.style.display = 'block'
+		}
+	}, [])
+	const hideVerticalLine = useCallback(() => {
+		if (verticalLine.current) {
+			verticalLine.current.style.display = 'none'
+		}
+	}, [])
+	const hideHorizontalLine = useCallback(() => {
+		if (horizontalLine.current) {
+			horizontalLine.current.style.display = 'none'
 		}
 	}, [])
 
@@ -79,6 +109,10 @@ export const Template = observer(() => {
 			rectParent.current = (
 				refTemplate.current as HTMLElement
 			)?.getBoundingClientRect()
+
+			guideElements.current = storeTemplate.inverseIds.map(
+				id => document.getElementById(id) as HTMLElement
+			)
 
 			storeTemplate.selectedObjects.forEach(({ id, rotation }) => {
 				const element = document.getElementById(id) as HTMLElement
@@ -111,7 +145,10 @@ export const Template = observer(() => {
 						(rotation === 90 || rotation === 270
 							? (rect?.height - rect?.width) / 2
 							: 0),
+					width: rect.width,
+					height: rect.height,
 					rotation,
+					element,
 					clone,
 					offsetX: event.clientX - rect.left,
 					offsetY: event.clientY - rect.top,
@@ -153,19 +190,120 @@ export const Template = observer(() => {
 		event.preventDefault()
 		event.stopPropagation()
 
-		const dx =
+		let dx =
 			minMax(
 				event.clientX,
 				sPosition.current?.minX ?? 0,
 				sPosition.current?.maxX ?? window.innerWidth
 			) - (sPosition.current?.x ?? 0)
 
-		const dy =
+		let dy =
 			minMax(
 				event.clientY,
 				sPosition.current?.minY ?? 0,
 				sPosition.current?.maxY ?? window.innerHeight
 			) - (sPosition.current?.y ?? 0)
+
+		guideElements.current.forEach(guide => {
+			const guideRect = guide.getBoundingClientRect()
+
+			const guideLeft = guideRect.left - rectParent.current.left
+			const guideCenterX = guideLeft + guide.offsetWidth / 2
+			const guideRight = guideLeft + guide.offsetWidth
+
+			const guideTop = guideRect.top - rectParent.current.top
+			const guideCenterY = guideTop + guide.offsetHeight / 2
+			const guideBottom = guideTop + guide.offsetHeight
+
+			cloneElement.current.forEach(clone => {
+				let newX = event.clientX - rectParent.current.left - clone.offsetX
+				let newY = event.clientY - rectParent.current.top - clone.offsetY
+
+				if (Math.abs(newX - guideLeft) < SNAP_THRESHOLD) {
+					dx = guideLeft - clone.left
+					showVerticalLine(guideLeft)
+				} else if (Math.abs(newX - guideCenterX) < SNAP_THRESHOLD) {
+					dx = guideCenterX - clone.left
+					showVerticalLine(guideCenterX)
+				} else if (Math.abs(newX - guideRight) < SNAP_THRESHOLD) {
+					dx = guideRight - clone.left
+					showVerticalLine(guideRight)
+				} else if (
+					Math.abs(newX + clone.width / 2 - guideLeft) < SNAP_THRESHOLD
+				) {
+					dx = guideLeft - clone.width / 2 - clone.left
+					showVerticalLine(guideLeft)
+				} else if (
+					Math.abs(newX + clone.width / 2 - guideCenterX) < SNAP_THRESHOLD
+				) {
+					dx = guideCenterX - clone.width / 2 - clone.left
+					showVerticalLine(guideCenterX)
+				} else if (
+					Math.abs(newX + clone.width / 2 - guideRight) < SNAP_THRESHOLD
+				) {
+					dx = guideRight - clone.width / 2 - clone.left
+					showVerticalLine(guideRight)
+				} else if (Math.abs(newX + clone.width - guideLeft) < SNAP_THRESHOLD) {
+					dx = guideLeft - clone.width - clone.left
+					showVerticalLine(guideLeft)
+				} else if (
+					Math.abs(newX + clone.width - guideCenterX) < SNAP_THRESHOLD
+				) {
+					dx = guideCenterX - clone.width - clone.left
+					showVerticalLine(guideCenterX)
+				} else if (Math.abs(newX + clone.width - guideRight) < SNAP_THRESHOLD) {
+					dx = guideRight - clone.width - clone.left
+					showVerticalLine(guideRight)
+				} else {
+					hideVerticalLine()
+				}
+
+				if (Math.abs(newY - guideTop) < SNAP_THRESHOLD) {
+					dy = guideTop - clone.top
+					showHorizontalLine(guideTop)
+				} else if (Math.abs(newY - guideCenterY) < SNAP_THRESHOLD) {
+					dy = guideCenterY - clone.top
+					showHorizontalLine(guideCenterY)
+				} else if (Math.abs(newY - guideBottom) < SNAP_THRESHOLD) {
+					dy = guideBottom - clone.top
+					showHorizontalLine(guideBottom)
+				} else if (
+					Math.abs(newY + clone.height / 2 - guideTop) < SNAP_THRESHOLD
+				) {
+					dy = guideTop - clone.height / 2 - clone.top
+					showHorizontalLine(guideTop)
+				} else if (
+					Math.abs(newY + clone.height / 2 - guideCenterY) < SNAP_THRESHOLD
+				) {
+					dy = guideCenterY - clone.height / 2 - clone.top
+					showHorizontalLine(guideCenterY)
+				} else if (
+					Math.abs(newY + clone.height / 2 - guideBottom) < SNAP_THRESHOLD
+				) {
+					dy = guideBottom - clone.height / 2 - clone.top
+					showHorizontalLine(guideBottom)
+				} else if (Math.abs(newY + clone.height - guideTop) < SNAP_THRESHOLD) {
+					dy = guideTop - clone.width - clone.left
+					showHorizontalLine(guideTop)
+				} else if (
+					Math.abs(newY + clone.height - guideCenterY) < SNAP_THRESHOLD
+				) {
+					dy = guideCenterY - clone.height - clone.left
+					showHorizontalLine(guideCenterY)
+				} else if (
+					Math.abs(newY + clone.height - guideBottom) < SNAP_THRESHOLD
+				) {
+					dy = guideBottom - clone.height - clone.left
+					showHorizontalLine(guideBottom)
+				} else {
+					hideHorizontalLine()
+				}
+			})
+
+			//console.log(guideLeft, guideTop)
+			//showVerticalLine(guideLeft)
+			//showHorizontalLine(guideTop)
+		})
 
 		cloneElement.current.forEach(item => {
 			item.clone.style.left = item.left + dx + 'px'
@@ -195,6 +333,9 @@ export const Template = observer(() => {
 
 		cloneElement.current.forEach(item => item.clone?.remove())
 
+		hideVerticalLine()
+		hideHorizontalLine()
+
 		sPosition.current = {
 			x: 0,
 			y: 0,
@@ -219,7 +360,6 @@ export const Template = observer(() => {
 		(element: HTMLElement, rect: Record<string, any>) => {
 			const elementRect = element.getBoundingClientRect()
 
-			// Приводим координаты к относительным относительно контейнера
 			const elemX = elementRect.left - rectParent.current.left
 			const elemY = elementRect.top - rectParent.current.top
 
@@ -263,9 +403,6 @@ export const Template = observer(() => {
 		const items = (refTemplate.current as HTMLElement).querySelectorAll(
 			`.${classes.element}`
 		)
-		// if (!items.length) {
-		// 	return
-		// }
 		const x = minMax(
 			event.clientX,
 			rectParent.current.left,
@@ -501,6 +638,29 @@ export const Template = observer(() => {
 			>
 				<BackgroundBg />
 				<div style={rectSelected}></div>
+				<div
+					ref={verticalLine}
+					style={{
+						position: 'absolute',
+						display: 'none',
+						width: '1px',
+						top: 0,
+						height: '100%',
+						backgroundColor: '#00000077',
+					}}
+				></div>
+				<div
+					ref={horizontalLine}
+					style={{
+						position: 'absolute',
+						display: 'none',
+						height: '1px',
+						left: 0,
+						width: '100%',
+						backgroundColor: '#00000077',
+					}}
+				></div>
+
 				{objects.map((object: Record<string, any>) => (
 					<Element
 						key={object.id}

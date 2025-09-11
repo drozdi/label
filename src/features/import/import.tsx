@@ -540,8 +540,11 @@ export const Import = observer(() => {
 			while (i < count) {
 				let obj = genObj()
 				let e = false
-				if (/^AT.?,/.test(lines[i])) {
+				if (/^AT[^,]*,/.test(lines[i])) {
 					this.textElement(obj, lines[i].replace(/^AT/, ''))
+					e = true
+				} else if (/^A[^,]*,/.test(lines[i])) {
+					this.textElementS(obj, lines[i])
 					e = true
 				} else if (/^XRB/.test(lines[i])) {
 					this.datamatrixElement(
@@ -579,13 +582,13 @@ export const Import = observer(() => {
 		},
 		textElement(obj: Record<string, any>, str: string) {
 			obj.name = 'text'
-			obj.typeObj = 'text'
+			obj.type = 'text'
 			obj.width = 'fit-content'
 			obj.height = 'fit-content'
 			obj.font_id = storeFonts.id
 
 			const res = regParse(
-				/(?:AT)?(?<t>.*)?\s*,\s*(?<x>[0-9]*)\s*,\s*(?<y>[0-9]*)\s*,\s*(?<w>[0-9]*)\s*,\s*(?<h>[0-9]*)\s*,\s*(?<g>[0-9]*)\s*,\s*(?<r>[0123])(?<i>[BTUELH]*)?,\s*(?<d>[01])\s*,\s*(?<m>[0-9.]*)\s*,\s*(?<data>.*)\s*/,
+				/(?:AT)?(?<t>[^,]*)?,(?<x>[0-9]*),(?<y>[0-9]*),(?<w>[0-9]*),(?<h>[0-9]*),(?<g>[0-9]*),(?<r>[0123])(?<i>[BTUELH]*)?,(?<d>[01]),(?<m>[0-9.]*),(?<data>.*)\s*/,
 				str,
 				{
 					t: '',
@@ -601,8 +604,6 @@ export const Import = observer(() => {
 				}
 			)
 
-			console.log(res)
-
 			obj.pos_x = res.x / storeTemplate.dpi
 			obj.pos_y = res.y / storeTemplate.dpi
 			obj.rotation =
@@ -613,9 +614,67 @@ export const Import = observer(() => {
 				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
 			)
 		},
+		textElementS(obj: Record<string, any>, str: string) {
+			obj.name = 'text'
+			obj.type = 'text'
+			obj.width = 'fit-content'
+			obj.height = 'fit-content'
+			obj.font_size = 12
+			obj.font_id = storeFonts.id
+
+			const res = regParse(
+				/(?:A)?(?<t>[^,]*)?,(?<x>[0-9]*),(?<y>[0-9]*),(?<w>[0-9]*),(?<h>[0-9]*),(?<g>[0-9]*),(?<r>[01234567]),(?<data>.*)\s*/,
+				str,
+				{
+					t: '',
+					x: 0,
+					y: 0,
+					w: 0,
+					h: 0,
+					g: 0,
+					r: 0,
+					m: 0,
+				}
+			)
+			res.t = (res.t || '').toUpperCase()
+			obj.font_size =
+				res.t === 'A'
+					? 6
+					: res.t === 'B'
+						? 8
+						: res.t === 'C'
+							? 10
+							: res.t === 'D'
+								? 12
+								: res.t === 'E'
+									? 14
+									: res.t === 'F'
+										? 18
+										: res.t === 'G'
+											? 24
+											: res.t === 'H'
+												? 30
+												: 12
+
+			obj.pos_x = res.x / storeTemplate.dpi
+			obj.pos_y = res.y / storeTemplate.dpi
+			obj.rotation =
+				res.r === '3' || res.r === '7'
+					? 270
+					: res.r === '2' || res.r === '6'
+						? 180
+						: res.r === '1' || res.r === '5'
+							? 90
+							: 0
+			obj.data = res.data
+
+			serviceNotifications.alert(
+				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+			)
+		},
 		blockElement(obj: Record<string, any>, str: string) {
 			obj.name = 'text'
-			obj.typeObj = 'text'
+			obj.type = 'text'
 			obj.font_id = storeFonts.id
 
 			const res = regParse(

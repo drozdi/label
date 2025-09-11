@@ -24,12 +24,7 @@ import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
 
 export const Header = observer(() => {
-	const {
-		loadTemplateFlag,
-		settingsFlag,
-		managerFontFamilyFlag,
-		managerImagesFlag,
-	} = storeApp
+	const { loadTemplateFlag, settingsFlag } = storeApp
 	const [openedInfo, info] = useDisclosure(false)
 	const { setColorScheme } = useMantineColorScheme()
 	const computedColorScheme = useComputedColorScheme('light', {

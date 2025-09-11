@@ -89,6 +89,21 @@ class StoreTemplate {
 	get selectedObjects() {
 		return this.selected.map(id => this.findById(id))
 	}
+	get inverseIds() {
+		return [
+			...new Set(this.objects.map(o => String(o.id))).difference(
+				new Set(this.selected)
+			),
+		]
+	}
+	get inverseIndex() {
+		return this.inverseIds.map(id =>
+			this.objects.findIndex(object => String(object.id) === String(id))
+		)
+	}
+	get inverseObjects() {
+		return this.inverseIds.map(id => this.findById(id))
+	}
 
 	setActiveObject(id: number | string) {
 		this.currId = String(id)
