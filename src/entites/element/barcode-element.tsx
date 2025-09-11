@@ -28,6 +28,9 @@ export class BarcodeElement extends BaseElement {
 		}
 		return props
 	}
+	get multiProperties() {
+		return ['enabled', 'rotation']
+	}
 	render(scale = 1, preview = false): React.ReactNode {
 		const prefix = preview ? '_preview' : ''
 		const style = {

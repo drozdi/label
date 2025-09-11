@@ -3,7 +3,7 @@ import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { DEF_TEMPLATE } from '../../shared/constants'
-import { debounce, round } from '../../shared/utils'
+import { debounce, genId, round } from '../../shared/utils'
 import { serviceNotifications } from '../notifications/service'
 
 const histroyAppendDebounce = debounce((...args: any[]) => {
@@ -15,6 +15,13 @@ const histroyAppend = (...args: any[]) => {
 }
 
 export const serviceTemplate = {
+	copyStack: [],
+	indexPaste: 1,
+	copyOffset: 5,
+	clear() {
+		this.copyStack = []
+		;((this.indexPaste = 1), (this.copyOffset = 5))
+	},
 	_moveX(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {
 			if (index > -1) {
@@ -69,6 +76,26 @@ export const serviceTemplate = {
 		const name = storeTemplate.current?.name
 		storeTemplate.current?.setName(v)
 		histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
+	},
+
+	copy() {
+		this.copyStack = storeTemplate.selectedObjects.map(object =>
+			object.getProps()
+		)
+		this.indexPaste = 1
+	},
+	paste() {
+		if (this.copyStack.length > 0) {
+			this.copyStack.forEach(props => {
+				storeTemplate.addObject({
+					...props,
+					id: genId(),
+					pos_x: props.pos_x + this.copyOffset * this.indexPaste,
+					pos_y: props.pos_y + this.copyOffset * this.indexPaste,
+				})
+			})
+			this.indexPaste += 1
+		}
 	},
 
 	async handleSave() {

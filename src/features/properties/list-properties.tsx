@@ -1,5 +1,6 @@
 import { ActionIcon, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { useCallback, useMemo } from 'react'
 import {
 	TbAlignCenter,
 	TbAlignLeft,
@@ -26,15 +27,45 @@ import { ItemSwitch } from './item-switch'
 import { ItemText } from './item-text'
 
 export const ListProperties = observer(() => {
-	const { current } = storeTemplate
+	const current = storeTemplate.selectedObjects[0] || undefined
 	if (!current) {
 		return 'Нужно выбрать елемент'
 	}
-	const properties = current.properties || []
-	const allowProp = (prop: string) => {
-		return properties.includes(prop)
-	}
+	const properties = useMemo<never[]>(() => {
+		if (storeTemplate.isOne()) {
+			return storeTemplate.selectedObjects[0].properties
+		}
+		let props = new Set([
+			'name',
+			'text_align',
+			'human_readable',
+			'radius',
+			'line_thickness',
+			'enabled',
+			'type',
+			'pos_x',
+			'pos_y',
+			'width',
+			'height',
+			'rotation',
+			'code_type',
+			'font_size',
+			'font_id',
+			'image_id',
+			'data',
+		])
+		storeTemplate.selectedObjects.forEach(o => {
+			props = props.intersection(new Set(o.multiProperties))
+		})
+		return [...props]
+	}, [storeTemplate.selected])
 
+	const allowProp = useCallback(
+		(prop: string) => {
+			return properties.includes(prop)
+		},
+		[properties]
+	)
 	return (
 		<Stack maw='auto' gap={0}>
 			{allowProp('enabled') && (
@@ -181,7 +212,7 @@ export const ListProperties = observer(() => {
 					edit
 					label='Размер:'
 					value={current.font_size}
-					unit='mm'
+					unit='pt'
 					onChange={v => {
 						storeTemplate.setFontSize(v)
 						histroyAppendDebounce(

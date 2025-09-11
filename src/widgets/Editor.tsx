@@ -94,12 +94,8 @@ export const Editor = observer(() => {
 									<Text c='dimmed' size='xl'>
 										Нет ни одного объекта
 									</Text>
-								) : storeTemplate.isOne() ? (
+								) : storeTemplate.isChoosed() ? (
 									<ListProperties />
-								) : storeTemplate.selected.length > 1 ? (
-									<Text c='dimmed' size='xl'>
-										Выбрано несколько объектов
-									</Text>
 								) : (
 									<Text c='dimmed' size='xl'>
 										Не один объект не выбран

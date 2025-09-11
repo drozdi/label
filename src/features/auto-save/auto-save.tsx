@@ -41,7 +41,7 @@ export const AutoSave = observer(() => {
 			close()
 		}
 	}, [storeApp.timeAutoSave, storeTemplate.id])
-	console.log(storeApp.timeAutoSave)
+
 	return (
 		<Dialog opened={opened} w={200} onClose={() => close()} withCloseButton>
 			<Group c='green' ta='center'>

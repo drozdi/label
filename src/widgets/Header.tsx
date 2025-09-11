@@ -1,6 +1,5 @@
 import {
 	ActionIcon,
-	Button,
 	Group,
 	List,
 	Popover,
@@ -20,11 +19,9 @@ import {
 	TbSun,
 } from 'react-icons/tb'
 import { storeApp } from '../entites/app/store'
-import { ManagerFontFamily } from '../features/fonts/manager-font-family'
 import { HeaderMain } from '../features/header/header-main'
 import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
-import { ManagerImages } from '../features/images/manager-images'
 
 export const Header = observer(() => {
 	const {
@@ -42,48 +39,6 @@ export const Header = observer(() => {
 		<Group justify='space-between' p='xs'>
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{!loadTemplateFlag && <HeaderPrint />}
-			<Group>
-				<Popover
-					opened={managerFontFamilyFlag}
-					onChange={v => storeApp.setManagerFontFamilyFlag(v)}
-					withOverlay
-					width={600}
-				>
-					<Popover.Target>
-						<Button
-							variant='outline'
-							color={managerFontFamilyFlag ? 'lime' : ''}
-							onClick={() =>
-								storeApp.setManagerFontFamilyFlag(!managerFontFamilyFlag)
-							}
-						>
-							Шрифты
-						</Button>
-					</Popover.Target>
-					<Popover.Dropdown>
-						<ManagerFontFamily />
-					</Popover.Dropdown>
-				</Popover>
-				<Popover
-					opened={managerImagesFlag}
-					onChange={v => storeApp.setManagerImagesFlag(v)}
-					withOverlay
-					width={600}
-				>
-					<Popover.Target>
-						<Button
-							variant='outline'
-							color={managerImagesFlag ? 'lime' : ''}
-							onClick={() => storeApp.setManagerImagesFlag(!managerImagesFlag)}
-						>
-							Изображения
-						</Button>
-					</Popover.Target>
-					<Popover.Dropdown>
-						<ManagerImages />
-					</Popover.Dropdown>
-				</Popover>
-			</Group>
 			<Group>
 				<ActionIcon
 					color={settingsFlag ? 'lime' : ''}
@@ -107,6 +62,13 @@ export const Header = observer(() => {
 							<List.Item>"Del" - удалить выбранные элемент</List.Item>
 							<List.Item>"Ctrl" + "z" - Отменить последнее действие</List.Item>
 							<List.Item>"Ctrl" + "y" - Вернуть отменённое действие</List.Item>
+							<List.Item>"Ctrl" + "s" - Сохранить шаблон</List.Item>
+							<List.Item>
+								"Ctrl" + "c" - Копировать выбранные элементы
+							</List.Item>
+							<List.Item>
+								"Ctrl" + "v" - Вставить скопированые элементы
+							</List.Item>
 							<List.Item>
 								"<TbArrowDown />,
 								<TbArrowUp />,

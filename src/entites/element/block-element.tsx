@@ -27,6 +27,9 @@ export class BlockElement extends BaseElement {
 			'data',
 		]
 	}
+	get multiProperties() {
+		return ['enabled', 'rotation', 'font_id', 'font_size', 'text_align']
+	}
 	get resize() {
 		return ['e', 's', 'se']
 	}

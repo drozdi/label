@@ -33,7 +33,7 @@ export const HeaderMain = observer(() => {
 			<Button
 				variant='filled'
 				color='green'
-				onClick={serviceTemplate.handleSave}
+				onClick={() => serviceTemplate.handleSave()}
 			>
 				Сохранить
 			</Button>

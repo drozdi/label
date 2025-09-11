@@ -8,7 +8,6 @@ import {
 	TextInput,
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { storeApp } from '../../entites/app/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { Item } from '../../shared/ui'
 import { useFontsUpload } from './hooks/use-fonts-upload'
@@ -17,10 +16,6 @@ export const ManagerFontFamily = observer(() => {
 	const { file, name, save, cancel, upload, writeName } = useFontsUpload()
 	const { list } = storeFonts
 	const handleClick = (id: number) => storeFonts.setId(id)
-	const handleClose = () => {
-		storeApp.setManagerFontFamilyFlag(false)
-		cancel()
-	}
 	const handleRemove = async (id: number) => {
 		await storeFonts.remove(id)
 	}
@@ -46,9 +41,6 @@ export const ManagerFontFamily = observer(() => {
 							</Button>
 						)}
 					</FileButton>
-					<Button variant='default' onClick={handleClose}>
-						Закрыть
-					</Button>
 				</Group>
 			</Group>
 

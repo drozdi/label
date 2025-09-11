@@ -8,7 +8,7 @@ import { storeTemplate } from '../../entites/template/store'
 import { Item } from '../../shared/ui'
 
 export const ItemFontFamily = observer(({ font }) => {
-	const { current } = storeTemplate
+	const current = storeTemplate.selectedObjects[0]
 	const [oldId] = useState(current?.font_id)
 	const handleMouseOver = () => {
 		storeTemplate.setFontId(font.id)
