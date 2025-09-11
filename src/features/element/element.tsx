@@ -2,9 +2,9 @@ import { Button, Stack } from '@mantine/core'
 import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useRef } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { minMax } from '../../shared/utils'
-import { useAppContext } from '../context'
 import classes from './element.module.css'
 import { resizeObject } from './utils/resize'
 
@@ -18,15 +18,14 @@ export const Element = observer(
 		preview,
 		scale = 1,
 	}: {
-		object: object
-		preview: boolean
+		object: Record<string, any>
+		preview?: boolean
 		scale: number
 	}) => {
 		if (preview && !object.enabled) {
 			return ''
 		}
 		const refParent = useRef<HTMLDivElement>(null)
-		const ctx = useAppContext()
 		const style = useMemo(
 			() => ({
 				...object.style?.(scale, refParent.current),
@@ -41,6 +40,7 @@ export const Element = observer(
 			const element = (event.target as HTMLElement).closest(
 				`.${classes.element}`
 			)
+
 			if (element instanceof HTMLDivElement) {
 				event.preventDefault()
 				event.stopPropagation()
@@ -48,20 +48,28 @@ export const Element = observer(
 
 			if (event.ctrlKey) {
 				storeTemplate.selectObject(element?.id as string)
-			} else {
-				if (element instanceof HTMLDivElement) {
-					storeTemplate.setActiveObject(element.id)
-				}
+			} else if (element instanceof HTMLDivElement) {
+				storeTemplate.setActiveObject(element.id)
 			}
 
-			ctx?.setFontFamilyFlag?.(false)
-			ctx?.setVariableFlag?.(false)
-			ctx?.setImageFlag?.(false)
+			storeApp?.setFontFamilyFlag?.(false)
+			storeApp?.setVariableFlag?.(false)
+			storeApp?.setImageFlag?.(false)
 		}
 
 		const resize = preview ? [] : (object?.resize as Array<'s' | 'e' | 'se'>)
-		const sPosition = useRef(null)
-		const cloneElement = useRef(null)
+		const sPosition = useRef<{
+			minX: number
+			maxX: number
+			minY: number
+			maxY: number
+			width: number
+			height: number
+			x: number
+			y: number
+			dir: 's' | 'e' | 'se'
+		}>(null)
+		const cloneElement = useRef<HTMLElement>(null)
 
 		const handleMouseDown = (
 			event: React.MouseEvent,
@@ -72,17 +80,19 @@ export const Element = observer(
 			}
 			const element = (event.target as HTMLElement).closest(
 				`.${classes.element}`
-			)
+			) as HTMLElement
 			if (element instanceof HTMLDivElement) {
 				event.preventDefault()
 				event.stopPropagation()
 				storeTemplate.setActiveObject(element.id)
 			}
 			const elementRect = element.getBoundingClientRect()
-			const parentRect = element.parentNode.getBoundingClientRect()
-			cloneElement.current = element.cloneNode(true)
+			const parentRect = (
+				element.parentNode as HTMLElement
+			).getBoundingClientRect()
+			cloneElement.current = element.cloneNode(true) as HTMLElement
 			cloneElement.current?.classList?.add?.(classes.clone)
-			element.parentNode.appendChild(cloneElement.current)
+			;(element.parentNode as HTMLElement).appendChild(cloneElement.current)
 			sPosition.current = {
 				minX: elementRect.left + 2,
 				maxX: parentRect.right - 2,
@@ -143,14 +153,17 @@ export const Element = observer(
 			}
 
 			if (object.rotation === 90 || object.rotation === 270) {
-				cloneElement.current.style.height = sPosition.current.width + dx + 'px'
-				cloneElement.current.style.width = sPosition.current.height + dy + 'px'
-				cloneElement.current.style.translate = `${-(dy - dx) / 2}px ${
-					(dy - dx) / 2
-				}px`
+				;(cloneElement.current as HTMLElement).style.height =
+					sPosition.current.width + dx + 'px'
+				;(cloneElement.current as HTMLElement).style.width =
+					sPosition.current.height + dy + 'px'
+				;(cloneElement.current as HTMLElement).style.translate =
+					`${-(dy - dx) / 2}px ${(dy - dx) / 2}px`
 			} else {
-				cloneElement.current.style.width = sPosition.current.width + dx + 'px'
-				cloneElement.current.style.height = sPosition.current.height + dy + 'px'
+				;(cloneElement.current as HTMLElement).style.width =
+					sPosition.current.width + dx + 'px'
+				;(cloneElement.current as HTMLElement).style.height =
+					sPosition.current.height + dy + 'px'
 			}
 		}
 		const handleMouseUp = (event: MouseEvent) => {

@@ -33,9 +33,9 @@ class StoreTemplate {
 	selectObject(id: number | string) {
 		id = String(id)
 		if (this.selected.includes(id)) {
-			this.selected = this.selected.filter(item => item !== id)
+			this.selected = this.selected.filter(item => String(item) !== id)
 		} else {
-			this.selected.push(id)
+			this.selected = [...this.selected, id]
 		}
 		if (this.selected.length === 1) {
 			this.currId = this.selected[0]
@@ -89,9 +89,7 @@ class StoreTemplate {
 	get selectedObjects() {
 		return this.selected.map(id => this.findById(id))
 	}
-	getCurrent() {
-		return this.objects[this.currIndex] || undefined
-	}
+
 	setActiveObject(id: number | string) {
 		this.currId = String(id)
 		this.currIndex = this.objects.findIndex(
@@ -227,83 +225,133 @@ class StoreTemplate {
 		}
 		this.direction_y = value
 	}
-	toggleEnabled(id: number) {
-		const index = this.objects.findIndex(object => object.id === id)
-		if (index > -1) {
-			this.objects[index].enabled = !this.objects[index].enabled
-			this.objects[index] = this.objects[index].copy()
-		}
-	}
 
-	setCurrent(object) {
-		if (!object || !this.objects[this.currIndex]) {
-			return
-		}
-		this.objects[this.currIndex] = object.copy()
-	}
 	setName(name: string) {
-		this.current?.setName(name)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setName(name)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setWidth(width: string | number) {
-		this.current?.setWidth(width)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setWidth(width)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setHeight(height: string | number) {
-		this.current?.setHeight(height)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setHeight(height)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setPosX(pos_x: string | number) {
-		this.current?.setPosX(pos_x)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setPosX(pos_x)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setPosY(pos_y: string | number) {
-		this.current?.setPosY(pos_y)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setPosY(pos_y)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setRotation(rotation: string | number) {
-		this.current?.setRotation(rotation)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setRotation(rotation)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setTextAlign(value: string | number) {
-		this.current?.setTextAlign(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setTextAlign(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setFontSize(value: string | number) {
-		this.current?.setFontSize(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setFontSize(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setLineThickness(value: string | number) {
-		this.current?.setLineThickness(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setLineThickness(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setRadius(value: string | number) {
-		this.current?.setRadius(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setRadius(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setEnabled(value: boolean) {
-		this.current?.setEnabled(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setEnabled(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setData(value: string) {
-		this.current?.setData(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setData(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setHumanReadable(value: string | number) {
-		this.current?.setHumanReadable(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setHumanReadable(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setFontId(value: string | number) {
-		this.current?.setFontId(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setFontId(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setImageId(value: string | number) {
-		this.current?.setImageId(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setImageId(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 
 	isOne() {
 		return this.selected.length === 1
+	}
+	isChoosed() {
+		return this.selected.length > 0
 	}
 	isEmpty() {
 		return this.selected.length === 0
@@ -316,6 +364,27 @@ class StoreTemplate {
 			this.deleteObject(id)
 		})
 	}
+	toggleEnabled(id: number) {
+		const index = this.objects.findIndex(object => object.id === id)
+		if (index > -1) {
+			this.objects[index].enabled = !this.objects[index].enabled
+			this.objects[index] = this.objects[index].copy()
+		}
+	}
+	selectedById(id: number, enabled: boolean) {
+		if (enabled) {
+			if (!this.isSelected(id)) {
+				this.selected.push(String(id))
+				this.selected = [...this.selected]
+			}
+		} else {
+			if (this.isSelected(id)) {
+				this.selected.splice(this.selected.indexOf(String(id)), 1)
+				this.selected = [...this.selected]
+			}
+		}
+	}
+
 	moveX(value: number) {
 		if (value === 0) {
 			return

@@ -1,13 +1,12 @@
 import { Button, Group, Modal, Stack, Textarea } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useRef } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { DEF_TEMPLATE } from '../../shared/constants'
 import { genId } from '../../shared/utils'
-import { useAppContext } from '../context'
 
 export const JsonCode = observer(() => {
-	const ctx = useAppContext()
 	const refText = useRef()
 	function handleImport() {
 		storeTemplate.clear()
@@ -22,7 +21,7 @@ export const JsonCode = observer(() => {
 				id: genId(),
 			})),
 		})
-		ctx.setJsonCodeFlag(false)
+		storeApp.setJsonCodeFlag(false)
 	}
 	function handleExport() {
 		refText.current.value = JSON.stringify({
@@ -44,8 +43,8 @@ export const JsonCode = observer(() => {
 	}
 	return (
 		<Modal
-			opened={ctx.jsonCodeFlag}
-			onClose={() => ctx.setJsonCodeFlag(false)}
+			opened={storeApp.jsonCodeFlag}
+			onClose={() => storeApp.setJsonCodeFlag(false)}
 			size='xl'
 		>
 			<Stack>
@@ -58,7 +57,10 @@ export const JsonCode = observer(() => {
 					<Button variant='filled' onClick={handleExport}>
 						Экспорт
 					</Button>
-					<Button variant='filled' onClick={() => ctx.setJsonCodeFlag(false)}>
+					<Button
+						variant='filled'
+						onClick={() => storeApp.setJsonCodeFlag(false)}
+					>
 						Закрыть
 					</Button>
 				</Group>

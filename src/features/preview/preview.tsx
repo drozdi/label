@@ -1,15 +1,14 @@
 import { Group, Modal, NumberInput, Slider } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { storeApp } from '../../entites/app/store'
 import { Preview as PreviewClass } from '../../entites/preview/preview'
 import { storeTemplate } from '../../entites/template/store'
-import { useAppContext } from '../context'
 import { Element } from '../element/element'
 
 const w = 50
 
 export const Preview = observer(() => {
-	const ctx = useAppContext()
 	const [scale, setScale] = useState(1)
 
 	const template = new PreviewClass(storeTemplate)
@@ -19,8 +18,8 @@ export const Preview = observer(() => {
 		<Modal
 			title='Предпросмотр'
 			size='auto'
-			opened={ctx?.previewFlag}
-			onClose={() => ctx?.setPreviewFlag?.(false)}
+			opened={storeApp?.previewFlag}
+			onClose={() => storeApp?.setPreviewFlag?.(false)}
 		>
 			<Slider
 				defaultValue={scale}

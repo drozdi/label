@@ -78,9 +78,10 @@ export class BaseElement {
 			'font_id',
 			'image_id',
 			'data',
-			'font_rel',
-			'image_rel',
 		]
+	}
+	get multiProperties() {
+		return ['enabled']
 	}
 	get fontFamily() {
 		return (storeFonts.findById(this.font_id) || this.font_rel)?.name
@@ -158,8 +159,8 @@ export class BaseElement {
 				this.text_align === 2
 					? 'center'
 					: this.text_align === 3
-					? 'flex-end'
-					: 'flex-start',
+						? 'flex-end'
+						: 'flex-start',
 			rotate: this.rotation + 'deg',
 			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,

@@ -1,5 +1,6 @@
 import { Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { storeApp } from '../../entites/app/store'
 import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
@@ -20,6 +21,15 @@ export const ListElement = observer(() => {
 			font_id: storeFonts.id || 1,
 		},
 		{
+			label: 'Переменная',
+			type: 'text',
+			data: '{barcode}',
+			font_id: storeFonts.id || 1,
+			callback: () => {
+				storeApp.setVariableFlag(true)
+			},
+		},
+		{
 			label: 'Data Matrix',
 			name: storeDataMatrix.fakeBodyDM,
 			type: 'barcode',
@@ -28,8 +38,8 @@ export const ListElement = observer(() => {
 			radius: 1.833,
 			width: 6,
 			height: 6,
-			callback: ctx => {
-				ctx?.setDataMatrixFlag(true)
+			callback: () => {
+				storeApp.setDataMatrixFlag(true)
 			},
 		},
 		{
@@ -69,6 +79,9 @@ export const ListElement = observer(() => {
 			label: 'Изображение из бд',
 			type: 'img',
 			image_id: storeImages.id,
+			callback: () => {
+				storeApp.setImageFlag(true)
+			},
 		},
 		{
 			label: 'Линия',

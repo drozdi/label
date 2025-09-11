@@ -12,16 +12,10 @@ export class ImgElement extends BaseElement {
 		})
 	}
 	get properties() {
-		return [
-			'enabled',
-			'name',
-			'pos_x',
-			'pos_y',
-			'width',
-			'height',
-			'image_id',
-			'type',
-		]
+		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'image_id']
+	}
+	get multiProperties() {
+		return ['enabled', 'image_id']
 	}
 	get resize() {
 		return ['e', 's', 'se']

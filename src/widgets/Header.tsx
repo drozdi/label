@@ -1,6 +1,5 @@
 import {
 	ActionIcon,
-	Button,
 	Group,
 	List,
 	Popover,
@@ -8,6 +7,7 @@ import {
 	useMantineColorScheme,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { observer } from 'mobx-react-lite'
 import {
 	TbArrowDown,
 	TbArrowLeft,
@@ -18,21 +18,18 @@ import {
 	TbSettings,
 	TbSun,
 } from 'react-icons/tb'
-import { useAppContext } from '../features/context'
-import { ManagerFontFamily } from '../features/fonts/manager-font-family'
+import { storeApp } from '../entites/app/store'
 import { HeaderMain } from '../features/header/header-main'
 import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
-import { ManagerImages } from '../features/images/manager-images'
 
-export function Header() {
-	const ctx = useAppContext()
+export const Header = observer(() => {
 	const {
 		loadTemplateFlag,
 		settingsFlag,
 		managerFontFamilyFlag,
 		managerImagesFlag,
-	} = ctx
+	} = storeApp
 	const [openedInfo, info] = useDisclosure(false)
 	const { setColorScheme } = useMantineColorScheme()
 	const computedColorScheme = useComputedColorScheme('light', {
@@ -43,51 +40,9 @@ export function Header() {
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{!loadTemplateFlag && <HeaderPrint />}
 			<Group>
-				<Popover
-					opened={managerFontFamilyFlag}
-					onChange={ctx.setManagerFontFamilyFlag}
-					withOverlay
-					width={600}
-				>
-					<Popover.Target>
-						<Button
-							variant='outline'
-							color={managerFontFamilyFlag ? 'lime' : ''}
-							onClick={() =>
-								ctx.setManagerFontFamilyFlag(!managerFontFamilyFlag)
-							}
-						>
-							Шрифты
-						</Button>
-					</Popover.Target>
-					<Popover.Dropdown>
-						<ManagerFontFamily />
-					</Popover.Dropdown>
-				</Popover>
-				<Popover
-					opened={managerImagesFlag}
-					onChange={ctx.setManagerImagesFlag}
-					withOverlay
-					width={600}
-				>
-					<Popover.Target>
-						<Button
-							variant='outline'
-							color={managerImagesFlag ? 'lime' : ''}
-							onClick={() => ctx.setManagerImagesFlag(!managerImagesFlag)}
-						>
-							Изображения
-						</Button>
-					</Popover.Target>
-					<Popover.Dropdown>
-						<ManagerImages />
-					</Popover.Dropdown>
-				</Popover>
-			</Group>
-			<Group>
 				<ActionIcon
 					color={settingsFlag ? 'lime' : ''}
-					onClick={() => ctx.setSettingsFlag(!settingsFlag)}
+					onClick={() => storeApp.setSettingsFlag(!settingsFlag)}
 				>
 					<TbSettings />
 				</ActionIcon>
@@ -107,6 +62,13 @@ export function Header() {
 							<List.Item>"Del" - удалить выбранные элемент</List.Item>
 							<List.Item>"Ctrl" + "z" - Отменить последнее действие</List.Item>
 							<List.Item>"Ctrl" + "y" - Вернуть отменённое действие</List.Item>
+							<List.Item>"Ctrl" + "s" - Сохранить шаблон</List.Item>
+							<List.Item>
+								"Ctrl" + "c" - Копировать выбранные элементы
+							</List.Item>
+							<List.Item>
+								"Ctrl" + "v" - Вставить скопированые элементы
+							</List.Item>
 							<List.Item>
 								"<TbArrowDown />,
 								<TbArrowUp />,
@@ -149,4 +111,4 @@ export function Header() {
 			</Group>
 		</Group>
 	)
-}
+})

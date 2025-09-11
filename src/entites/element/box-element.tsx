@@ -21,6 +21,9 @@ export class BoxElement extends BaseElement {
 			'line_thickness',
 		]
 	}
+	get multiProperties() {
+		return ['enabled']
+	}
 	get resize() {
 		return ['e', 's', 'se']
 	}

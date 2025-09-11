@@ -1,5 +1,6 @@
 import { ActionIcon, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { useCallback, useMemo } from 'react'
 import {
 	TbAlignCenter,
 	TbAlignLeft,
@@ -7,6 +8,7 @@ import {
 	TbBaselineDensitySmall,
 	TbX,
 } from 'react-icons/tb'
+import { storeApp } from '../../entites/app/store'
 import {
 	labelsHumanReadable,
 	labelsTextAlign,
@@ -17,7 +19,6 @@ import {
 } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
-import { useAppContext } from '../context'
 import { ItemAction } from './item-action'
 import { ItemEditable } from './item-editable'
 import { ItemNumber } from './item-number'
@@ -26,16 +27,45 @@ import { ItemSwitch } from './item-switch'
 import { ItemText } from './item-text'
 
 export const ListProperties = observer(() => {
-	const { current } = storeTemplate
+	const current = storeTemplate.selectedObjects[0] || undefined
 	if (!current) {
 		return 'Нужно выбрать елемент'
 	}
-	const ctx = useAppContext()
-	const properties = current.properties || []
-	const allowProp = (prop: string) => {
-		return properties.includes(prop)
-	}
+	const properties = useMemo<never[]>(() => {
+		if (storeTemplate.isOne()) {
+			return storeTemplate.selectedObjects[0].properties
+		}
+		let props = new Set([
+			'name',
+			'text_align',
+			'human_readable',
+			'radius',
+			'line_thickness',
+			'enabled',
+			'type',
+			'pos_x',
+			'pos_y',
+			'width',
+			'height',
+			'rotation',
+			'code_type',
+			'font_size',
+			'font_id',
+			'image_id',
+			'data',
+		])
+		storeTemplate.selectedObjects.forEach(o => {
+			props = props.intersection(new Set(o.multiProperties))
+		})
+		return [...props]
+	}, [storeTemplate.selected])
 
+	const allowProp = useCallback(
+		(prop: string) => {
+			return properties.includes(prop)
+		},
+		[properties]
+	)
 	return (
 		<Stack maw='auto' gap={0}>
 			{allowProp('enabled') && (
@@ -182,7 +212,7 @@ export const ListProperties = observer(() => {
 					edit
 					label='Размер:'
 					value={current.font_size}
-					unit='mm'
+					unit='pt'
 					onChange={v => {
 						storeTemplate.setFontSize(v)
 						histroyAppendDebounce(
@@ -228,7 +258,7 @@ export const ListProperties = observer(() => {
 					label='Шрифт:'
 					value={current.fontFamily}
 					onClick={() => {
-						ctx.setFontFamilyFlag(true)
+						storeApp.setFontFamilyFlag(true)
 					}}
 				/>
 			)}
@@ -237,7 +267,10 @@ export const ListProperties = observer(() => {
 					type={current?.type === 'block' ? 'textarea' : 'text'}
 					edit
 					icon={
-						<ActionIcon radius={0} onClick={() => ctx.setVariableFlag(true)}>
+						<ActionIcon
+							radius={0}
+							onClick={() => storeApp.setVariableFlag(true)}
+						>
 							<TbBaselineDensitySmall />
 						</ActionIcon>
 					}
@@ -290,7 +323,7 @@ export const ListProperties = observer(() => {
 					label='Изображение:'
 					value={current.imageName}
 					onClick={() => {
-						ctx.setImageFlag(true)
+						storeApp.setImageFlag(true)
 					}}
 				/>
 			)}

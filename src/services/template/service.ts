@@ -1,6 +1,10 @@
+import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
-import { debounce, round } from '../../shared/utils'
+import { storeTemplates } from '../../entites/templates/store'
+import { DEF_TEMPLATE } from '../../shared/constants'
+import { debounce, genId, round } from '../../shared/utils'
+import { serviceNotifications } from '../notifications/service'
 
 const histroyAppendDebounce = debounce((...args: any[]) => {
 	storeHistory.append(...args)
@@ -11,6 +15,13 @@ const histroyAppend = (...args: any[]) => {
 }
 
 export const serviceTemplate = {
+	copyStack: [],
+	indexPaste: 1,
+	copyOffset: 5,
+	clear() {
+		this.copyStack = []
+		;((this.indexPaste = 1), (this.copyOffset = 5))
+	},
 	_moveX(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {
 			if (index > -1) {
@@ -65,5 +76,76 @@ export const serviceTemplate = {
 		const name = storeTemplate.current?.name
 		storeTemplate.current?.setName(v)
 		histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
+	},
+
+	copy() {
+		this.copyStack = storeTemplate.selectedObjects.map(object =>
+			object.getProps()
+		)
+		this.indexPaste = 1
+	},
+	paste() {
+		if (this.copyStack.length > 0) {
+			this.copyStack.forEach(props => {
+				storeTemplate.addObject({
+					...props,
+					id: genId(),
+					pos_x: props.pos_x + this.copyOffset * this.indexPaste,
+					pos_y: props.pos_y + this.copyOffset * this.indexPaste,
+				})
+			})
+			this.indexPaste += 1
+		}
+	},
+
+	async handleSave() {
+		if (storeTemplate.name?.length < 3) {
+			serviceNotifications.error(
+				'Название шаблона должно быть не менее 3 символов'
+			)
+			storeApp.setErrorName(true)
+			return
+		}
+		if (storeTemplate.objects.length === 0) {
+			serviceNotifications.error('Шаблон не может быть пустым')
+			return
+		}
+		const template = {
+			...DEF_TEMPLATE,
+			...storeTemplate,
+			objects: storeTemplate.objects.map(item => ({
+				...item.getProps(),
+			})),
+			scale: undefined,
+			dpi: undefined,
+			mm: undefined,
+			cm: undefined,
+			mm_qr: undefined,
+			currId: undefined,
+			currIndex: undefined,
+			selected: undefined,
+		}
+		if (storeTemplate.id > 0) {
+			await this.handleUpdate(template)
+		} else {
+			await this.handleNew(template)
+		}
+	},
+	async handleUpdate(template) {
+		try {
+			await storeTemplates.updateTemplate(template)
+			serviceNotifications.success('Шаблон успешно изменён')
+		} catch (error) {
+			serviceNotifications.error(error)
+		}
+	},
+	async handleNew(template) {
+		try {
+			const res = await storeTemplates.newTemplate(template)
+			storeTemplate.loadTemplate(res.data)
+			serviceNotifications.success('Шаблон успешно сохранён')
+		} catch (error) {
+			serviceNotifications.error(error)
+		}
 	},
 }

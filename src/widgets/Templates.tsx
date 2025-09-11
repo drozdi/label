@@ -10,16 +10,15 @@ import {
 import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
+import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
-import { useAppContext } from '../features/context'
 import { ListTemplate } from '../features/templates/list-template'
 import { Preview } from '../features/templates/preview'
 import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
 
 export const Templates = observer(() => {
-	const ctx = useAppContext()
 	const { selected: templateSelected } = storeTemplates
 	const { objects = [] } = templateSelected || {}
 
@@ -31,11 +30,11 @@ export const Templates = observer(() => {
 
 	const handleSelect = () => {
 		storeTemplate.loadTemplate(storeTemplates.selected)
-		ctx?.setLoadTemplateFlag(false)
+		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleCopy = () => {
 		storeTemplate.loadTemplate(storeTemplates.selected, true)
-		ctx?.setLoadTemplateFlag(false)
+		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleExport = async () => {
 		storeTemplates.exportTemplate()

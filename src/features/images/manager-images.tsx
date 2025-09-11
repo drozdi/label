@@ -10,22 +10,14 @@ import {
 	Title,
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
 import { Item } from '../../shared/ui'
-import { useAppContext } from '../context'
 import { useImagesUpload } from './hooks/use-images-upload'
 
 export const ManagerImages = observer(() => {
-	const ctx = useAppContext()
 	const { file, name, save, cancel, upload, writeName } = useImagesUpload()
-	const { managerImagesFlag } = ctx
 	const { list } = storeImages
 	const handleClick = (id: number) => storeImages.setId(id)
-	const handleClose = () => {
-		ctx.setManagerImagesFlag(false)
-		cancel()
-	}
 	const handleRemove = async (id: number) => {
 		await storeImages.remove(id)
 	}
@@ -33,15 +25,7 @@ export const ManagerImages = observer(() => {
 		<Stack>
 			<Group justify='space-between'>
 				<Text>
-					Изображения по умолчанию "
-					<span
-						style={{
-							fontFamily: storeFonts.default?.name,
-						}}
-					>
-						{storeFonts.default?.name}
-					</span>
-					"
+					Изображения по умолчанию "<span>{storeImages.default?.name}</span>"
 				</Text>
 				<Group justify='flex-end'>
 					<FileButton onChange={upload} accept='.bmp'>
@@ -51,9 +35,6 @@ export const ManagerImages = observer(() => {
 							</Button>
 						)}
 					</FileButton>
-					<Button variant='default' onClick={handleClose}>
-						Закрыть
-					</Button>
 				</Group>
 			</Group>
 

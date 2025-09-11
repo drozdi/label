@@ -4,9 +4,14 @@ import { useMemo } from 'react'
 import { storeVariables } from '../../entites/variables/store'
 import { ItemVariable } from './item-variable'
 
-export const ListVariable = observer(({ query = '' }) => {
+export const ListVariable = observer(({ query = '' }: { query: string }) => {
 	const { list } = storeVariables
-	const filtered = useMemo(
+	const filtered = useMemo<
+		{
+			data: string
+			name: string
+		}[]
+	>(
 		() =>
 			query
 				? (list || []).filter(

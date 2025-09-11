@@ -1,12 +1,10 @@
 import { Button, FileButton, Group } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { serviceNotifications } from '../../services/notifications/service'
-import { useAppContext } from '../context'
 
 export const HeaderTemplates = observer(() => {
-	const ctx = useAppContext()
-
 	const handleImport = file => {
 		if (!file.name.match(/\.tdmc$/gm)) {
 			serviceNotifications.error(
@@ -19,7 +17,10 @@ export const HeaderTemplates = observer(() => {
 
 	return (
 		<Group gap='xs'>
-			<Button variant='outline' onClick={() => ctx?.setLoadTemplateFlag(false)}>
+			<Button
+				variant='outline'
+				onClick={() => storeApp?.setLoadTemplateFlag(false)}
+			>
 				Закрыть
 			</Button>
 			<FileButton onChange={handleImport} accept='.tdmc'>

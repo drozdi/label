@@ -4,7 +4,10 @@ class StoreVariables {
 	isLoading = false
 	isLoaded = false
 	error = ''
-	_list = []
+	_list: {
+		data: string
+		name: string
+	}[] = []
 	constructor() {
 		makeAutoObservable(this)
 	}

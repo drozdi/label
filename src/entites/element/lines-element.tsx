@@ -17,6 +17,9 @@ export class LinesElement extends BaseElement {
 	get properties() {
 		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height']
 	}
+	get multiProperties() {
+		return ['enabled']
+	}
 	get resize() {
 		return ['se']
 	}

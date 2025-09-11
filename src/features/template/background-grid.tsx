@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
-import { useAppContext } from '../context'
 import classes from './background.module.css'
 
 export const BackgroundGrid = observer(() => {
-	const { gridFlag } = useAppContext()
+	const { gridFlag } = storeApp
 	if (!gridFlag) {
 		return null
 	}

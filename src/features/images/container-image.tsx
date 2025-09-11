@@ -13,20 +13,19 @@ import {
 } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { TbFilePlus } from 'react-icons/tb'
-import { useAppContext } from '../context'
+import { storeApp } from '../../entites/app/store'
 import { useImagesUpload } from './hooks/use-images-upload'
 import { ListImage } from './list-image'
 
 export const ContainerImage = observer(() => {
 	const { file, image, name, upload, cancel, save, writeName } =
 		useImagesUpload()
-	const ctx = useAppContext()
 
 	return (
 		<Stack h='100%'>
 			<Group mt='xs' justify='space-between'>
 				Изображения
-				<CloseButton onClick={() => ctx?.setImageFlag(false)} />
+				<CloseButton onClick={() => storeApp?.setImageFlag(false)} />
 			</Group>
 			{file ? (
 				<>

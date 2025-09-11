@@ -8,15 +8,14 @@ import {
 	TbGrid3X3,
 	TbZoomIn,
 } from 'react-icons/tb'
+import { storeApp } from '../../../entites/app/store'
 import { storeHistory } from '../../../entites/history/store'
 import { storeTemplate } from '../../../entites/template/store'
-import { useAppContext } from '../../context'
 
 const allowedExtensions = ['bmp', 'jpeg', 'png']
 
 export const ToolbarTools = observer(() => {
-	const ctx = useAppContext()
-	const { gridFlag, imageBg } = ctx
+	const { gridFlag, imageBg } = storeApp
 	const [opened, { close, open }] = useDisclosure(false)
 
 	const selectedBG = file => {
@@ -32,7 +31,7 @@ export const ToolbarTools = observer(() => {
 		}
 		const reader = new FileReader()
 		reader.onload = () => {
-			ctx.setImageBg(reader.result)
+			storeApp.setImageBg(reader.result)
 		}
 		reader.readAsDataURL(file)
 	}
@@ -78,7 +77,7 @@ export const ToolbarTools = observer(() => {
 					<ActionIcon
 						{...props}
 						onClick={() => {
-							ctx.setImageBg('')
+							storeApp.setImageBg('')
 							props.onClick()
 						}}
 						color={imageBg ? 'lime' : ''}
@@ -91,7 +90,7 @@ export const ToolbarTools = observer(() => {
 			<ActionIcon
 				color={gridFlag ? 'lime' : ''}
 				title='Сетка разметки'
-				onClick={() => ctx.setGridFlag(v => !v)}
+				onClick={() => storeApp.setGridFlag(v => !v)}
 			>
 				<TbGrid3X3 />
 			</ActionIcon>
