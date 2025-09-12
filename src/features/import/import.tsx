@@ -264,6 +264,7 @@ export const Import = observer(() => {
 			} else {
 				obj.font_size = parseInt(res.x_multiplication, 10)
 			}
+			obj.font_size = Math.floor((obj.font_size * 8) / 12)
 
 			obj.data = res.data
 

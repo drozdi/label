@@ -1,6 +1,7 @@
 export const KEY_FONT_DEFAULT = 'default.font'
 export const KEY_IMAGE_DEFAULT = 'default.image'
 export const KEY_TIME_AUTO_SAVE = 'default.time.auto.save'
+export const KEY_SCALE_DEFAULT = 'default.scale'
 
 export const URL_API = 'http://10.76.10.102:8033/api/v1/'
 

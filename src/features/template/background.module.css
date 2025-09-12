@@ -26,3 +26,19 @@
 	background-position: 0px 0px, 0px 0px, -1px -1px, -1px -1px;
 	background-size: 0 0, 0 0, 0 0, 0 0;
 }
+
+.line {
+	position: absolute;
+	display: none;
+	background-color: #0011ff48;
+}
+.lineV {
+	width: 1px;
+	top: 0;
+	height: 100%
+}
+.lineH {
+	height: 1px;
+	left: 0;
+	width: 100%;
+}

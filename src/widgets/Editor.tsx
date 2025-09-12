@@ -14,11 +14,12 @@ import { Template } from '../features/template/template'
 import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
 import { ToolbarTools } from '../features/toolbars/tools/toolbar-tools'
 import { ContainerVariable } from '../features/variables/container-variable'
+import { ProvideGuideLine } from '../services/guide-line/context'
 
 export const Editor = observer(() => {
 	const { fontFamilyFlag, variableFlag, imageFlag, dataMatrixFlag } = storeApp
 	return (
-		<>
+		<ProvideGuideLine>
 			<LabelTolbar />
 			<Box
 				h='100%'
@@ -118,6 +119,6 @@ export const Editor = observer(() => {
 					)}
 				</Box>
 			</Box>
-		</>
+		</ProvideGuideLine>
 	)
 })
