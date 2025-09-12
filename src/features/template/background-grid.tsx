@@ -4,8 +4,7 @@ import { storeTemplate } from '../../entites/template/store'
 import classes from './background.module.css'
 
 export const BackgroundGrid = observer(() => {
-	const { gridFlag } = storeApp
-	if (!gridFlag) {
+	if (!storeApp.gridFlag) {
 		return null
 	}
 	return (

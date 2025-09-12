@@ -90,7 +90,7 @@ export const ToolbarTools = observer(() => {
 			<ActionIcon
 				color={gridFlag ? 'lime' : ''}
 				title='Сетка разметки'
-				onClick={() => storeApp.setGridFlag(v => !v)}
+				onClick={() => storeApp.setGridFlag(!gridFlag)}
 			>
 				<TbGrid3X3 />
 			</ActionIcon>

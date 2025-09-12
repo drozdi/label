@@ -1,5 +1,11 @@
 import { makeAutoObservable } from 'mobx'
-import { CM, DEF_TEMPLATE, MM, MM_QR } from '../../shared/constants'
+import {
+	CM,
+	DEF_TEMPLATE,
+	KEY_SCALE_DEFAULT,
+	MM,
+	MM_QR,
+} from '../../shared/constants'
 import { round } from '../../shared/utils'
 import { factoryElement } from '../element/factory-element'
 
@@ -15,7 +21,7 @@ class StoreTemplate {
 	reference_x = 0
 	reference_y = 0
 	objects = []
-	scale = 1
+	scale = Number(localStorage.getItem(KEY_SCALE_DEFAULT) || 1)
 	id = 0
 	name = ''
 
@@ -88,6 +94,21 @@ class StoreTemplate {
 	}
 	get selectedObjects() {
 		return this.selected.map(id => this.findById(id))
+	}
+	get inverseIds() {
+		return [
+			...new Set(this.objects.map(o => String(o.id))).difference(
+				new Set(this.selected)
+			),
+		]
+	}
+	get inverseIndex() {
+		return this.inverseIds.map(id =>
+			this.objects.findIndex(object => String(object.id) === String(id))
+		)
+	}
+	get inverseObjects() {
+		return this.inverseIds.map(id => this.findById(id))
 	}
 
 	setActiveObject(id: number | string) {
@@ -168,6 +189,7 @@ class StoreTemplate {
 			value = parseInt(value, 10)
 		}
 		this.scale = value
+		localStorage.setItem(KEY_SCALE_DEFAULT, String(value))
 		this.objects = this.objects.map(object => object.copy())
 	}
 	changeDpi(dpi: null | string) {

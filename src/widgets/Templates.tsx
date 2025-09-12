@@ -69,7 +69,6 @@ export const Templates = observer(() => {
 				<ScrollArea h='100%' flex='none' w='18rem' p='xs'>
 					<ListTemplate />
 				</ScrollArea>
-
 				<ScrollArea maw='50%' flex='auto' w='auto' h='100%'>
 					<Box h='100%'>
 						{storeTemplates.selected ? (

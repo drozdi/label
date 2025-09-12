@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { KEY_TIME_AUTO_SAVE } from '../../shared/constants'
 
-class StoreApp {
+class StoreApp implements AppContext {
 	timeAutoSave = Number(localStorage.getItem(KEY_TIME_AUTO_SAVE) || 10)
 	showAppLoader = true
 	fontFamilyFlag = false
@@ -15,8 +15,6 @@ class StoreApp {
 	dataMatrixFlag = false
 	previewFlag = false
 	serverError = false
-	managerFontFamilyFlag = false
-	managerImagesFlag = false
 	jsonCodeFlag = false
 	errorName = false
 	constructor() {
@@ -67,12 +65,6 @@ class StoreApp {
 	}
 	setServerError(val: boolean) {
 		this.serverError = val
-	}
-	setManagerFontFamilyFlag(val: boolean) {
-		this.managerFontFamilyFlag = val
-	}
-	setManagerImagesFlag(val: boolean) {
-		this.managerImagesFlag = val
 	}
 	setJsonCodeFlag(val: boolean) {
 		this.jsonCodeFlag = val

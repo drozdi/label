@@ -4,6 +4,8 @@ import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
+import { useGuideLine } from '../../services/guide-line/context'
+import { SNAP_THRESHOLD } from '../../shared/constants'
 import { minMax } from '../../shared/utils'
 import classes from './element.module.css'
 import { resizeObject } from './utils/resize'
@@ -13,33 +15,28 @@ function aspect(width: number, height: number): number {
 }
 
 export const Element = observer(
-	({
-		object,
-		preview,
-		scale = 1,
-	}: {
-		object: Record<string, any>
-		preview?: boolean
-		scale: number
-	}) => {
+	({ object, preview, scale = 1 }: { object: Record<string, any>; preview?: boolean; scale: number }) => {
 		if (preview && !object.enabled) {
 			return ''
 		}
-		const refParent = useRef<HTMLDivElement>(null)
+		const refWrap = useRef<HTMLDivElement>(null)
+		const guideElements = useRef<HTMLElement[]>([])
+		const rectParent = useRef<DOMRect>({} as DOMRect)
+		const rectElement = useRef<DOMRect>({} as DOMRect)
+
 		const style = useMemo(
 			() => ({
-				...object.style?.(scale, refParent.current),
+				...object.style?.(scale, refWrap.current),
 				...(preview ? { outline: '0px' } : {}),
 			}),
-			[object, refParent.current]
+			[object, refWrap.current]
 		)
+
 		const handleClick = (event: React.MouseEvent) => {
 			if (preview) {
 				return
 			}
-			const element = (event.target as HTMLElement).closest(
-				`.${classes.element}`
-			)
+			const element = (event.target as HTMLElement).closest(`.${classes.element}`)
 
 			if (element instanceof HTMLDivElement) {
 				event.preventDefault()
@@ -57,6 +54,8 @@ export const Element = observer(
 			storeApp?.setImageFlag?.(false)
 		}
 
+		const { snap, showLine, hideLine } = useGuideLine()
+
 		const resize = preview ? [] : (object?.resize as Array<'s' | 'e' | 'se'>)
 		const sPosition = useRef<{
 			minX: number
@@ -65,167 +64,181 @@ export const Element = observer(
 			maxY: number
 			width: number
 			height: number
+			top: number
+			left: number
 			x: number
 			y: number
 			dir: 's' | 'e' | 'se'
 		}>(null)
 		const cloneElement = useRef<HTMLElement>(null)
 
-		const handleMouseDown = (
-			event: React.MouseEvent,
-			dir: 's' | 'e' | 'se'
-		) => {
+		const handleMouseDown = (event: React.MouseEvent, dir: 's' | 'e' | 'se') => {
 			if (preview) {
 				return
 			}
-			const element = (event.target as HTMLElement).closest(
-				`.${classes.element}`
-			) as HTMLElement
+			const element = (event.target as HTMLElement).closest(`.${classes.element}`) as HTMLElement
+
 			if (element instanceof HTMLDivElement) {
 				event.preventDefault()
 				event.stopPropagation()
 				storeTemplate.setActiveObject(element.id)
 			}
-			const elementRect = element.getBoundingClientRect()
-			const parentRect = (
-				element.parentNode as HTMLElement
-			).getBoundingClientRect()
+
+			guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
+
+			rectElement.current = element.getBoundingClientRect()
+			rectParent.current = (element.parentNode as HTMLElement)?.getBoundingClientRect()
+
 			cloneElement.current = element.cloneNode(true) as HTMLElement
 			cloneElement.current?.classList?.add?.(classes.clone)
 			;(element.parentNode as HTMLElement).appendChild(cloneElement.current)
+
 			sPosition.current = {
-				minX: elementRect.left + 2,
-				maxX: parentRect.right - 2,
-				minY: elementRect.top + 2,
-				maxY: parentRect.bottom - 2,
-				width: elementRect.width,
-				height: elementRect.height,
+				minX: rectElement.current.left + 2,
+				maxX: rectParent.current.right - 2,
+				minY: rectElement.current.top + 2,
+				maxY: rectParent.current.bottom - 2,
+				width: rectElement.current.width,
+				height: rectElement.current.height,
 				x: event.clientX,
 				y: event.clientY,
+				top:
+					rectElement.current.top -
+					rectParent.current.top +
+					(object.rotation === 90 || object.rotation === 270
+						? (rectElement.current?.height - rectElement.current?.width) / 2
+						: 0),
+				left:
+					rectElement.current.left -
+					rectParent.current.left -
+					(object.rotation === 90 || object.rotation === 270
+						? (rectElement.current?.height - rectElement.current?.width) / 2
+						: 0),
 				dir,
 			}
 		}
-		const handleMouseMove = (event: MouseEvent) => {
-			if (!sPosition.current) {
-				return
-			}
+
+		SNAP_THRESHOLD
+
+		const calcOffset = (event: MouseEvent) => {
+			const a = aspect(sPosition.current.width, sPosition.current.height)
+			let dx = 0
+			let dy = 0
+
+			snap.current.isX = false
+			snap.current.isY = false
+
 			event.preventDefault()
 			event.stopPropagation()
 
-			const a = aspect(sPosition.current.width, sPosition.current.height)
-			let dx = 0,
-				dy = 0
-
 			if (sPosition.current?.dir === 'e') {
-				dx =
-					minMax(
-						event.clientX,
-						sPosition.current.minX,
-						sPosition.current.maxX
-					) - sPosition.current.x
+				dx = minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) - sPosition.current.x
 				if (event.shiftKey && resize.includes('se')) {
 					dy = dx * a
 				}
 			} else if (sPosition.current?.dir === 's') {
-				dy =
-					minMax(
-						event.clientY,
-						sPosition.current.minY,
-						sPosition.current.maxY
-					) - sPosition.current.y
+				dy = minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) - sPosition.current.y
 				if (event.shiftKey && resize.includes('se')) {
 					dx = dy / a
 				}
 			} else if (sPosition.current?.dir === 'se') {
-				dx =
-					minMax(
-						event.clientX,
-						sPosition.current.minX,
-						sPosition.current.maxX
-					) - sPosition.current.x
+				dx = minMax(event.clientX, sPosition.current.minX, sPosition.current.maxX) - sPosition.current.x
 				dy = event.shiftKey
 					? dx * a
-					: minMax(
-							event.clientY,
-							sPosition.current.minY,
-							sPosition.current.maxY
-						) - sPosition.current.y
+					: minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) - sPosition.current.y
 			}
 
-			if (object.rotation === 90 || object.rotation === 270) {
-				;(cloneElement.current as HTMLElement).style.height =
-					sPosition.current.width + dx + 'px'
-				;(cloneElement.current as HTMLElement).style.width =
-					sPosition.current.height + dy + 'px'
-				;(cloneElement.current as HTMLElement).style.translate =
-					`${-(dy - dx) / 2}px ${(dy - dx) / 2}px`
-			} else {
-				;(cloneElement.current as HTMLElement).style.width =
-					sPosition.current.width + dx + 'px'
-				;(cloneElement.current as HTMLElement).style.height =
-					sPosition.current.height + dy + 'px'
+			guideElements.current.forEach(guide => {
+				const guideRect = guide.getBoundingClientRect()
+
+				const guideLeft = guideRect.left - rectParent.current.left
+				const guideCenterX = guideLeft + guide.offsetWidth / 2
+				const guideRight = guideLeft + guide.offsetWidth
+
+				const guideTop = guideRect.top - rectParent.current.top
+				const guideCenterY = guideTop + guide.offsetHeight / 2
+				const guideBottom = guideTop + guide.offsetHeight
+
+				let newX = event.clientX - rectParent.current.left
+				let newY = event.clientY - rectParent.current.top
+
+				if (sPosition.current?.dir === 'e' || sPosition.current?.dir === 'se') {
+					if (Math.abs(newX - guideLeft) < SNAP_THRESHOLD) {
+						dx = guideLeft - (sPosition.current.width + sPosition.current.left)
+						snap.current.x = guideLeft
+						snap.current.isX = true
+					} else if (Math.abs(newX - guideCenterX) < SNAP_THRESHOLD) {
+						dx = guideCenterX - (sPosition.current.width + sPosition.current.left)
+						snap.current.x = guideCenterX
+						snap.current.isX = true
+					} else if (Math.abs(newX - guideRight) < SNAP_THRESHOLD) {
+						dx = guideRight - (sPosition.current.width + sPosition.current.left)
+						snap.current.x = guideRight
+						snap.current.isX = true
+					}
+					if (event.shiftKey) {
+						dy = dx * a
+					}
+				}
+
+				if (sPosition.current?.dir === 's' || sPosition.current?.dir === 'se') {
+					if (Math.abs(newY - guideTop) < SNAP_THRESHOLD) {
+						dy = guideTop - (sPosition.current.height + sPosition.current.top)
+						snap.current.y = guideTop
+						snap.current.isY = true
+					} else if (Math.abs(newY - guideCenterY) < SNAP_THRESHOLD) {
+						dy = guideCenterY - (sPosition.current.height + sPosition.current.top)
+						snap.current.y = guideCenterY
+						snap.current.isY = true
+					} else if (Math.abs(newY - guideBottom) < SNAP_THRESHOLD) {
+						dy = guideBottom - (sPosition.current.height + sPosition.current.top)
+						snap.current.y = guideBottom
+						snap.current.isY = true
+					}
+					if (event.shiftKey) {
+						dx = dy / a
+					}
+				}
+			})
+
+			return [dx, dy]
+		}
+
+		const handleMouseMove = (event: MouseEvent) => {
+			if (!sPosition.current) {
+				return
 			}
+
+			const [dx, dy] = calcOffset(event)
+
+			if (object.rotation === 90 || object.rotation === 270) {
+				;(cloneElement.current as HTMLElement).style.height = sPosition.current.width + dx + 'px'
+				;(cloneElement.current as HTMLElement).style.width = sPosition.current.height + dy + 'px'
+				;(cloneElement.current as HTMLElement).style.translate = `${-(dy - dx) / 2}px ${(dy - dx) / 2}px`
+			} else {
+				;(cloneElement.current as HTMLElement).style.width = sPosition.current.width + dx + 'px'
+				;(cloneElement.current as HTMLElement).style.height = sPosition.current.height + dy + 'px'
+			}
+
+			showLine()
 		}
 		const handleMouseUp = (event: MouseEvent) => {
 			if (!sPosition.current) {
 				return
 			}
 
-			event.preventDefault()
-			event.stopPropagation()
-
-			const a = aspect(sPosition.current.width, sPosition.current.height)
-			let dx = 0,
-				dy = 0
-
-			if (sPosition.current?.dir === 'e') {
-				dx =
-					minMax(
-						event.clientX,
-						sPosition.current.minX,
-						sPosition.current.maxX
-					) - sPosition.current.x
-				if (event.shiftKey && resize.includes('se')) {
-					dy = dx * a
-				}
-			} else if (sPosition.current?.dir === 's') {
-				dy =
-					minMax(
-						event.clientY,
-						sPosition.current.minY,
-						sPosition.current.maxY
-					) - sPosition.current.y
-				if (event.shiftKey && resize.includes('se')) {
-					dx = dy / a
-				}
-			} else if (sPosition.current?.dir === 'se') {
-				dx =
-					minMax(
-						event.clientX,
-						sPosition.current.minX,
-						sPosition.current.maxX
-					) - sPosition.current.x
-				dy = event.shiftKey
-					? dx * a
-					: minMax(
-							event.clientY,
-							sPosition.current.minY,
-							sPosition.current.maxY
-						) - sPosition.current.y
-			}
-
-			const ddx = dx / storeTemplate.mm / scale
-			const ddy = dy / storeTemplate.mm / scale
+			const [dx, dy] = calcOffset(event).map(val => val / storeTemplate.mm / scale)
 
 			if (object.rotation === 90 || object.rotation === 270) {
-				resizeObject(ddy, ddx)
-				object.rotation === 270 && storeTemplate.moveY(ddy)
+				resizeObject(dy, dx)
+				object.rotation === 270 && storeTemplate.moveY(dy)
 			} else {
-				resizeObject(ddx, ddy)
-				object.rotation === 180 && storeTemplate.moveY(ddy)
-				object.rotation === 180 && storeTemplate.moveX(ddx)
+				resizeObject(dx, dy)
+				object.rotation === 180 && storeTemplate.moveY(dy)
+				object.rotation === 180 && storeTemplate.moveX(dx)
 			}
 
+			hideLine()
 			cloneElement.current?.remove()
 			sPosition.current = null
 			cloneElement.current = null
@@ -244,40 +257,23 @@ export const Element = observer(
 			<div
 				id={object.id}
 				style={style}
-				ref={refParent}
+				ref={refWrap}
 				className={clsx(classes.element, {
-					[classes.active]:
-						!preview && storeTemplate.selected.includes(String(object.id)),
+					[classes.active]: !preview && storeTemplate.selected.includes(String(object.id)),
 					[classes[`rotation-${object.rotation}`]]: object.rotation,
 				})}
 				onClick={handleClick}
-				data-draggable={!preview}
 			>
-				{object.type === 'barcode' &&
-					['datamatrix', 'qrcode'].includes(object.code_type) && (
-						<Stack
-							className={classes.size}
-							pos='absolute'
-							right='100%'
-							top='0'
-							gap={1}
-						>
-							<Button
-								size='compact-xs'
-								variant='filled'
-								onClick={() => storeTemplate.setWidth(object.width + 1)}
-							>
-								+
-							</Button>
-							<Button
-								size='compact-xs'
-								variant='filled'
-								onClick={() => storeTemplate.setWidth(object.width - 1)}
-							>
-								-
-							</Button>
-						</Stack>
-					)}
+				{object.type === 'barcode' && ['datamatrix', 'qrcode'].includes(object.code_type) && (
+					<Stack className={classes.size} pos='absolute' right='100%' top='0' gap={1}>
+						<Button size='compact-xs' variant='filled' onClick={() => storeTemplate.setWidth(object.width + 1)}>
+							+
+						</Button>
+						<Button size='compact-xs' variant='filled' onClick={() => storeTemplate.setWidth(object.width - 1)}>
+							-
+						</Button>
+					</Stack>
+				)}
 
 				{object.render(scale, preview)}
 				{resize.map(dir => (

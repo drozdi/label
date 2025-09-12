@@ -1,5 +1,6 @@
 import { Image, Title } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { histroyAppend } from '../../entites/history/store'
 import { storeImages } from '../../entites/images/store'
@@ -18,6 +19,11 @@ export const ItemImage = observer(
 		}
 	}) => {
 		const current = storeTemplate.selectedObjects[0]
+		useEffect(() => {
+			if (!current) {
+				storeApp.setImageFlag(false)
+			}
+		}, [current])
 		const handleSelect = () => {
 			storeTemplate.setImageId(image.id)
 			histroyAppend(
@@ -25,6 +31,9 @@ export const ItemImage = observer(
 				`Картинка "${current?.name}" - ${storeImages.findById(image.id)?.name}`
 			)
 			storeApp.setImageFlag(false)
+		}
+		if (!current) {
+			return ''
 		}
 		return (
 			<Item active={current.image_id === image.id} onClick={handleSelect}>

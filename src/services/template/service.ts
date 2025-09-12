@@ -86,15 +86,19 @@ export const serviceTemplate = {
 	},
 	paste() {
 		if (this.copyStack.length > 0) {
+			const selected = []
 			this.copyStack.forEach(props => {
+				const id = genId()
 				storeTemplate.addObject({
 					...props,
-					id: genId(),
+					id: id,
 					pos_x: props.pos_x + this.copyOffset * this.indexPaste,
 					pos_y: props.pos_y + this.copyOffset * this.indexPaste,
 				})
+				selected.push(id)
 			})
 			this.indexPaste += 1
+			storeTemplate.selected = selected
 		}
 	},
 

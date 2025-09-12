@@ -2,6 +2,7 @@
 	position: absolute;
 	display: flex;
 	outline: 1px solid #00000040;
+	//outline-offset: -1px;
 	cursor: default;
 	user-select: none;
 	z-index: 10;
@@ -22,7 +23,7 @@
 	left: -3px;
 	right: -3px;
 	bottom: -3px;
-	border: 1px dashed #12db1290;
+	border: 1px dashed #0011ff48;
 }
 
 .element:not(.active) .size,

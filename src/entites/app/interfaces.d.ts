@@ -8,8 +8,9 @@ interface AppContext {
 	importFlag?: boolean
 	gridFlag?: boolean
 	previewFlag?: boolean
-	managerFontFamilyFlag?: boolean
-	managerImagesFlag?: boolean
+	jsonCodeFlag?: boolean
+	errorName?: boolean
+	showAppLoader?: boolean
 
 	setFontFamilyFlag?: (flag: boolean) => void
 	setVariableFlag?: (flag: boolean) => void
@@ -20,11 +21,13 @@ interface AppContext {
 	setImportFlag?: (flag: boolean) => void
 	setGridFlag?: (flag: boolean) => void
 	setPreviewFlag?: (flag: boolean) => void
-	setManagerFontFamilyFlag?: (flag: boolean) => void
-	setManagerImagesFlag?: (flag: boolean) => void
+	setJsonCodeFlag?: (flag: boolean) => void
+	setErrorName?: (flag: boolean) => void
+	setShowAppLoader?: (flag: boolean) => void
 
 	imageBg?: string
 	setImageBg?: (bg?: string) => void
 	serverError?: boolean
 	setServerError?: (flag: boolean) => void
+	async silent: (fn: Function) => void
 }

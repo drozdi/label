@@ -1,5 +1,6 @@
 import {
 	ActionIcon,
+	Button,
 	Group,
 	List,
 	Popover,
@@ -19,17 +20,13 @@ import {
 	TbSun,
 } from 'react-icons/tb'
 import { storeApp } from '../entites/app/store'
+import { storeTemplate } from '../entites/template/store'
 import { HeaderMain } from '../features/header/header-main'
 import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
 
 export const Header = observer(() => {
-	const {
-		loadTemplateFlag,
-		settingsFlag,
-		managerFontFamilyFlag,
-		managerImagesFlag,
-	} = storeApp
+	const { loadTemplateFlag, settingsFlag } = storeApp
 	const [openedInfo, info] = useDisclosure(false)
 	const { setColorScheme } = useMantineColorScheme()
 	const computedColorScheme = useComputedColorScheme('light', {
@@ -98,16 +95,16 @@ export const Header = observer(() => {
 						}}
 					/>
 				</ActionIcon>
-				{/* <Button
+				<Button
 					onClick={() =>
 						console.log({
 							...storeTemplate,
-							objects: [...storeTemplate.objects],
+							objects: storeTemplate.objects.map(o => o.getProps()),
 						})
 					}
 				>
 					check
-				</Button> */}
+				</Button>
 			</Group>
 		</Group>
 	)
