@@ -104,11 +104,13 @@ export const Template = observer(() => {
 				maxX: rectParent.current.right - (rect.right - event.clientX),
 				minY: rectParent.current.top - (rect.top - event.clientY),
 				maxY: rectParent.current.bottom - (rect.bottom - event.clientY),
-				top:
+				top: rect.top - rectParent.current.top,
+				left: rect.left - rectParent.current.left,
+				_top:
 					rect.top -
 					rectParent.current.top +
 					(rotation === 90 || rotation === 270 ? (rect?.height - rect?.width) / 2 : 0),
-				left:
+				_left:
 					rect.left -
 					rectParent.current.left -
 					(rotation === 90 || rotation === 270 ? (rect?.height - rect?.width) / 2 : 0),
@@ -143,15 +145,17 @@ export const Template = observer(() => {
 		snap.current.isY = false
 
 		guideElements.current.forEach(guide => {
+			const { rotation } = storeTemplate.findById(guide.id)
 			const guideRect = guide.getBoundingClientRect()
 
 			const guideLeft = guideRect.left - rectParent.current.left
-			const guideCenterX = guideLeft + guide.offsetWidth / 2
-			const guideRight = guideLeft + guide.offsetWidth
+			const guideCenterX =
+				guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth) / 2
+			const guideRight = guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth)
 
 			const guideTop = guideRect.top - rectParent.current.top
-			const guideCenterY = guideTop + guide.offsetHeight / 2
-			const guideBottom = guideTop + guide.offsetHeight
+			const guideCenterY = guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight) / 2
+			const guideBottom = guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight)
 
 			cloneElement.current.forEach(clone => {
 				let newX = event.clientX - rectParent.current.left - clone.offsetX
@@ -248,9 +252,10 @@ export const Template = observer(() => {
 		event.stopPropagation()
 
 		const [dx, dy] = calckOffset(event)
+
 		cloneElement.current.forEach(item => {
-			item.clone.style.left = item.left + dx + 'px'
-			item.clone.style.top = item.top + dy + 'px'
+			item.clone.style.left = item._left + dx + 'px'
+			item.clone.style.top = item._top + dy + 'px'
 		})
 	}, [])
 	const handleDragMouseUp = useCallback((event: MouseEvent) => {
@@ -261,9 +266,9 @@ export const Template = observer(() => {
 		event.preventDefault()
 		event.stopPropagation()
 
-		const [dx, dy] = calckOffset(event)
+		const [dx, dy] = calckOffset(event).map(v => v / storeTemplate.mm / storeTemplate.scale)
 
-		move(round(dx / storeTemplate.mm / storeTemplate.scale), round(dy / storeTemplate.mm / storeTemplate.scale))
+		move(round(dx), round(dy))
 
 		cloneElement.current.forEach(item => {
 			item.clone?.remove()

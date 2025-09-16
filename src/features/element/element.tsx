@@ -1,7 +1,7 @@
 import { Button, Stack } from '@mantine/core'
 import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
@@ -102,25 +102,13 @@ export const Element = observer(
 				height: rectElement.current.height,
 				x: event.clientX,
 				y: event.clientY,
-				top:
-					rectElement.current.top -
-					rectParent.current.top +
-					(object.rotation === 90 || object.rotation === 270
-						? (rectElement.current?.height - rectElement.current?.width) / 2
-						: 0),
-				left:
-					rectElement.current.left -
-					rectParent.current.left -
-					(object.rotation === 90 || object.rotation === 270
-						? (rectElement.current?.height - rectElement.current?.width) / 2
-						: 0),
+				top: rectElement.current.top - rectParent.current.top,
+				left: rectElement.current.left - rectParent.current.left,
 				dir,
 			}
 		}
 
-		SNAP_THRESHOLD
-
-		const calcOffset = (event: MouseEvent) => {
+		const calcOffset = useCallback((event: MouseEvent) => {
 			const a = aspect(sPosition.current.width, sPosition.current.height)
 			let dx = 0
 			let dy = 0
@@ -149,15 +137,18 @@ export const Element = observer(
 			}
 
 			guideElements.current.forEach(guide => {
+				const { rotation } = storeTemplate.findById(guide.id)
 				const guideRect = guide.getBoundingClientRect()
 
 				const guideLeft = guideRect.left - rectParent.current.left
-				const guideCenterX = guideLeft + guide.offsetWidth / 2
-				const guideRight = guideLeft + guide.offsetWidth
+				const guideCenterX =
+					guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth) / 2
+				const guideRight = guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth)
 
 				const guideTop = guideRect.top - rectParent.current.top
-				const guideCenterY = guideTop + guide.offsetHeight / 2
-				const guideBottom = guideTop + guide.offsetHeight
+				const guideCenterY =
+					guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight) / 2
+				const guideBottom = guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight)
 
 				let newX = event.clientX - rectParent.current.left
 				let newY = event.clientY - rectParent.current.top
@@ -202,7 +193,7 @@ export const Element = observer(
 			})
 
 			return [dx, dy]
-		}
+		}, [])
 
 		const handleMouseMove = (event: MouseEvent) => {
 			if (!sPosition.current) {

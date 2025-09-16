@@ -90,11 +90,7 @@ class StoreTemplates {
 			return res
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.data ||
-				error.message ||
-				error.toString() ||
-				'Unknown error'
+			this.error = error.response?.data?.data || error.message || error.toString() || 'Unknown error'
 			throw this.error
 		} finally {
 			this.isLoading = false
@@ -104,16 +100,12 @@ class StoreTemplates {
 		this.isLoading = true
 		this.error = ''
 		try {
-			const deleteObjects = this.selected.objects.map(item => item.id)
+			const deleteObjects = this.selected?.objects?.map(item => item.id) ?? []
 			const newObjects = []
 			const updateObjects = []
 			template.objects.forEach(item => {
 				let index = -1
-				if (
-					(index = deleteObjects.findIndex(
-						id => String(id) === String(item.id)
-					)) > -1
-				) {
+				if ((index = deleteObjects.findIndex(id => String(id) === String(item.id))) > -1) {
 					deleteObjects.splice(index, 1)
 				}
 				if (parseInt(item.id) > 0) {
@@ -149,11 +141,7 @@ class StoreTemplates {
 			return res
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.data ||
-				error.message ||
-				error.toString() ||
-				'Unknown error'
+			this.error = error.response?.data?.data || error.message || error.toString() || 'Unknown error'
 			throw this.error
 		} finally {
 			this.isLoading = false

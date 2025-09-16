@@ -138,13 +138,15 @@ export class BaseElement {
 		_height ??= height
 		if (_width !== 'auto' && _height !== 'auto') {
 			if (this.rotation === 90) {
+				;[_width, _height] = [_height, _width]
 				left -= (_width + _height) / 2
-				top -= (_width - _height) / 2
+				top += (_width - _height) / 2
 			} else if (this.rotation === 180) {
 				left -= _width
 				top -= _height
 			} else if (this.rotation === 270) {
-				left -= (_height - _width) / 2
+				;[_width, _height] = [_height, _width]
+				left -= (_width - _height) / 2
 				top -= (_width + _height) / 2
 			}
 		}
@@ -155,12 +157,7 @@ export class BaseElement {
 			width,
 			height,
 			fontSize: this.font_size * scale + 'pt',
-			justifyContent:
-				this.text_align === 2
-					? 'center'
-					: this.text_align === 3
-						? 'flex-end'
-						: 'flex-start',
+			justifyContent: this.text_align === 2 ? 'center' : this.text_align === 3 ? 'flex-end' : 'flex-start',
 			rotate: this.rotation + 'deg',
 			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,

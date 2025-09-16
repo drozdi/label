@@ -4,11 +4,7 @@ import classes from './notification.module.css'
 
 function checkMessage(notifications, message: string) {
 	if (notifications.length) {
-		if (
-			notifications.findIndex(
-				notification => notification.message === message
-			) > -1
-		) {
+		if (notifications.findIndex(notification => notification.message === message) > -1) {
 			return false
 		}
 	}
@@ -32,18 +28,32 @@ function send(item) {
 		...item,
 	})
 }
-
 export const serviceNotifications = {
-	error: message => {
-		send({ message, color: 'red' })
+	error: (title: string, message?: string) => {
+		send({
+			title: message ? title : undefined,
+			message: message || title,
+			color: 'red',
+		})
 	},
-	success: message => {
-		send({ message, color: 'green' })
+	success: (title: string, message?: string) => {
+		send({
+			title: message ? title : undefined,
+			message: message || title,
+			color: 'green',
+		})
 	},
-	danger: message => {
-		send({ message, color: 'orange' })
+	danger: (title: string, message?: string) => {
+		send({
+			title: message ? title : undefined,
+			message: message || title,
+			color: 'orange',
+		})
 	},
-	alert: message => {
-		send({ message })
+	alert: (title: string, message?: string) => {
+		send({
+			title: message ? title : undefined,
+			message: message || title,
+		})
 	},
 }

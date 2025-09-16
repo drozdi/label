@@ -25,9 +25,7 @@ export const serviceTemplate = {
 	_moveX(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {
 			if (index > -1) {
-				storeTemplate.objects[index].setPosX(
-					round(storeTemplate.objects[index].pos_x + value)
-				)
+				storeTemplate.objects[index].setPosX(round(storeTemplate.objects[index].pos_x + value))
 				storeTemplate.objects[index] = storeTemplate.objects[index].copy()
 			}
 		})
@@ -35,9 +33,7 @@ export const serviceTemplate = {
 	_moveY(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {
 			if (index > -1) {
-				storeTemplate.objects[index].setPosY(
-					round(storeTemplate.objects[index].pos_y + value)
-				)
+				storeTemplate.objects[index].setPosY(round(storeTemplate.objects[index].pos_y + value))
 				storeTemplate.objects[index] = storeTemplate.objects[index].copy()
 			}
 		})
@@ -79,9 +75,7 @@ export const serviceTemplate = {
 	},
 
 	copy() {
-		this.copyStack = storeTemplate.selectedObjects.map(object =>
-			object.getProps()
-		)
+		this.copyStack = storeTemplate.selectedObjects.map(object => object.getProps())
 		this.indexPaste = 1
 	},
 	paste() {
@@ -104,9 +98,7 @@ export const serviceTemplate = {
 
 	async handleSave() {
 		if (storeTemplate.name?.length < 3) {
-			serviceNotifications.error(
-				'Название шаблона должно быть не менее 3 символов'
-			)
+			serviceNotifications.error('Название шаблона должно быть не менее 3 символов')
 			storeApp.setErrorName(true)
 			return
 		}
