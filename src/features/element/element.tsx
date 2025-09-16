@@ -29,7 +29,7 @@ export const Element = observer(
 				...object.style?.(scale, refWrap.current),
 				...(preview ? { outline: '0px' } : {}),
 			}),
-			[object, refWrap.current]
+			[JSON.stringify(object), refWrap.current]
 		)
 
 		const handleClick = (event: React.MouseEvent) => {
@@ -72,41 +72,44 @@ export const Element = observer(
 		}>(null)
 		const cloneElement = useRef<HTMLElement>(null)
 
-		const handleMouseDown = (event: React.MouseEvent, dir: 's' | 'e' | 'se') => {
-			if (preview) {
-				return
-			}
-			const element = (event.target as HTMLElement).closest(`.${classes.element}`) as HTMLElement
+		const handleMouseDown = useCallback(
+			(event: React.MouseEvent, dir: 's' | 'e' | 'se') => {
+				if (preview) {
+					return
+				}
+				const element = (event.target as HTMLElement).closest(`.${classes.element}`) as HTMLElement
 
-			if (element instanceof HTMLDivElement) {
-				event.preventDefault()
-				event.stopPropagation()
-				storeTemplate.setActiveObject(element.id)
-			}
+				if (element instanceof HTMLDivElement) {
+					event.preventDefault()
+					event.stopPropagation()
+					storeTemplate.setActiveObject(element.id)
+				}
 
-			guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
+				guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
 
-			rectElement.current = element.getBoundingClientRect()
-			rectParent.current = (element.parentNode as HTMLElement)?.getBoundingClientRect()
+				rectElement.current = element.getBoundingClientRect()
+				rectParent.current = (element.parentNode as HTMLElement)?.getBoundingClientRect()
 
-			cloneElement.current = element.cloneNode(true) as HTMLElement
-			cloneElement.current?.classList?.add?.(classes.clone)
-			;(element.parentNode as HTMLElement).appendChild(cloneElement.current)
+				cloneElement.current = element.cloneNode(true) as HTMLElement
+				cloneElement.current?.classList?.add?.(classes.clone)
+				;(element.parentNode as HTMLElement).appendChild(cloneElement.current)
 
-			sPosition.current = {
-				minX: rectElement.current.left + 2,
-				maxX: rectParent.current.right - 2,
-				minY: rectElement.current.top + 2,
-				maxY: rectParent.current.bottom - 2,
-				width: rectElement.current.width,
-				height: rectElement.current.height,
-				x: event.clientX,
-				y: event.clientY,
-				top: rectElement.current.top - rectParent.current.top,
-				left: rectElement.current.left - rectParent.current.left,
-				dir,
-			}
-		}
+				sPosition.current = {
+					minX: rectElement.current.left + 2,
+					maxX: rectParent.current.right - 2,
+					minY: rectElement.current.top + 2,
+					maxY: rectParent.current.bottom - 2,
+					width: rectElement.current.width,
+					height: rectElement.current.height,
+					x: event.clientX,
+					y: event.clientY,
+					top: rectElement.current.top - rectParent.current.top,
+					left: rectElement.current.left - rectParent.current.left,
+					dir,
+				}
+			},
+			[preview]
+		)
 
 		const calcOffset = useCallback((event: MouseEvent) => {
 			const a = aspect(sPosition.current.width, sPosition.current.height)

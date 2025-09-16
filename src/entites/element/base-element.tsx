@@ -115,7 +115,19 @@ export class BaseElement {
 	copy() {
 		return factoryElement(this)
 	}
-
+	size(scale = 1) {
+		const element = document.getElementById(this.id)
+		const rectElement = element?.getBoundingClientRect()
+		const rectParent = element?.parentElement?.getBoundingClientRect()
+		return {
+			top: (rectElement?.top - rectParent?.top) / this.mm / scale,
+			left: (rectElement?.left - rectParent?.left) / this.mm / scale,
+			width: rectElement?.width / this.mm / scale,
+			height: rectElement?.height / this.mm / scale,
+			right: (rectParent?.width - (rectElement?.left - rectParent?.left) - rectElement?.width) / this.mm / scale,
+			bottom: (rectParent?.height - (rectElement?.top - rectParent?.top) - rectElement?.height) / this.mm / scale,
+		}
+	}
 	style(scale = 1, element) {
 		let width, height, _width, _height
 		let left = this.pos_x * this.mm * scale
