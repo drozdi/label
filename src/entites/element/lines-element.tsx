@@ -31,9 +31,9 @@ export class LinesElement extends BaseElement {
 			line_thickness: this.height,
 		}
 	}
-	style(scale = 1, element) {
+	style(scale = 1) {
 		return {
-			...super.style(scale, element),
+			...super.style(scale),
 			outline: 0,
 			borderRadius: 0,
 			background: 'black',

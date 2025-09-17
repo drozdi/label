@@ -13,23 +13,12 @@ export class TextElement extends BaseElement {
 		})
 	}
 	get properties() {
-		return [
-			'enabled',
-			'name',
-			'pos_x',
-			'pos_y',
-			'width',
-			'height',
-			'rotation',
-			'font_size',
-			'font_id',
-			'data',
-		]
+		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'rotation', 'font_size', 'font_id', 'data']
 	}
 	get multiProperties() {
 		return ['enabled', 'rotation', 'font_id', 'font_size', 'text_align']
 	}
-	getProps() {
-		return { ...super.getProps(), width: 0, height: 0 }
-	}
+	// getProps() {
+	// 	return { ...super.getProps(), width: 0, height: 0 }
+	// }
 }

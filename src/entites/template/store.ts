@@ -112,6 +112,14 @@ class StoreTemplate {
 			return String(object.id) === String(id)
 		})
 	}
+	setById(id: number | string, object: Record<string, any>) {
+		this.objects = this.objects.map(o => {
+			if (String(o.id) === String(id)) {
+				return factoryElement(object)
+			}
+			return o
+		})
+	}
 	deleteObject(id: number | string) {
 		this.objects = this.objects.filter(object => {
 			return String(object.id) !== String(id)

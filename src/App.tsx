@@ -4,13 +4,20 @@ import { useEffect, useRef, useState } from 'react'
 export function App() {
 	const refSS = useRef<HTMLDivElement>(null)
 	const refS1 = useRef<HTMLDivElement>(null)
+	const refSS_ = useRef<HTMLDivElement>(null)
+	const refS1_ = useRef<HTMLDivElement>(null)
 	const [sss, setSSS] = useState({})
 	const [ss1, setSS1] = useState({})
+	const [sss_, setSSS_] = useState({})
+	const [ss1_, setSS1_] = useState({})
 	const width = 120
 	const height = 20
 	const x = 30
 	const y = 20
 	const rotate = 90
+	const wrapS = {
+		outline: '1px solid #0000ff5b',
+	}
 	const ss = {
 		position: 'absolute',
 		left: x,
@@ -21,9 +28,8 @@ export function App() {
 	}
 	const s1 = {
 		...ss,
-		left: x - (rotate === 90 || rotate === 270 ? (width - height) / 2 : 0),
-		top: y + (rotate === 90 || rotate === 270 ? (width - height) / 2 : 0),
 		background: '#0000ff5b',
+		transformOrigin: 'top left',
 		rotate: `${rotate}deg`,
 	}
 	useEffect(() => {
@@ -33,23 +39,35 @@ export function App() {
 		if (refS1.current) {
 			setSS1(refS1.current?.getBoundingClientRect())
 		}
+		if (refSS_.current) {
+			setSSS_(refSS_.current?.getBoundingClientRect())
+		}
+		if (refS1_.current) {
+			setSS1_(refS1_.current?.getBoundingClientRect())
+		}
 	}, [])
 	return (
 		<div>
 			<Stack>
 				<Group h={200} gap={5}>
-					<span style={ss} ref={refSS}>
-						Text 1
-					</span>
-					<span style={s1} ref={refS1}>
-						Text 2
-					</span>
+					<div style={wrapS} ref={refSS_}>
+						<div style={ss} ref={refSS}>
+							Text 1
+						</div>
+					</div>
+					<div style={wrapS} ref={refS1_}>
+						<div style={s1} ref={refS1}>
+							Text 2
+						</div>
+					</div>
 				</Group>
 				<Stack p={20}>
 					<div>ss</div>
-					<Code>{JSON.stringify(sss)}</Code>
+					<Code>sss: {JSON.stringify(sss)}</Code>
+					<Code>wss: {JSON.stringify(sss_)}</Code>
 					<div>s1</div>
-					<Code>{JSON.stringify(ss1)}</Code>
+					<Code>ss1: {JSON.stringify(ss1)}</Code>
+					<Code>ws1: {JSON.stringify(ss1_)}</Code>
 				</Stack>
 			</Stack>
 		</div>

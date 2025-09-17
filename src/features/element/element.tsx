@@ -26,33 +26,36 @@ export const Element = observer(
 
 		const style = useMemo(
 			() => ({
-				...object.style?.(scale, refWrap.current),
+				...object.style?.(scale),
 				...(preview ? { outline: '0px' } : {}),
 			}),
-			[JSON.stringify(object), refWrap.current]
+			[object, scale, preview, refWrap.current]
 		)
 
-		const handleClick = (event: React.MouseEvent) => {
-			if (preview) {
-				return
-			}
-			const element = (event.target as HTMLElement).closest(`.${classes.element}`)
+		const handleClick = useCallback(
+			(event: React.MouseEvent) => {
+				if (preview) {
+					return
+				}
+				const element = (event.target as HTMLElement).closest(`.${classes.element}`)
 
-			if (element instanceof HTMLDivElement) {
-				event.preventDefault()
-				event.stopPropagation()
-			}
+				if (element instanceof HTMLDivElement) {
+					event.preventDefault()
+					event.stopPropagation()
+				}
 
-			if (event.ctrlKey) {
-				storeTemplate.selectObject(element?.id as string)
-			} else if (element instanceof HTMLDivElement) {
-				storeTemplate.setActiveObject(element.id)
-			}
+				if (event.ctrlKey) {
+					storeTemplate.selectObject(element?.id as string)
+				} else if (element instanceof HTMLDivElement) {
+					storeTemplate.setActiveObject(element.id)
+				}
 
-			storeApp?.setFontFamilyFlag?.(false)
-			storeApp?.setVariableFlag?.(false)
-			storeApp?.setImageFlag?.(false)
-		}
+				storeApp?.setFontFamilyFlag?.(false)
+				storeApp?.setVariableFlag?.(false)
+				storeApp?.setImageFlag?.(false)
+			},
+			[preview]
+		)
 
 		const { snap, showLine, hideLine } = useGuideLine()
 
@@ -208,10 +211,17 @@ export const Element = observer(
 			if (object.rotation === 90 || object.rotation === 270) {
 				;(cloneElement.current as HTMLElement).style.height = sPosition.current.width + dx + 'px'
 				;(cloneElement.current as HTMLElement).style.width = sPosition.current.height + dy + 'px'
-				;(cloneElement.current as HTMLElement).style.translate = `${-(dy - dx) / 2}px ${(dy - dx) / 2}px`
 			} else {
 				;(cloneElement.current as HTMLElement).style.width = sPosition.current.width + dx + 'px'
 				;(cloneElement.current as HTMLElement).style.height = sPosition.current.height + dy + 'px'
+			}
+
+			if (object.rotation === 90) {
+				;(cloneElement.current as HTMLElement).style.translate = `${dx}px 0px`
+			} else if (object.rotation === 180) {
+				;(cloneElement.current as HTMLElement).style.translate = `${dx}px ${dy}px`
+			} else if (object.rotation === 270) {
+				;(cloneElement.current as HTMLElement).style.translate = `0px ${dy}px`
 			}
 
 			showLine()

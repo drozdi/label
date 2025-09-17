@@ -106,14 +106,6 @@ export const Template = observer(() => {
 				maxY: rectParent.current.bottom - (rect.bottom - event.clientY),
 				top: rect.top - rectParent.current.top,
 				left: rect.left - rectParent.current.left,
-				_top:
-					rect.top -
-					rectParent.current.top +
-					(rotation === 90 || rotation === 270 ? (rect?.height - rect?.width) / 2 : 0),
-				_left:
-					rect.left -
-					rectParent.current.left -
-					(rotation === 90 || rotation === 270 ? (rect?.height - rect?.width) / 2 : 0),
 				width: rect.width,
 				height: rect.height,
 				rotation,
@@ -254,8 +246,8 @@ export const Template = observer(() => {
 		const [dx, dy] = calckOffset(event)
 
 		cloneElement.current.forEach(item => {
-			item.clone.style.left = item._left + dx + 'px'
-			item.clone.style.top = item._top + dy + 'px'
+			item.clone.style.left = item.left + dx + (item.rotation === 90 || item.rotation === 180 ? item.width : 0) + 'px'
+			item.clone.style.top = item.top + dy + (item.rotation === 180 || item.rotation === 270 ? item.height : 0) + 'px'
 		})
 	}, [])
 	const handleDragMouseUp = useCallback((event: MouseEvent) => {

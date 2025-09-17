@@ -1,6 +1,6 @@
 import { Button, Group, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { TbRotate2, TbRotateClockwise2 } from 'react-icons/tb'
+import { TbRotate2 } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
@@ -15,12 +15,50 @@ export const HeaderMain = observer(() => {
 		storeTemplate.changeHeight(width_mm)
 		storeTemplate.loadObjects(
 			storeTemplate.objects.map(item => {
+				// let newItem = {
+				// 	...item.getCorrectProps(),
+				// 	pos_x: height_mm - item.height - item.pos_y,
+				// 	pos_y: item.pos_x,
+				// 	rotation: (item.rotation + 90) % 360,
+				// }
+
 				let newItem = {
-					...item.getCorrectProps(),
-					pos_x: height_mm - item.height - item.pos_y,
-					pos_y: item.pos_x,
-					rotation: (item.rotation + 90) % 360,
+					...(item.getCorrectProps?.() || item),
 				}
+				// console.log({ ...newItem })
+				// console.log(rect)
+				if (item.properties.includes('rotation')) {
+					newItem = {
+						...newItem,
+						pos_y: newItem.pos_x,
+						pos_x: height_mm - newItem.height - newItem.pos_x,
+						rotation: (newItem.rotation + 270) % 360,
+					}
+				} else if ('lines' === item.type) {
+					let { width, height, pos_x, pos_y, line_thickness } = newItem
+
+					width -= pos_x
+					pos_y = height
+					height = line_thickness
+
+					newItem = {
+						...newItem,
+						pos_x: pos_y,
+						pos_y: width_mm - pos_x - width,
+						width: height + pos_y,
+						height: width_mm - pos_x - width,
+						line_thickness: width,
+					}
+				} else {
+					newItem = {
+						...newItem,
+						pos_y: newItem.pos_x,
+						pos_x: height_mm - newItem.height - newItem.pos_y,
+						width: newItem.height,
+						height: newItem.width,
+					}
+				}
+
 				return newItem
 			})
 		)
@@ -37,9 +75,8 @@ export const HeaderMain = observer(() => {
 				let newItem = {
 					...(item.getCorrectProps?.() || item),
 				}
-
-				console.log({ ...newItem })
-				console.log(rect)
+				// console.log({ ...newItem })
+				// console.log(rect)
 				if (item.properties.includes('rotation')) {
 					newItem = {
 						...newItem,
@@ -127,9 +164,9 @@ export const HeaderMain = observer(() => {
 			<Button variant='filled' onClick={handleRotateLeft}>
 				<TbRotate2 />
 			</Button>
-			<Button variant='filled' onClick={handleRotateRight}>
+			{/* <Button variant='filled' onClick={handleRotateRight}>
 				<TbRotateClockwise2 />
-			</Button>
+			</Button> */}
 		</Group>
 	)
 })

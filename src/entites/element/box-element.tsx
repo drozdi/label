@@ -10,16 +10,7 @@ export class BoxElement extends BaseElement {
 		})
 	}
 	get properties() {
-		return [
-			'enabled',
-			'name',
-			'pos_x',
-			'pos_y',
-			'width',
-			'height',
-			'radius',
-			'line_thickness',
-		]
+		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'radius', 'line_thickness']
 	}
 	get multiProperties() {
 		return ['enabled']
@@ -27,9 +18,9 @@ export class BoxElement extends BaseElement {
 	get resize() {
 		return ['e', 's', 'se']
 	}
-	style(scale = 1, element) {
+	style(scale = 1) {
 		return {
-			...super.style(scale, element),
+			...super.style(scale),
 			outline: 0,
 			borderRadius: 0,
 		}

@@ -13,23 +13,20 @@ export class BarcodeElement extends BaseElement {
 		})
 	}
 	get properties() {
-		const props = [
-			'enabled',
-			'name',
-			'pos_x',
-			'pos_y',
-			'width',
-			'height',
-			'rotation',
-			'data',
-		]
+		const props = ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'data']
 		if (this.code_type === 'ean13' || this.code_type === 'code128') {
-			props.push('human_readable')
+			props.push('human_readable', 'rotation')
+		} else if (this.code_type === 'qrcode') {
+			props.push('rotation')
 		}
+
 		return props
 	}
 	get multiProperties() {
-		return ['enabled', 'rotation']
+		if (this.code_type === 'ean13' || this.code_type === 'code128' || this.code_type === 'qrcode') {
+			return ['enabled', 'rotation']
+		}
+		return ['enabled']
 	}
 	render(scale = 1, preview = false): React.ReactNode {
 		const prefix = preview ? '_preview' : ''
@@ -41,9 +38,7 @@ export class BarcodeElement extends BaseElement {
 			margin: 0,
 			lineHeight: 1,
 		}
-		const [body, setBody] = useState(
-			this.data.length >= 13 ? this.data : '0000000000000'
-		)
+		const [body, setBody] = useState(this.data.length >= 13 ? this.data : '0000000000000')
 		useEffect(() => {
 			try {
 				if (this.code_type === 'ean13' || this.code_type === 'code128') {
@@ -129,8 +124,8 @@ export class BarcodeElement extends BaseElement {
 	get min_size() {
 		return this.radius
 	}
-	style(scale = 1, element) {
-		const style = super.style(scale, element)
+	style(scale = 1) {
+		const style = super.style(scale)
 		if (this.code_type === 'datamatrix') {
 			/*style.width = style.width * this.min_size
 			style.height = style.height * this.min_size //*/

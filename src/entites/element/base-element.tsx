@@ -128,7 +128,8 @@ export class BaseElement {
 			bottom: (rectParent?.height - (rectElement?.top - rectParent?.top) - rectElement?.height) / this.mm / scale,
 		}
 	}
-	style(scale = 1, element) {
+	style(scale = 1) {
+		const element = document.getElementById(this.id)
 		let width, height, _width, _height
 		let left = this.pos_x * this.mm * scale
 		let top = this.pos_y * this.mm * scale
@@ -148,7 +149,8 @@ export class BaseElement {
 
 		_width ??= width
 		_height ??= height
-		if (_width !== 'auto' && _height !== 'auto') {
+
+		/*if (_width !== 'auto' && _height !== 'auto') {
 			if (this.rotation === 90) {
 				;[_width, _height] = [_height, _width]
 				left -= (_width + _height) / 2
@@ -161,7 +163,7 @@ export class BaseElement {
 				left -= (_width - _height) / 2
 				top -= (_width + _height) / 2
 			}
-		}
+		}*/
 
 		return {
 			left,
@@ -174,6 +176,7 @@ export class BaseElement {
 			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,
 			fontFamily: this.fontFamily,
+			transformOrigin: 'top left',
 		}
 	}
 
