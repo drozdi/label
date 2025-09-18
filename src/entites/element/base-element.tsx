@@ -3,6 +3,7 @@ import { round } from '../../shared/utils'
 import { storeFonts } from '../fonts/store'
 import { storeImages } from '../images/store'
 import { factoryElement } from './factory-element'
+
 export class BaseElement {
 	/////
 	mm = MM
@@ -120,12 +121,14 @@ export class BaseElement {
 		const rectElement = element?.getBoundingClientRect()
 		const rectParent = element?.parentElement?.getBoundingClientRect()
 		return {
-			top: (rectElement?.top - rectParent?.top) / this.mm / scale,
-			left: (rectElement?.left - rectParent?.left) / this.mm / scale,
-			width: rectElement?.width / this.mm / scale,
-			height: rectElement?.height / this.mm / scale,
-			right: (rectParent?.width - (rectElement?.left - rectParent?.left) - rectElement?.width) / this.mm / scale,
-			bottom: (rectParent?.height - (rectElement?.top - rectParent?.top) - rectElement?.height) / this.mm / scale,
+			top: round((rectElement?.top - rectParent?.top) / this.mm / scale),
+			left: round((rectElement?.left - rectParent?.left) / this.mm / scale),
+			width: round(rectElement?.width / this.mm / scale),
+			height: round(rectElement?.height / this.mm / scale),
+			right: round((rectParent?.width - (rectElement?.left - rectParent?.left) - rectElement?.width) / this.mm / scale),
+			bottom: round(
+				(rectParent?.height - (rectElement?.top - rectParent?.top) - rectElement?.height) / this.mm / scale
+			),
 		}
 	}
 	style(scale = 1) {
@@ -147,29 +150,11 @@ export class BaseElement {
 			height = this.height * this.mm * scale
 		}
 
-		_width ??= width
-		_height ??= height
-
-		/*if (_width !== 'auto' && _height !== 'auto') {
-			if (this.rotation === 90) {
-				;[_width, _height] = [_height, _width]
-				left -= (_width + _height) / 2
-				top += (_width - _height) / 2
-			} else if (this.rotation === 180) {
-				left -= _width
-				top -= _height
-			} else if (this.rotation === 270) {
-				;[_width, _height] = [_height, _width]
-				left -= (_width - _height) / 2
-				top -= (_width + _height) / 2
-			}
-		}*/
-
 		return {
-			left,
-			top,
-			width,
-			height,
+			left: round(left),
+			top: round(top),
+			width: width === 'auto' ? 'auto' : round(width),
+			height: height === 'auto' ? 'auto' : round(height),
 			fontSize: this.font_size * scale + 'pt',
 			justifyContent: this.text_align === 2 ? 'center' : this.text_align === 3 ? 'flex-end' : 'flex-start',
 			rotate: this.rotation + 'deg',

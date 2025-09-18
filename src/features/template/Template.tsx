@@ -6,7 +6,7 @@ import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
 import { serviceTemplate } from '../../services/template/service'
 import { SNAP_THRESHOLD, STEP } from '../../shared/constants'
-import { minMax, round } from '../../shared/utils'
+import { minMax, round, roundInt } from '../../shared/utils'
 import { Element } from '../element/element'
 import classes from '../element/element.module.css'
 import { BackgroundBg } from './background-bg'
@@ -232,7 +232,7 @@ export const Template = observer(() => {
 		})
 
 		showLine()
-		return [dx, dy]
+		return [roundInt(dx), roundInt(dy)]
 	}, [])
 
 	const handleDragMouseMove = useCallback((event: MouseEvent) => {
@@ -244,6 +244,10 @@ export const Template = observer(() => {
 		event.stopPropagation()
 
 		const [dx, dy] = calckOffset(event)
+
+		if (Math.abs(dx) < 4 && Math.abs(dy) < 4) {
+			return
+		}
 
 		cloneElement.current.forEach(item => {
 			item.clone.style.left = item.left + dx + (item.rotation === 90 || item.rotation === 180 ? item.width : 0) + 'px'
@@ -258,9 +262,11 @@ export const Template = observer(() => {
 		event.preventDefault()
 		event.stopPropagation()
 
-		const [dx, dy] = calckOffset(event).map(v => v / storeTemplate.mm / storeTemplate.scale)
+		const [dx, dy] = calckOffset(event)
 
-		move(round(dx), round(dy))
+		if (Math.abs(dx) > SNAP_THRESHOLD - 1 || Math.abs(dy) > SNAP_THRESHOLD - 1) {
+			move(round(dx / storeTemplate.mm / storeTemplate.scale), round(dy / storeTemplate.mm / storeTemplate.scale))
+		}
 
 		cloneElement.current.forEach(item => {
 			item.clone?.remove()

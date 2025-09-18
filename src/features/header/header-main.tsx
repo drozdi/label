@@ -1,11 +1,12 @@
 import { Button, Group, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { TbRotate2 } from 'react-icons/tb'
+import { TbRotate2, TbRotateClockwise2 } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { serviceTemplate } from '../../services/template/service'
+import { round } from '../../shared/utils'
 
 export const HeaderMain = observer(() => {
 	const { importFlag, previewFlag, errorName } = storeApp
@@ -15,24 +16,18 @@ export const HeaderMain = observer(() => {
 		storeTemplate.changeHeight(width_mm)
 		storeTemplate.loadObjects(
 			storeTemplate.objects.map(item => {
-				// let newItem = {
-				// 	...item.getCorrectProps(),
-				// 	pos_x: height_mm - item.height - item.pos_y,
-				// 	pos_y: item.pos_x,
-				// 	rotation: (item.rotation + 90) % 360,
-				// }
-
 				let newItem = {
 					...(item.getCorrectProps?.() || item),
 				}
-				// console.log({ ...newItem })
-				// console.log(rect)
 				if (item.properties.includes('rotation')) {
+					const rotation = (newItem.rotation + 90) % 360
 					newItem = {
 						...newItem,
-						pos_y: newItem.pos_x,
-						pos_x: height_mm - newItem.height - newItem.pos_x,
-						rotation: (newItem.rotation + 270) % 360,
+						pos_x: round(
+							height_mm - newItem.pos_y - (rotation === 90 && newItem.type === 'block' ? newItem.height : 0)
+						),
+						pos_y: round(newItem.pos_x + (rotation === 180 && newItem.type === 'block' ? newItem.height : 0)),
+						rotation: rotation,
 					}
 				} else if ('lines' === item.type) {
 					let { width, height, pos_x, pos_y, line_thickness } = newItem
@@ -43,26 +38,25 @@ export const HeaderMain = observer(() => {
 
 					newItem = {
 						...newItem,
-						pos_x: pos_y,
-						pos_y: width_mm - pos_x - width,
-						width: height + pos_y,
-						height: width_mm - pos_x - width,
-						line_thickness: width,
+						pos_y: round(pos_x),
+						pos_x: round(height_mm - pos_y - height),
+						width: round(height_mm - pos_y),
+						height: round(pos_x),
+						line_thickness: round(width),
 					}
 				} else {
 					newItem = {
 						...newItem,
-						pos_y: newItem.pos_x,
-						pos_x: height_mm - newItem.height - newItem.pos_y,
-						width: newItem.height,
-						height: newItem.width,
+						pos_y: round(newItem.pos_x),
+						pos_x: round(height_mm - newItem.height - newItem.pos_y),
+						width: round(newItem.height),
+						height: round(newItem.width),
 					}
 				}
 
 				return newItem
 			})
 		)
-		//storeTemplate.loadObjects(storeTemplate.objects)
 		storeHistory.append(storeTemplate.objects, 'Поворот на -90')
 	}
 	const handleRotateLeft = () => {
@@ -71,18 +65,16 @@ export const HeaderMain = observer(() => {
 		storeTemplate.changeHeight(width_mm)
 		storeTemplate.loadObjects(
 			storeTemplate.objects.map(item => {
-				const rect = item.size(storeTemplate.scale)
 				let newItem = {
 					...(item.getCorrectProps?.() || item),
 				}
-				// console.log({ ...newItem })
-				// console.log(rect)
 				if (item.properties.includes('rotation')) {
+					const rotation = (newItem.rotation + 270) % 360
 					newItem = {
 						...newItem,
-						pos_x: newItem.pos_y,
-						pos_y: width_mm - newItem.pos_x,
-						rotation: (newItem.rotation + 270) % 360,
+						pos_x: round(newItem.pos_y - (rotation === 90 && newItem.type === 'block' ? newItem.height : 0)),
+						pos_y: round(width_mm - newItem.pos_x - (rotation === 0 && newItem.type === 'block' ? newItem.height : 0)),
+						rotation: rotation,
 					}
 				} else if ('lines' === item.type) {
 					let { width, height, pos_x, pos_y, line_thickness } = newItem
@@ -93,19 +85,19 @@ export const HeaderMain = observer(() => {
 
 					newItem = {
 						...newItem,
-						pos_x: pos_y,
-						pos_y: width_mm - pos_x - width,
-						width: height + pos_y,
-						height: width_mm - pos_x - width,
-						line_thickness: width,
+						pos_x: round(pos_y),
+						pos_y: round(width_mm - pos_x - width),
+						width: round(height + pos_y),
+						height: round(width_mm - pos_x - width),
+						line_thickness: round(width),
 					}
 				} else {
 					newItem = {
 						...newItem,
-						pos_x: newItem.pos_y,
-						pos_y: width_mm - newItem.pos_x - newItem.width,
-						width: newItem.height,
-						height: newItem.width,
+						pos_x: round(newItem.pos_y),
+						pos_y: round(width_mm - newItem.pos_x - newItem.width),
+						width: round(newItem.height),
+						height: round(newItem.width),
 					}
 				}
 
@@ -164,9 +156,9 @@ export const HeaderMain = observer(() => {
 			<Button variant='filled' onClick={handleRotateLeft}>
 				<TbRotate2 />
 			</Button>
-			{/* <Button variant='filled' onClick={handleRotateRight}>
+			<Button variant='filled' onClick={handleRotateRight}>
 				<TbRotateClockwise2 />
-			</Button> */}
+			</Button>
 		</Group>
 	)
 })

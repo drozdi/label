@@ -1,6 +1,6 @@
 import bwipjs from 'bwip-js'
 import { useEffect, useState } from 'react'
-import { minMax } from '../../shared/utils'
+import { minMax, round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
 export class BarcodeElement extends BaseElement {
@@ -47,22 +47,22 @@ export class BarcodeElement extends BaseElement {
 						scaleY: 2,
 						bcid: this.code_type,
 						text: body,
-						height: this.height * 2,
+						height: round(this.height * 2),
 					})
 				} else if (this.code_type === 'datamatrix') {
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: 'datamatrix',
 						text: '^FNC1' + this.name,
-						height: this.height * this.min_size,
-						width: this.width * this.min_size,
+						height: round(this.height * this.min_size),
+						width: round(this.width * this.min_size),
 						parsefnc: true,
 					})
 				} else {
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: this.code_type,
 						text: this.data,
-						height: this.height,
-						width: this.width,
+						height: round(this.height),
+						width: round(this.width),
 					})
 				}
 			} catch (e) {
@@ -76,13 +76,15 @@ export class BarcodeElement extends BaseElement {
 					id={'mycanvas' + this.id + prefix}
 					style={{
 						height:
-							this.code_type === 'qrcode'
-								? this.height * this.mm_qr * scale + 'px'
-								: this.code_type === 'datamatrix' && this.min_size === 0
-									? this.height * 1.833 * this.mm * scale + 'px'
-									: this.code_type === 'datamatrix' && this.min_size !== 0
-										? this.height * this.min_size * this.mm * scale + 'px'
-										: this.height * this.mm * scale + 'px',
+							round(
+								this.code_type === 'qrcode'
+									? this.height * this.mm_qr * scale
+									: this.code_type === 'datamatrix' && this.min_size === 0
+										? this.height * 1.833 * this.mm * scale
+										: this.code_type === 'datamatrix' && this.min_size !== 0
+											? this.height * this.min_size * this.mm * scale
+											: this.height * this.mm * scale
+							) + 'px',
 					}}
 				></canvas>
 				{this.human_readable === 1 ? (
@@ -119,7 +121,7 @@ export class BarcodeElement extends BaseElement {
 		)
 	}
 	get size() {
-		return Math.max(this.width, this.height)
+		return round(Math.max(this.width, this.height))
 	}
 	get min_size() {
 		return this.radius

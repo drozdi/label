@@ -16,8 +16,8 @@ export const VERSION = '2.0.0'
 
 export const DEF_TEMPLATE = {
 	dpi: 12,
-	height_mm: 100,
-	width_mm: 100,
+	width_mm: 58,
+	height_mm: 40,
 	radius_label: 5,
 	gap_mm: 3,
 	scale: 1,

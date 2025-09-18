@@ -64,7 +64,16 @@ export async function requestObjectNew(template_id = 0, objects: any | any[]) {
 }
 
 export async function requestObjectUpdate(objects: any | any[]) {
-	const res = await api.patch(`/form_labels/field/`, [].concat(objects))
+	const res = await api.patch(
+		`/form_labels/field/`,
+		[].concat(objects).map(item => {
+			if (item.type === 'text') {
+				item.width = 0
+				item.height = 0
+			}
+			return item
+		})
+	)
 	return res.data
 }
 // Обновление существующих объектов внутри шаблона

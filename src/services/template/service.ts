@@ -131,6 +131,7 @@ export const serviceTemplate = {
 		try {
 			await storeTemplates.updateTemplate(template)
 			serviceNotifications.success('Шаблон успешно изменён')
+			storeApp.setErrorName(false)
 		} catch (error) {
 			serviceNotifications.error(error)
 		}
@@ -140,6 +141,7 @@ export const serviceTemplate = {
 			const res = await storeTemplates.newTemplate(template)
 			storeTemplate.loadTemplate(res.data)
 			serviceNotifications.success('Шаблон успешно сохранён')
+			storeApp.setErrorName(false)
 		} catch (error) {
 			serviceNotifications.error(error)
 		}

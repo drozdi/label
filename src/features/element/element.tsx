@@ -6,7 +6,7 @@ import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
 import { SNAP_THRESHOLD } from '../../shared/constants'
-import { minMax } from '../../shared/utils'
+import { minMax, round, roundInt } from '../../shared/utils'
 import classes from './element.module.css'
 import { resizeObject } from './utils/resize'
 
@@ -198,7 +198,7 @@ export const Element = observer(
 				}
 			})
 
-			return [dx, dy]
+			return [roundInt(dx), roundInt(dy)]
 		}, [])
 
 		const handleMouseMove = (event: MouseEvent) => {
@@ -231,7 +231,7 @@ export const Element = observer(
 				return
 			}
 
-			const [dx, dy] = calcOffset(event).map(val => val / storeTemplate.mm / scale)
+			const [dx, dy] = calcOffset(event).map(val => round(val / storeTemplate.mm / scale))
 
 			if (object.rotation === 90 || object.rotation === 270) {
 				resizeObject(dy, dx)

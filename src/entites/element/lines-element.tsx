@@ -1,3 +1,4 @@
+import { round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
 export class LinesElement extends BaseElement {
@@ -26,9 +27,9 @@ export class LinesElement extends BaseElement {
 	getCorrectProps() {
 		return {
 			...super.getCorrectProps(),
-			width: this.pos_x + this.width,
-			height: this.pos_y,
-			line_thickness: this.height,
+			width: round(this.pos_x + this.width),
+			height: round(this.pos_y),
+			line_thickness: round(this.height),
 		}
 	}
 	style(scale = 1) {

@@ -1,3 +1,4 @@
+import { round } from '../../shared/utils'
 import { storeFonts } from '../fonts/store'
 import { BaseElement } from './base-element'
 
@@ -43,6 +44,6 @@ export class BlockElement extends BaseElement {
 			left += height
 		}
 
-		return { ...super.style(scale), left }
+		return { ...super.style(scale), left: round(left) }
 	}
 }

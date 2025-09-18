@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { CM, DEF_TEMPLATE, KEY_SCALE_DEFAULT, MM, MM_QR } from '../../shared/constants'
-import { round } from '../../shared/utils'
+import { round, roundInt } from '../../shared/utils'
 import { factoryElement } from '../element/factory-element'
 
 class StoreTemplate {
@@ -51,22 +51,22 @@ class StoreTemplate {
 	}
 
 	get width() {
-		return this.width_mm * this.mm * this.scale
+		return roundInt(this.width_mm * this.mm * this.scale)
 	}
 	get height() {
-		return this.height_mm * this.mm * this.scale
+		return roundInt(this.height_mm * this.mm * this.scale)
 	}
 	get borderRadius() {
 		return this.radius_label
 	}
 	get referenceX() {
-		return this.reference_x * this.mm * this.scale
+		return roundInt(this.reference_x * this.mm * this.scale)
 	}
 	get referenceY() {
-		return this.reference_y * this.mm * this.scale
+		return roundInt(this.reference_y * this.mm * this.scale)
 	}
 	get space() {
-		return this.gap_mm * this.mm * this.scale
+		return roundInt(this.gap_mm * this.mm * this.scale)
 	}
 	get style() {
 		return {
