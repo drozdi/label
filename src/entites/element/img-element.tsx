@@ -23,7 +23,14 @@ export class ImgElement extends BaseElement {
 	}
 	render(scale = 1, preview = false): React.ReactNode {
 		return (
-			<Image mah='100%' maw='100%' fit='contain' src={`data:image/bmp;base64,${this.imageData}`} alt={this.imageName} />
+			<Image
+				mah='100%'
+				maw='100%'
+				fit='contain'
+				src={`data:image/bmp;base64,${this.imageData}`}
+				alt={this.imageName}
+				onDragStart={event => event.preventDefault()}
+			/>
 		)
 	}
 }

@@ -131,6 +131,14 @@ export class BaseElement {
 			),
 		}
 	}
+	_size() {
+		const element = document.getElementById(this.id)
+		const rectElement = element?.getBoundingClientRect()
+		return {
+			width: round(rectElement?.width),
+			height: round(rectElement?.height),
+		}
+	}
 	style(scale = 1) {
 		const element = document.getElementById(this.id)
 		let width, height, _width, _height
@@ -166,7 +174,7 @@ export class BaseElement {
 	}
 
 	render(scale = 1, preview = false): React.ReactNode {
-		return this.data
+		return typeof this.data === 'string' ? this.data.replace(/  /g, ' \u00A0') : this.data
 	}
 
 	setName(name: string) {

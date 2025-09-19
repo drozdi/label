@@ -1,4 +1,3 @@
-import { round } from '../../shared/utils'
 import { storeFonts } from '../fonts/store'
 import { BaseElement } from './base-element'
 
@@ -33,17 +32,5 @@ export class BlockElement extends BaseElement {
 	}
 	get resize() {
 		return ['e', 's', 'se']
-	}
-	style(scale = 1) {
-		let width = this.width * this.mm * scale
-		let height = this.height * this.mm * scale
-		let left = this.pos_x * this.mm * scale
-		let top = this.pos_y * this.mm * scale
-
-		if (this.rotation === 90) {
-			left += height
-		}
-
-		return { ...super.style(scale), left: round(left) }
 	}
 }

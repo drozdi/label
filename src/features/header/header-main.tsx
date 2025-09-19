@@ -23,10 +23,8 @@ export const HeaderMain = observer(() => {
 					const rotation = (newItem.rotation + 90) % 360
 					newItem = {
 						...newItem,
-						pos_x: round(
-							height_mm - newItem.pos_y - (rotation === 90 && newItem.type === 'block' ? newItem.height : 0)
-						),
-						pos_y: round(newItem.pos_x + (rotation === 180 && newItem.type === 'block' ? newItem.height : 0)),
+						pos_x: round(height_mm - newItem.pos_y),
+						pos_y: round(newItem.pos_x),
 						rotation: rotation,
 					}
 				} else if ('lines' === item.type) {
@@ -72,8 +70,8 @@ export const HeaderMain = observer(() => {
 					const rotation = (newItem.rotation + 270) % 360
 					newItem = {
 						...newItem,
-						pos_x: round(newItem.pos_y - (rotation === 90 && newItem.type === 'block' ? newItem.height : 0)),
-						pos_y: round(width_mm - newItem.pos_x - (rotation === 0 && newItem.type === 'block' ? newItem.height : 0)),
+						pos_x: round(newItem.pos_y),
+						pos_y: round(width_mm - newItem.pos_x),
 						rotation: rotation,
 					}
 				} else if ('lines' === item.type) {

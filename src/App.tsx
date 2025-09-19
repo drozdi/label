@@ -6,10 +6,12 @@ export function App() {
 	const refS1 = useRef<HTMLDivElement>(null)
 	const refSS_ = useRef<HTMLDivElement>(null)
 	const refS1_ = useRef<HTMLDivElement>(null)
+	const refS1__ = useRef<HTMLDivElement>(null)
 	const [sss, setSSS] = useState({})
 	const [ss1, setSS1] = useState({})
 	const [sss_, setSSS_] = useState({})
 	const [ss1_, setSS1_] = useState({})
+	const [ss1__, setSS1__] = useState({})
 	const width = 120
 	const height = 20
 	const x = 30
@@ -22,8 +24,8 @@ export function App() {
 		position: 'absolute',
 		left: x,
 		top: y,
-		width,
-		height,
+		//width,
+		//height,
 		background: '#ff000050',
 	}
 	const s1 = {
@@ -45,6 +47,9 @@ export function App() {
 		if (refS1_.current) {
 			setSS1_(refS1_.current?.getBoundingClientRect())
 		}
+		if (refS1__.current) {
+			setSS1__(refS1__.current?.getBoundingClientRect())
+		}
 	}, [])
 	return (
 		<div>
@@ -57,7 +62,7 @@ export function App() {
 					</div>
 					<div style={wrapS} ref={refS1_}>
 						<div style={s1} ref={refS1}>
-							Text 2
+							<div ref={refS1__}>Text wewe we wref w efwef2</div>
 						</div>
 					</div>
 				</Group>
@@ -68,6 +73,7 @@ export function App() {
 					<div>s1</div>
 					<Code>ss1: {JSON.stringify(ss1)}</Code>
 					<Code>ws1: {JSON.stringify(ss1_)}</Code>
+					<Code>is1: {JSON.stringify(ss1__)}</Code>
 				</Stack>
 			</Stack>
 		</div>

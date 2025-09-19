@@ -1,12 +1,4 @@
-import {
-	Button,
-	FileButton,
-	Group,
-	Modal,
-	Stack,
-	Textarea,
-	Title,
-} from '@mantine/core'
+import { Button, FileButton, Group, Modal, Stack, Textarea, Title } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useRef, useState } from 'react'
 import { storeApp } from '../../entites/app/store'
@@ -15,6 +7,7 @@ import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
 import { storeTemplate } from '../../entites/template/store'
 import { serviceNotifications } from '../../services/notifications/service'
+import { KEY_API_HOST, URL_API } from '../../shared/constants'
 import { genId, round } from '../../shared/utils'
 
 function genObj(def = {}) {
@@ -98,6 +91,7 @@ const regParse = (reg: RegExp, str: string, def = {}) => {
 }
 
 export const Import = observer(() => {
+	const _cost = (localStorage.getItem(KEY_API_HOST) || URL_API) === URL_API
 	const refText = useRef<HTMLTextAreaElement>(null)
 	const handleFile = (file: any) => {
 		if (!file.name.toLowerCase().match(/\.txt$/g)) {
@@ -241,8 +235,8 @@ export const Import = observer(() => {
 				}
 			)
 
-			obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
+			obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
+			obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
 
 			let font
 			if ((font = storeFonts.findByTagFonts(res.font))) {
@@ -264,7 +258,7 @@ export const Import = observer(() => {
 			} else {
 				obj.font_size = parseInt(res.x_multiplication, 10)
 			}
-			obj.font_size = Math.floor((obj.font_size * 8) / 12)
+			//obj.font_size = Math.floor((obj.font_size * 8) / 12)
 
 			obj.data = res.data
 
@@ -279,7 +273,7 @@ export const Import = observer(() => {
 			})
 
 			const res = regParse(
-				/(?:BLOCK)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<width>[0-9]*)\s*,\s*(?<height>[0-9]*)\s*,\s*"(?<font>.*)"\s*,\s*(?<rotation>[0-9]*)\s*,\s*(?<x_multiplication>[0-9]*)\s*,\s*(?<y_multiplication>[0-9]*)(?:\s*,\s*(?<space>[0-9]*))?(?:\s*,\s*(?<alignment>[0123]))?\s*,\s*"(?<data>.*)"/,
+				/(?:BLOCK)?\s*(?<pos_x>[0-9]*)\s*,\s*(?<pos_y>[0-9]*)\s*,\s*(?<width>[0-9]*)\s*,\s*(?<height>[0-9]*)\s*,\s*"(?<font>.*)"\s*,\s*(?<rotation>[0-9]*)\s*,\s*(?<x_multiplication>[0-9]*)\s*,\s*(?<y_multiplication>[0-9]*)(?:\s*,\s*(?<space>[0-9]*))?(?:\s*,\s*(?<alignment>[0123]))?(?:\s*,\s*(?<fit>[0-9]*))?\s*,\s*"(?<data>.*)"/,
 				str,
 				{
 					pos_x: 0,
@@ -292,13 +286,20 @@ export const Import = observer(() => {
 					alignment: 0,
 					space: 0,
 					data: '',
+					fit: 0,
 				}
 			)
 
-			obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
-			obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
-			obj.width = parseInt(res.width, 10) / storeTemplate.dpi
-			obj.height = parseInt(res.height, 10) / storeTemplate.dpi
+			obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
+			obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
+
+			if (_cost) {
+				obj.width = round(parseInt(res.width - res.pos_x, 10) / storeTemplate.dpi)
+				obj.height = round(parseInt(res.height - res.pos_y, 10) / storeTemplate.dpi)
+			} else {
+				obj.width = round(parseInt(res.width, 10) / storeTemplate.dpi)
+				obj.height = round(parseInt(res.height, 10) / storeTemplate.dpi)
+			}
 
 			let font
 			if ((font = storeFonts.findByTagFonts(res.font))) {
@@ -436,9 +437,7 @@ export const Import = observer(() => {
 			} else if ((image = storeImages.findById(res.data))) {
 				obj.image_id = image.id
 			} else {
-				serviceNotifications.alert(
-					'Изображение не загружено, пожалуйста, передобавьте его вручную.'
-				)
+				serviceNotifications.alert('Изображение не загружено, пожалуйста, передобавьте его вручную.')
 			}
 
 			storeTemplate.addObject(obj)
@@ -455,24 +454,12 @@ export const Import = observer(() => {
 				{ pos_x: 0, pos_y: 0, x_end: 0, y_end: 0, line_thickness: 1, radius: 0 }
 			)
 
-			console.log(res)
-
 			obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
 			obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
-			obj.width = round(
-				Math.abs(parseInt(res.pos_x, 10) - parseInt(res.x_end, 10)) /
-					storeTemplate.dpi
-			)
-			obj.height = round(
-				Math.abs(parseInt(res.pos_y, 10) - parseInt(res.y_end, 10)) /
-					storeTemplate.dpi
-			)
-			obj.line_thickness = round(
-				parseInt(res.line_thickness, 10) / storeTemplate.dpi
-			)
+			obj.width = round(Math.abs(parseInt(res.pos_x, 10) - parseInt(res.x_end, 10)) / storeTemplate.dpi)
+			obj.height = round(Math.abs(parseInt(res.pos_y, 10) - parseInt(res.y_end, 10)) / storeTemplate.dpi)
+			obj.line_thickness = round(parseInt(res.line_thickness, 10) / storeTemplate.dpi)
 			obj.radius = parseInt(res.radius ?? 0, 10)
-
-			console.log(obj)
 
 			storeTemplate.addObject(obj)
 		},
@@ -548,11 +535,7 @@ export const Import = observer(() => {
 					this.textElementS(obj, lines[i])
 					e = true
 				} else if (/^XRB/.test(lines[i])) {
-					this.datamatrixElement(
-						obj,
-						lines[i].replace(/^XRB/, ''),
-						lines[i + 1]
-					)
+					this.datamatrixElement(obj, lines[i].replace(/^XRB/, ''), lines[i + 1])
 					i++
 					e = true
 				} else if (/^W/.test(lines[i])) {
@@ -607,8 +590,7 @@ export const Import = observer(() => {
 
 			obj.pos_x = res.x / storeTemplate.dpi
 			obj.pos_y = res.y / storeTemplate.dpi
-			obj.rotation =
-				res.r === '3' ? 270 : res.r === '2' ? 180 : res.r === '1' ? 90 : 0
+			obj.rotation = res.r === '3' ? 270 : res.r === '2' ? 180 : res.r === '1' ? 90 : 0
 			obj.data = res.data
 
 			serviceNotifications.alert(
@@ -695,15 +677,12 @@ export const Import = observer(() => {
 				}
 			)
 
-			console.log(res)
-
 			obj.pos_x = res.x / storeTemplate.dpi
 			obj.pos_y = res.y / storeTemplate.dpi
 			obj.width = res.w / storeTemplate.dpi
 			obj.height = res.h / storeTemplate.dpi
 
-			obj.rotation =
-				res.r === '3' ? 270 : res.r === '2' ? 180 : res.r === '1' ? 90 : 0
+			obj.rotation = res.r === '3' ? 270 : res.r === '2' ? 180 : res.r === '1' ? 90 : 0
 
 			obj.data = res.data
 
@@ -734,14 +713,7 @@ export const Import = observer(() => {
 			obj.pos_y = parseInt(res.y, 10) / storeTemplate.dpi
 			obj.width = parseInt(res.enlarge.replace(/[^\d]/, ''), 10)
 			obj.height = obj.width
-			obj.rotation =
-				res.rotation === '3'
-					? 270
-					: res.rotation === '2'
-						? 180
-						: res.rotation === '1'
-							? 90
-							: 0
+			obj.rotation = res.rotation === '3' ? 270 : res.rotation === '2' ? 180 : res.rotation === '1' ? 90 : 0
 
 			const dm = storeDataMatrix._selectedDM(storeDataMatrix.findByDM(obj.name))
 
@@ -756,11 +728,7 @@ export const Import = observer(() => {
 			obj.width = 10
 			obj.height = 10
 
-			const res = regParse(
-				/(?:Y)?(?<x>[0-9]*),(?<y>[0-9]*),(?<data>.*)/,
-				str,
-				{}
-			)
+			const res = regParse(/(?:Y)?(?<x>[0-9]*),(?<y>[0-9]*),(?<data>.*)/, str, {})
 
 			obj.pos_x = parseInt(res.x, 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(res.y, 10) / storeTemplate.dpi
@@ -774,9 +742,7 @@ export const Import = observer(() => {
 				obj.image_id = image.id
 			} else {
 				obj.image_id = storeImages.id
-				serviceNotifications.alert(
-					'Изображение не загружено, пожалуйста, передобавьте его вручную.'
-				)
+				serviceNotifications.alert('Изображение не загружено, пожалуйста, передобавьте его вручную.')
 			}
 		},
 		barElement(obj: Record<string, any>, str: string) {
@@ -797,14 +763,8 @@ export const Import = observer(() => {
 				}
 			)
 
-			const p1 = [
-				parseInt(res.x, 10) / storeTemplate.dpi,
-				parseInt(res.y, 10) / storeTemplate.dpi,
-			]
-			const p2 = [
-				parseInt(res.x1, 10) / storeTemplate.dpi,
-				parseInt(res.y1, 10) / storeTemplate.dpi,
-			]
+			const p1 = [parseInt(res.x, 10) / storeTemplate.dpi, parseInt(res.y, 10) / storeTemplate.dpi]
+			const p2 = [parseInt(res.x1, 10) / storeTemplate.dpi, parseInt(res.y1, 10) / storeTemplate.dpi]
 
 			obj.pos_x = Math.min(p1[0], p2[0])
 			obj.pos_y = Math.min(p1[1], p2[1])
@@ -815,12 +775,9 @@ export const Import = observer(() => {
 			const dx = Math.abs(x - obj.pos_x)
 			const dy = Math.abs(y - obj.pos_y)
 
-			obj.width =
-				obj.pos_x +
-				(y === 0 || dy === 0 ? dx : parseInt(res.n, 10) / storeTemplate.dpi)
+			obj.width = obj.pos_x + (y === 0 || dy === 0 ? dx : parseInt(res.n, 10) / storeTemplate.dpi)
 			obj.height = obj.pos_y
-			obj.line_thickness =
-				x === 0 || dx === 0 ? dy : parseInt(res.n, 10) / storeTemplate.dpi
+			obj.line_thickness = x === 0 || dx === 0 ? dy : parseInt(res.n, 10) / storeTemplate.dpi
 		},
 		barcodeElement(obj: Record<string, any>, str: string, type: string) {
 			const res = regParse(
@@ -856,14 +813,7 @@ export const Import = observer(() => {
 							? 3
 							: 0
 
-			obj.rotation =
-				res.rotation === '3'
-					? 270
-					: res.rotation === '2'
-						? 182
-						: res.rotation === '1'
-							? 90
-							: 0
+			obj.rotation = res.rotation === '3' ? 270 : res.rotation === '2' ? 182 : res.rotation === '1' ? 90 : 0
 			obj.data = res.data
 		},
 		barcodeElementEAN13(obj: Record<string, any>, str: string) {
@@ -906,14 +856,7 @@ export const Import = observer(() => {
 
 			obj.pos_x = parseInt(res.x, 10) / storeTemplate.dpi
 			obj.pos_y = parseInt(res.y, 10) / storeTemplate.dpi
-			obj.rotation =
-				res.roatae === '3'
-					? 270
-					: res.roatae === '2'
-						? 180
-						: res.roatae === '1'
-							? 90
-							: 0
+			obj.rotation = res.roatae === '3' ? 270 : res.roatae === '2' ? 180 : res.roatae === '1' ? 90 : 0
 			obj.width = parseInt(res.mul, 10) + 4
 			obj.height = obj.width
 			obj.data = body
@@ -957,10 +900,7 @@ export const Import = observer(() => {
 					<Button variant='filled' onClick={handleParse}>
 						Импорт
 					</Button>
-					<Button
-						variant='filled'
-						onClick={() => storeApp.setImportFlag(false)}
-					>
+					<Button variant='filled' onClick={() => storeApp.setImportFlag(false)}>
 						Закрыть
 					</Button>
 					<FileButton onChange={handleFile} accept='.txt'>

@@ -13,9 +13,7 @@ export const PrinterSettings = observer(() => {
 	const [host, setHost] = useState(config.host)
 	const [count, setCount] = useState(config.number_labels)
 	const [typePrinter, setTypePrinter] = useState(config.type_printer)
-	const [printerResolution, setPrinterResolution] = useState(
-		String(config.printer_resolution)
-	)
+	const [printerResolution, setPrinterResolution] = useState(String(config.printer_resolution))
 	const [shiftX, setShiftX] = useState(config.SHIFT_X)
 	const [shiftY, setShiftY] = useState(config.SHIFT_Y)
 
@@ -90,10 +88,7 @@ export const PrinterSettings = observer(() => {
 		) {
 			serviceNotifications.success('Настройки принтера успешно сохранены.')
 		}
-		if (
-			Number(shift_X) !== Number(shiftX) ||
-			Number(shift_Y) !== Number(shiftY)
-		) {
+		if (Number(shift_X) !== Number(shiftX) || Number(shift_Y) !== Number(shiftY)) {
 			const settingsPrinter = {
 				...storePrinter.getConfig(),
 				shift: {
@@ -120,31 +115,13 @@ export const PrinterSettings = observer(() => {
 	return (
 		<Group w='100%' justify='space-between' gap='2rem'>
 			<Stack w='65%'>
-				<ItemEditable
-					editable
-					type='text'
-					label='ip-адрес:'
-					value={host}
-					onChange={e => setValue(e, setHost)}
-				/>
-				<ItemEditable
-					editable
-					type='number'
-					label='Порт:'
-					value={port}
-					onChange={e => setValue(e, setPort)}
-				/>
-				<ItemEditable
-					editable
-					type='number'
-					label='Кол-во:'
-					value={count}
-					onChange={e => setValue(e, setCount)}
-				/>
+				<ItemEditable editable type='text' label='ip-адрес:' value={host} onChange={e => setValue(e, setHost)} />
+				<ItemEditable editable type='number' label='Порт:' value={port} onChange={e => setValue(e, setPort)} />
+				<ItemEditable editable type='number' label='Кол-во:' value={count} onChange={e => setValue(e, setCount)} />
 				<ItemOptions
 					label='Тип принтера:'
 					value={typePrinter}
-					options={['tspl', 'ezpl']}
+					options={['tspl', 'ezpl', 'zpl']}
 					onChange={setTypePrinter}
 				/>
 				<ItemOptions
@@ -170,10 +147,7 @@ export const PrinterSettings = observer(() => {
 				/>
 				<ItemEditable label='Плотность печати:' value={storePrinter.DENSITY} />
 				<ItemEditable label='Скорость печати:' value={storePrinter.SPEED} />
-				<ItemEditable
-					label='Страница кодировки:'
-					value={storePrinter.CODEPAGE}
-				/>
+				<ItemEditable label='Страница кодировки:' value={storePrinter.CODEPAGE} />
 			</Stack>
 			<Stack align='stretch' justify='space-between' w='10rem' h='100%'>
 				<Stack align='stretch' justify='flex-start' gap='1rem'>

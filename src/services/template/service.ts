@@ -20,7 +20,8 @@ export const serviceTemplate = {
 	copyOffset: 5,
 	clear() {
 		this.copyStack = []
-		;((this.indexPaste = 1), (this.copyOffset = 5))
+		this.indexPaste = 1
+		this.copyOffset = 5
 	},
 	_moveX(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {

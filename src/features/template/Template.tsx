@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
@@ -26,18 +26,8 @@ export const Template = observer(() => {
 	const refTemplate = useRef<HTMLDivElement>(null)
 	const isDrag = useRef<boolean>(false)
 	const isSelecting = useRef<boolean>(false)
-	const [rectSelected, setRectSelected] = useState<Record<string, any>>({
-		display: 'block',
-		position: 'absolute',
-		left: -1,
-		top: -1,
-		right: '',
-		bottom: '',
-		width: '',
-		height: '',
-		zIndex: 1000,
-		border: '1px dashed #0011ff48',
-	})
+	const refRectSelected = useRef<HTMLDivElement>(null)
+
 	const sPosition = useRef<{
 		minX?: number
 		maxX?: number
@@ -85,8 +75,15 @@ export const Template = observer(() => {
 
 		guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
 
-		storeTemplate.selectedObjects.forEach(({ id, rotation }) => {
+		storeTemplate.selectedObjects.forEach(({ id, rotation, type }) => {
 			const element = document.getElementById(id) as HTMLElement
+			const content = element.querySelector('[data-content]')
+			const rectContent = content?.getBoundingClientRect() ?? rect
+			if ('text' === type && content) {
+				content.style.width = 'auto'
+				content.style.height = 'auto'
+			}
+
 			const rect = element.getBoundingClientRect()
 			const clone = element.cloneNode(true) as HTMLElement
 
@@ -95,6 +92,14 @@ export const Template = observer(() => {
 			let canvas: HTMLCanvasElement | null | undefined = null
 			if ((canvas = element?.querySelector('canvas'))) {
 				clone.querySelector('canvas').getContext('2d').drawImage(canvas, 0, 0)
+			}
+
+			if (rotation === 90 || rotation === 270) {
+				clone.style.width = `${rectContent.height}px`
+				clone.style.height = `${rectContent.width}px`
+			} else {
+				clone.style.width = `${rectContent.width}px`
+				clone.style.height = `${rectContent.height}px`
 			}
 
 			refTemplate.current?.appendChild(clone)
@@ -111,6 +116,7 @@ export const Template = observer(() => {
 				rotation,
 				element,
 				clone,
+				type,
 				offsetX: event.clientX - rect.left,
 				offsetY: event.clientY - rect.top,
 			})
@@ -271,6 +277,14 @@ export const Template = observer(() => {
 		cloneElement.current.forEach(item => {
 			item.clone?.remove()
 			item.element.style.opacity = 1
+
+			if (item.type === 'text' && (item.rotation === 90 || item.rotation === 270)) {
+				item.element.style.width = item.height + 'px'
+				item.element.style.height = item.width + 'px'
+			} else if (item.type === 'text') {
+				item.element.style.width = item.width + 'px'
+				item.element.style.height = item.height + 'px'
+			}
 		})
 
 		hideLine()
@@ -279,20 +293,9 @@ export const Template = observer(() => {
 			x: 0,
 			y: 0,
 		}
+		delete cloneElement.current
 		cloneElement.current = []
 		isDrag.current = false
-	}, [])
-
-	const clearRect = useCallback(() => {
-		setRectSelected(v => ({
-			...v,
-			left: -1,
-			top: -1,
-			width: '',
-			height: '',
-			right: '',
-			bottom: '',
-		}))
 	}, [])
 
 	const isIntersecting = useCallback((element: HTMLElement, rect: Record<string, any>) => {
@@ -308,15 +311,18 @@ export const Template = observer(() => {
 			rect.top > elemY + elementRect.height
 		)
 	}, [])
+	const selectRect = useCallback((rect: Record<string, any>) => {
+		Object.assign(refRectSelected.current.style, rect)
+	}, [])
 	const handleSelectMouseDown = useCallback((event: React.MouseEvent<HTMLElement>) => {
 		rectParent.current = (refTemplate.current as HTMLElement)?.getBoundingClientRect()
-		setRectSelected(v => ({
-			...v,
-			left: event.clientX - rectParent.current.left,
-			top: event.clientY - rectParent.current.top,
+		selectRect({
+			left: event.clientX - rectParent.current.left + 'px',
+			top: event.clientY - rectParent.current.top + 'px',
 			width: '',
 			height: '',
-		}))
+		})
+
 		sPosition.current = {
 			x: event?.clientX,
 			y: event?.clientY,
@@ -353,10 +359,14 @@ export const Template = observer(() => {
 				storeTemplate.selectedById(item.id, false)
 			}
 		})
-		setRectSelected(v => ({
-			...v,
-			...rect,
-		}))
+		selectRect({
+			left: rect.left + 'px',
+			top: rect.top + 'px',
+			right: rect.right + 'px',
+			bottom: rect.bottom + 'px',
+			width: rect.width + 'px',
+			height: rect.height + 'px',
+		})
 	}, [])
 	const handleSelectMouseUp = useCallback((event: MouseEvent) => {
 		if (!isSelecting.current) {
@@ -364,7 +374,14 @@ export const Template = observer(() => {
 		}
 		sPosition.current = { x: 0, y: 0 }
 		isSelecting.current = false
-		clearRect()
+		selectRect({
+			left: '-1px',
+			top: '-1px',
+			width: 'auto',
+			height: 'auto',
+			right: 'auto',
+			bottom: 'auto',
+		})
 	}, [])
 
 	const handleMouseDown = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -420,46 +437,58 @@ export const Template = observer(() => {
 			}
 			if (
 				['input', 'textarea'].includes((event.target as HTMLElement)?.localName as string) ||
-				!['Delete', 'ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'KeyZ', 'KeyY', 'KeyS', 'KeyC', 'KeyV'].includes(
-					event.code
-				)
+				![
+					'Delete',
+					'ArrowRight',
+					'ArrowLeft',
+					'ArrowUp',
+					'ArrowDown',
+					'KeyZ',
+					'KeyY',
+					'KeyS',
+					'KeyC',
+					'KeyV',
+					'NumpadSubtract',
+					'NumpadAdd',
+				].includes(event.code)
 			) {
 				return
 			}
+
 			event.stopPropagation()
 			event.preventDefault()
 
 			if (event.code === 'Delete') {
 				deleteObject()
-			}
-			if (event.code === 'ArrowRight') {
+			} else if (event.code === 'ArrowRight') {
 				moveX(STEP)
-			}
-			if (event.code === 'ArrowLeft') {
+			} else if (event.code === 'ArrowLeft') {
 				moveX(-STEP)
-			}
-			if (event.code === 'ArrowUp') {
+			} else if (event.code === 'ArrowUp') {
 				moveY(-STEP)
-			}
-			if (event.code === 'ArrowDown') {
+			} else if (event.code === 'ArrowDown') {
 				moveY(STEP)
 			}
 
 			if (event.ctrlKey) {
 				if (event.code === 'KeyZ') {
 					storeHistory.back()
-				}
-				if (event.code === 'KeyY') {
+				} else if (event.code === 'KeyY') {
 					storeHistory.forward()
-				}
-				if (event.code === 'KeyS') {
+				} else if (event.code === 'KeyS') {
 					await serviceTemplate.handleSave()
-				}
-				if (event.code === 'KeyC') {
+				} else if (event.code === 'KeyC') {
 					serviceTemplate.copy()
-				}
-				if (event.code === 'KeyV') {
+				} else if (event.code === 'KeyV') {
 					serviceTemplate.paste()
+				} else if (event.code === 'NumpadSubtract') {
+					if (storeTemplate.scale > 1) {
+						storeTemplate.setScale(storeTemplate.scale - (event.shiftKey ? 0.01 : 0.1))
+					}
+				} else if (event.code === 'NumpadAdd') {
+					if (storeTemplate.scale < 4) {
+						storeTemplate.setScale(storeTemplate.scale + (event.shiftKey ? 0.01 : 0.1))
+					}
 				}
 			} //*/
 		}
@@ -528,7 +557,7 @@ export const Template = observer(() => {
 				ref={refTemplate}
 			>
 				<BackgroundBg />
-				<div style={rectSelected}></div>
+				<div ref={refRectSelected} className={claseesBG.rect}></div>
 				<div ref={verticalLine} className={`${claseesBG.line} ${claseesBG.lineV}`}></div>
 				<div ref={horizontalLine} className={`${claseesBG.line} ${claseesBG.lineH}`}></div>
 

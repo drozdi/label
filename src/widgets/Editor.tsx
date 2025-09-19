@@ -29,7 +29,7 @@ export const Editor = observer(() => {
 					gridTemplateRows: '1fr',
 					overflow: 'hidden',
 					width: '100%',
-					maxWidth: 'var(--mantine-breakpoint-xl)',
+					//maxWidth: 'var(--mantine-breakpoint-xl)',
 					margin: '0 auto',
 				}}
 			>
