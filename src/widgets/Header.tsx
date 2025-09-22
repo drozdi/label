@@ -16,6 +16,7 @@ export const Header = observer(() => {
 	const computedColorScheme = useComputedColorScheme('light', {
 		getInitialValueInEffect: true,
 	})
+	console.log(import.meta.env)
 	return (
 		<Group justify='space-between' p='xs'>
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
