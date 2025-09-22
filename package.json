@@ -1,5 +1,6 @@
 {
-	"name": "DMCLabelEditor",
+	"name": "dmc_label_edit_desktop",
+	"description": "Ваше описание приложения",
 	"homepage": "./",
 	"author": {
 		"name": "MAST SOFT",
@@ -15,7 +16,7 @@
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
 		"start": "electron-forge start",
-		"server": "nodemon server.js",
+		"server": "node server.js",
 		"package": "electron-forge package",
 		"make": "electron-forge make"
 	},
@@ -24,7 +25,8 @@
 			"packagerConfig": {
 				"files": [
 					"main.js",
-					"dist/**/*"
+					"dist/**/*",
+					"build/**/*"
 				],
 				"icon": "icon",
 				"extraResource": [
