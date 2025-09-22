@@ -1,12 +1,6 @@
 import { makeAutoObservable } from 'mobx'
-import {
-	CM,
-	DEF_TEMPLATE,
-	KEY_SCALE_DEFAULT,
-	MM,
-	MM_QR,
-} from '../../shared/constants'
-import { round } from '../../shared/utils'
+import { CM, DEF_TEMPLATE, KEY_SCALE_DEFAULT, MM, MM_QR } from '../../shared/constants'
+import { round, roundInt } from '../../shared/utils'
 import { factoryElement } from '../element/factory-element'
 
 class StoreTemplate {
@@ -45,9 +39,7 @@ class StoreTemplate {
 		}
 		if (this.selected.length === 1) {
 			this.currId = this.selected[0]
-			this.currIndex = this.objects.findIndex(
-				object => String(object.id) === String(this.currId)
-			)
+			this.currIndex = this.objects.findIndex(object => String(object.id) === String(this.currId))
 		} else {
 			this.currId = 0
 			this.currIndex = -1
@@ -59,22 +51,22 @@ class StoreTemplate {
 	}
 
 	get width() {
-		return this.width_mm * this.mm * this.scale
+		return roundInt(this.width_mm * this.mm * this.scale)
 	}
 	get height() {
-		return this.height_mm * this.mm * this.scale
+		return roundInt(this.height_mm * this.mm * this.scale)
 	}
 	get borderRadius() {
 		return this.radius_label
 	}
 	get referenceX() {
-		return this.reference_x * this.mm * this.scale
+		return roundInt(this.reference_x * this.mm * this.scale)
 	}
 	get referenceY() {
-		return this.reference_y * this.mm * this.scale
+		return roundInt(this.reference_y * this.mm * this.scale)
 	}
 	get space() {
-		return this.gap_mm * this.mm * this.scale
+		return roundInt(this.gap_mm * this.mm * this.scale)
 	}
 	get style() {
 		return {
@@ -84,28 +76,20 @@ class StoreTemplate {
 		}
 	}
 	get current() {
-		return this.objects[this.currIndex] || undefined
+		return this.objects[this.currIndex] || this.selectedObjects?.[0] || undefined
 	}
 
 	get selectedIndex() {
-		return this.selected.map(id =>
-			this.objects.findIndex(object => String(object.id) === String(id))
-		)
+		return this.selected.map(id => this.objects.findIndex(object => String(object.id) === String(id)))
 	}
 	get selectedObjects() {
 		return this.selected.map(id => this.findById(id))
 	}
 	get inverseIds() {
-		return [
-			...new Set(this.objects.map(o => String(o.id))).difference(
-				new Set(this.selected)
-			),
-		]
+		return [...new Set(this.objects.map(o => String(o.id))).difference(new Set(this.selected))]
 	}
 	get inverseIndex() {
-		return this.inverseIds.map(id =>
-			this.objects.findIndex(object => String(object.id) === String(id))
-		)
+		return this.inverseIds.map(id => this.objects.findIndex(object => String(object.id) === String(id)))
 	}
 	get inverseObjects() {
 		return this.inverseIds.map(id => this.findById(id))
@@ -113,9 +97,7 @@ class StoreTemplate {
 
 	setActiveObject(id: number | string) {
 		this.currId = String(id)
-		this.currIndex = this.objects.findIndex(
-			object => String(object.id) === String(this.currId)
-		)
+		this.currIndex = this.objects.findIndex(object => String(object.id) === String(this.currId))
 		if (this.currIndex === -1) {
 			this.currId = 0
 		}
@@ -128,6 +110,14 @@ class StoreTemplate {
 	findById(id: number | string) {
 		return this.objects.find(object => {
 			return String(object.id) === String(id)
+		})
+	}
+	setById(id: number | string, object: Record<string, any>) {
+		this.objects = this.objects.map(o => {
+			if (String(o.id) === String(id)) {
+				return factoryElement(object)
+			}
+			return o
 		})
 	}
 	deleteObject(id: number | string) {

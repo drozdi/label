@@ -1,12 +1,12 @@
 import { Button, Stack } from '@mantine/core'
 import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
 import { SNAP_THRESHOLD } from '../../shared/constants'
-import { minMax } from '../../shared/utils'
+import { minMax, round, roundInt } from '../../shared/utils'
 import classes from './element.module.css'
 import { resizeObject } from './utils/resize'
 
@@ -26,33 +26,36 @@ export const Element = observer(
 
 		const style = useMemo(
 			() => ({
-				...object.style?.(scale, refWrap.current),
+				...object.style?.(scale),
 				...(preview ? { outline: '0px' } : {}),
 			}),
-			[object, refWrap.current]
+			[object, scale, preview, refWrap.current]
 		)
 
-		const handleClick = (event: React.MouseEvent) => {
-			if (preview) {
-				return
-			}
-			const element = (event.target as HTMLElement).closest(`.${classes.element}`)
+		const handleClick = useCallback(
+			(event: React.MouseEvent) => {
+				if (preview) {
+					return
+				}
+				const element = (event.target as HTMLElement).closest(`.${classes.element}`)
 
-			if (element instanceof HTMLDivElement) {
-				event.preventDefault()
-				event.stopPropagation()
-			}
+				if (element instanceof HTMLDivElement) {
+					event.preventDefault()
+					event.stopPropagation()
+				}
 
-			if (event.ctrlKey) {
-				storeTemplate.selectObject(element?.id as string)
-			} else if (element instanceof HTMLDivElement) {
-				storeTemplate.setActiveObject(element.id)
-			}
+				if (event.ctrlKey) {
+					storeTemplate.selectObject(element?.id as string)
+				} else if (element instanceof HTMLDivElement) {
+					storeTemplate.setActiveObject(element.id)
+				}
 
-			storeApp?.setFontFamilyFlag?.(false)
-			storeApp?.setVariableFlag?.(false)
-			storeApp?.setImageFlag?.(false)
-		}
+				storeApp?.setFontFamilyFlag?.(false)
+				storeApp?.setVariableFlag?.(false)
+				storeApp?.setImageFlag?.(false)
+			},
+			[preview]
+		)
 
 		const { snap, showLine, hideLine } = useGuideLine()
 
@@ -72,55 +75,46 @@ export const Element = observer(
 		}>(null)
 		const cloneElement = useRef<HTMLElement>(null)
 
-		const handleMouseDown = (event: React.MouseEvent, dir: 's' | 'e' | 'se') => {
-			if (preview) {
-				return
-			}
-			const element = (event.target as HTMLElement).closest(`.${classes.element}`) as HTMLElement
+		const handleMouseDown = useCallback(
+			(event: React.MouseEvent, dir: 's' | 'e' | 'se') => {
+				if (preview) {
+					return
+				}
+				const element = (event.target as HTMLElement).closest(`.${classes.element}`) as HTMLElement
 
-			if (element instanceof HTMLDivElement) {
-				event.preventDefault()
-				event.stopPropagation()
-				storeTemplate.setActiveObject(element.id)
-			}
+				if (element instanceof HTMLDivElement) {
+					event.preventDefault()
+					event.stopPropagation()
+					storeTemplate.setActiveObject(element.id)
+				}
 
-			guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
+				guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
 
-			rectElement.current = element.getBoundingClientRect()
-			rectParent.current = (element.parentNode as HTMLElement)?.getBoundingClientRect()
+				rectElement.current = element.getBoundingClientRect()
+				rectParent.current = (element.parentNode as HTMLElement)?.getBoundingClientRect()
 
-			cloneElement.current = element.cloneNode(true) as HTMLElement
-			cloneElement.current?.classList?.add?.(classes.clone)
-			;(element.parentNode as HTMLElement).appendChild(cloneElement.current)
+				cloneElement.current = element.cloneNode(true) as HTMLElement
+				cloneElement.current?.classList?.add?.(classes.clone)
+				;(element.parentNode as HTMLElement).appendChild(cloneElement.current)
 
-			sPosition.current = {
-				minX: rectElement.current.left + 2,
-				maxX: rectParent.current.right - 2,
-				minY: rectElement.current.top + 2,
-				maxY: rectParent.current.bottom - 2,
-				width: rectElement.current.width,
-				height: rectElement.current.height,
-				x: event.clientX,
-				y: event.clientY,
-				top:
-					rectElement.current.top -
-					rectParent.current.top +
-					(object.rotation === 90 || object.rotation === 270
-						? (rectElement.current?.height - rectElement.current?.width) / 2
-						: 0),
-				left:
-					rectElement.current.left -
-					rectParent.current.left -
-					(object.rotation === 90 || object.rotation === 270
-						? (rectElement.current?.height - rectElement.current?.width) / 2
-						: 0),
-				dir,
-			}
-		}
+				sPosition.current = {
+					minX: rectElement.current.left + 2,
+					maxX: rectParent.current.right - 2,
+					minY: rectElement.current.top + 2,
+					maxY: rectParent.current.bottom - 2,
+					width: rectElement.current.width,
+					height: rectElement.current.height,
+					x: event.clientX,
+					y: event.clientY,
+					top: rectElement.current.top - rectParent.current.top,
+					left: rectElement.current.left - rectParent.current.left,
+					dir,
+				}
+			},
+			[preview]
+		)
 
-		SNAP_THRESHOLD
-
-		const calcOffset = (event: MouseEvent) => {
+		const calcOffset = useCallback((event: MouseEvent) => {
 			const a = aspect(sPosition.current.width, sPosition.current.height)
 			let dx = 0
 			let dy = 0
@@ -149,15 +143,18 @@ export const Element = observer(
 			}
 
 			guideElements.current.forEach(guide => {
+				const { rotation } = storeTemplate.findById(guide.id)
 				const guideRect = guide.getBoundingClientRect()
 
 				const guideLeft = guideRect.left - rectParent.current.left
-				const guideCenterX = guideLeft + guide.offsetWidth / 2
-				const guideRight = guideLeft + guide.offsetWidth
+				const guideCenterX =
+					guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth) / 2
+				const guideRight = guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth)
 
 				const guideTop = guideRect.top - rectParent.current.top
-				const guideCenterY = guideTop + guide.offsetHeight / 2
-				const guideBottom = guideTop + guide.offsetHeight
+				const guideCenterY =
+					guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight) / 2
+				const guideBottom = guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight)
 
 				let newX = event.clientX - rectParent.current.left
 				let newY = event.clientY - rectParent.current.top
@@ -201,8 +198,8 @@ export const Element = observer(
 				}
 			})
 
-			return [dx, dy]
-		}
+			return [roundInt(dx), roundInt(dy)]
+		}, [])
 
 		const handleMouseMove = (event: MouseEvent) => {
 			if (!sPosition.current) {
@@ -214,10 +211,17 @@ export const Element = observer(
 			if (object.rotation === 90 || object.rotation === 270) {
 				;(cloneElement.current as HTMLElement).style.height = sPosition.current.width + dx + 'px'
 				;(cloneElement.current as HTMLElement).style.width = sPosition.current.height + dy + 'px'
-				;(cloneElement.current as HTMLElement).style.translate = `${-(dy - dx) / 2}px ${(dy - dx) / 2}px`
 			} else {
 				;(cloneElement.current as HTMLElement).style.width = sPosition.current.width + dx + 'px'
 				;(cloneElement.current as HTMLElement).style.height = sPosition.current.height + dy + 'px'
+			}
+
+			if (object.rotation === 90) {
+				;(cloneElement.current as HTMLElement).style.translate = `${dx}px 0px`
+			} else if (object.rotation === 180) {
+				;(cloneElement.current as HTMLElement).style.translate = `${dx}px ${dy}px`
+			} else if (object.rotation === 270) {
+				;(cloneElement.current as HTMLElement).style.translate = `0px ${dy}px`
 			}
 
 			showLine()
@@ -227,7 +231,7 @@ export const Element = observer(
 				return
 			}
 
-			const [dx, dy] = calcOffset(event).map(val => val / storeTemplate.mm / scale)
+			const [dx, dy] = calcOffset(event).map(val => round(val / storeTemplate.mm / scale))
 
 			if (object.rotation === 90 || object.rotation === 270) {
 				resizeObject(dy, dx)

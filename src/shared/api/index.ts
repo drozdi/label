@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { URL_API } from '../constants'
+import { KEY_API_HOST, URL_API } from '../constants'
 
 export const api = axios.create({
-	baseURL: localStorage.getItem('api.host') || URL_API,
+	baseURL: localStorage.getItem(KEY_API_HOST) || URL_API,
 	//withCredentials: true,
 	headers: {
 		'Content-Type': 'application/json',

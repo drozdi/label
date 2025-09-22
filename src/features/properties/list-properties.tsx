@@ -1,22 +1,10 @@
 import { ActionIcon, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useMemo } from 'react'
-import {
-	TbAlignCenter,
-	TbAlignLeft,
-	TbAlignRight,
-	TbBaselineDensitySmall,
-	TbX,
-} from 'react-icons/tb'
+import { TbAlignCenter, TbAlignLeft, TbAlignRight, TbBaselineDensitySmall, TbX } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
-import {
-	labelsHumanReadable,
-	labelsTextAlign,
-} from '../../entites/element/constants'
-import {
-	histroyAppend,
-	histroyAppendDebounce,
-} from '../../entites/history/store'
+import { labelsHumanReadable, labelsTextAlign } from '../../entites/element/constants'
+import { histroyAppend, histroyAppendDebounce } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { STEP } from '../../shared/constants'
 import { ItemAction } from './item-action'
@@ -27,13 +15,13 @@ import { ItemSwitch } from './item-switch'
 import { ItemText } from './item-text'
 
 export const ListProperties = observer(() => {
-	const current = storeTemplate.selectedObjects[0] || undefined
+	const { current } = storeTemplate
 	if (!current) {
 		return 'Нужно выбрать елемент'
 	}
 	const properties = useMemo<never[]>(() => {
 		if (storeTemplate.isOne()) {
-			return storeTemplate.selectedObjects[0].properties
+			return current.properties
 		}
 		let props = new Set([
 			'name',
@@ -69,16 +57,9 @@ export const ListProperties = observer(() => {
 	return (
 		<Stack maw='auto' gap={0}>
 			{allowProp('enabled') && (
-				<ItemSwitch
-					edit
-					label='Активен:'
-					checked={current.enabled}
-					onChange={val => storeTemplate.setEnabled(val)}
-				/>
+				<ItemSwitch edit label='Активен:' checked={current.enabled} onChange={val => storeTemplate.setEnabled(val)} />
 			)}
-			{allowProp('code_type') && (
-				<ItemEditable label='Тип кода:' value={current.code_type} />
-			)}
+			{allowProp('code_type') && <ItemEditable label='Тип кода:' value={current.code_type} />}
 			{allowProp('name') && (
 				<ItemEditable
 					editable
@@ -89,10 +70,7 @@ export const ListProperties = observer(() => {
 					onChange={v => {
 						const name = current?.name
 						storeTemplate.setName(v)
-						histroyAppend(
-							storeTemplate.objects,
-							`Переименование "${name}" в "${v}"`
-						)
+						histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
 					}}
 				/>
 			)}
@@ -100,17 +78,12 @@ export const ListProperties = observer(() => {
 				<ItemNumber
 					edit={current.width !== 'fit-content'}
 					label='Ширина:'
-					value={
-						current.width !== '' ? Math.round(current.width * 100) / 100 : ''
-					}
+					value={current.width !== '' ? Math.round(current.width * 100) / 100 : ''}
 					step={STEP}
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setWidth(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`"${current?.name}" ширина: ${v}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `"${current?.name}" ширина: ${v}`)
 					}}
 				/>
 			)}
@@ -118,17 +91,12 @@ export const ListProperties = observer(() => {
 				<ItemNumber
 					edit={current.height !== 'fit-content'}
 					label='Высота:'
-					value={
-						current.height !== '' ? Math.round(current.height * 100) / 100 : ''
-					}
+					value={current.height !== '' ? Math.round(current.height * 100) / 100 : ''}
 					step={STEP}
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setHeight(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`"${current?.name}" высота: ${v}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `"${current?.name}" высота: ${v}`)
 					}}
 				/>
 			)}
@@ -141,10 +109,7 @@ export const ListProperties = observer(() => {
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setPosX(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Перемещение "${current?.name}" по x в "${v}"`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Перемещение "${current?.name}" по x в "${v}"`)
 					}}
 				/>
 			)}
@@ -157,10 +122,7 @@ export const ListProperties = observer(() => {
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setPosY(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Перемещение "${current?.name}" по y в "${v}"`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Перемещение "${current?.name}" по y в "${v}"`)
 					}}
 				/>
 			)}
@@ -171,10 +133,7 @@ export const ListProperties = observer(() => {
 					options={['0', '90', '180', '270']}
 					onChange={v => {
 						storeTemplate.setRotation(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Поворот "${current?.name}" на ${v}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Поворот "${current?.name}" на ${v}`)
 					}}
 					value={current.rotation}
 				/>
@@ -199,10 +158,7 @@ export const ListProperties = observer(() => {
 					labels={labelsTextAlign}
 					onChange={v => {
 						storeTemplate.setTextAlign(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Выравнивание "${current?.name}": ${labelsTextAlign[v]}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Выравнивание "${current?.name}": ${labelsTextAlign[v]}`)
 					}}
 					value={current.text_align}
 				/>
@@ -215,10 +171,7 @@ export const ListProperties = observer(() => {
 					unit='pt'
 					onChange={v => {
 						storeTemplate.setFontSize(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Размер текста "${current?.name}": ${v}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Размер текста "${current?.name}": ${v}`)
 					}}
 				/>
 			)}
@@ -230,10 +183,7 @@ export const ListProperties = observer(() => {
 					step={STEP}
 					onChange={v => {
 						storeTemplate.setLineThickness(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Толщина "${current?.name}": ${value}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Толщина "${current?.name}": ${value}`)
 					}}
 				/>
 			)}
@@ -245,10 +195,7 @@ export const ListProperties = observer(() => {
 					step={STEP}
 					onChange={v => {
 						storeTemplate.setRadius(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Радиус "${current?.name}": ${v}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Радиус "${current?.name}": ${v}`)
 					}}
 				/>
 			)}
@@ -267,20 +214,14 @@ export const ListProperties = observer(() => {
 					type={current?.type === 'block' ? 'textarea' : 'text'}
 					edit
 					icon={
-						<ActionIcon
-							radius={0}
-							onClick={() => storeApp.setVariableFlag(true)}
-						>
+						<ActionIcon radius={0} onClick={() => storeApp.setVariableFlag(true)}>
 							<TbBaselineDensitySmall />
 						</ActionIcon>
 					}
 					placeholder='Введите текст'
 					value={current.data}
 					onChange={v => {
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Изменение текста "${current?.data}" в "${v}"`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Изменение текста "${current?.data}" в "${v}"`)
 						storeTemplate.setData(v)
 					}}
 				/>
@@ -310,10 +251,7 @@ export const ListProperties = observer(() => {
 					value={current.human_readable}
 					onChange={v => {
 						storeTemplate.setHumanReadable(v)
-						histroyAppendDebounce(
-							storeTemplate.objects,
-							`Выравнивание "${current?.name}" - ${labelsHumanReadable[v]}`
-						)
+						histroyAppendDebounce(storeTemplate.objects, `Выравнивание "${current?.name}" - ${labelsHumanReadable[v]}`)
 					}}
 				/>
 			)}

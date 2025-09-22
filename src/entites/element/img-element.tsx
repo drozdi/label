@@ -1,6 +1,7 @@
 import { Image } from '@mantine/core'
 import { storeImages } from '../images/store'
 import { BaseElement } from './base-element'
+
 export class ImgElement extends BaseElement {
 	constructor(object: Record<string, any>) {
 		super({
@@ -28,6 +29,7 @@ export class ImgElement extends BaseElement {
 				fit='contain'
 				src={`data:image/bmp;base64,${this.imageData}`}
 				alt={this.imageName}
+				onDragStart={event => event.preventDefault()}
 			/>
 		)
 	}

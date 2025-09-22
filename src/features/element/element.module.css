@@ -2,7 +2,7 @@
 	position: absolute;
 	display: flex;
 	outline: 1px solid #00000040;
-	//outline-offset: -1px;
+	outline-offset: 0px;
 	cursor: default;
 	user-select: none;
 	z-index: 10;

@@ -17,9 +17,7 @@ export const HeaderPrint = observer(() => {
 		modals.open({
 			title: `Код для принтера на "${storePrinter.getConfig().type_printer}"`,
 			size: 'lg',
-			children: (
-				<Textarea readOnly rows={20} size='lg' defaultValue={res.trim()} />
-			),
+			children: <Textarea readOnly rows={20} size='lg' defaultValue={res.trim()} />,
 		})
 	}
 	const handlePrintTrial = async () => {
@@ -32,9 +30,7 @@ export const HeaderPrint = observer(() => {
 		modals.open({
 			title: `Код для принтера на "${storePrinter.getConfig().type_printer}"`,
 			size: 'lg',
-			children: (
-				<Textarea readOnly rows={20} size='lg' defaultValue={res.trim()} />
-			),
+			children: <Textarea readOnly rows={20} size='lg' defaultValue={res.trim()} />,
 		})
 	}
 	const handlePrintExample = async () => {
@@ -44,13 +40,7 @@ export const HeaderPrint = observer(() => {
 		}
 		const res = await servicePrinter.examplePrint(storeTemplates.selected.id)
 		if (res === undefined) return
-		modals.open({
-			title: `Код для принтера на "${storePrinter.getConfig().type_printer}"`,
-			size: 'lg',
-			children: (
-				<Textarea readOnly rows={20} size='lg' defaultValue={res.trim()} />
-			),
-		})
+		serviceNotifications.success(`Код для принтера на "${storePrinter.getConfig().type_printer}"`, res.trim())
 	}
 
 	return (

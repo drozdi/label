@@ -1,16 +1,9 @@
-import {
-	Box,
-	Button,
-	Center,
-	Group,
-	ScrollArea,
-	Stack,
-	Text,
-} from '@mantine/core'
+import { Box, Button, Center, Group, ScrollArea, Stack, Text } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
+import { storeHistory } from '../entites/history/store'
 import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
@@ -29,6 +22,7 @@ export const Templates = observer(() => {
 	}, [templateSelected?.id])
 
 	const handleSelect = () => {
+		storeHistory.clear()
 		storeTemplate.loadTemplate(storeTemplates.selected)
 		storeApp?.setLoadTemplateFlag(false)
 	}
@@ -80,14 +74,13 @@ export const Templates = observer(() => {
 								<Text c='dimmed' size='xl'>
 									{storeTemplates.list.length > 0 ? (
 										<>
-											Выберите шаблон из списка слева, для предпросмотра. Ваш
-											текуший шаблон не перезапишется, пока не нажмёте кнопку
-											"Выбрать шаблон"
+											Выберите шаблон из списка слева, для предпросмотра. Ваш текуший шаблон не перезапишется, пока не
+											нажмёте кнопку "Выбрать шаблон"
 										</>
 									) : (
 										<>
-											В базе данных шаблоны отсутствуют. Создайте Ваш первый
-											шаблон, сохраните и он отобразиться всписке.
+											В базе данных шаблоны отсутствуют. Создайте Ваш первый шаблон, сохраните и он отобразиться
+											всписке.
 										</>
 									)}
 								</Text>

@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../../entites/template/store'
+import { minMax } from '../../shared/utils'
 
 export const Band = observer(({ template, children }) => {
 	template = template || storeTemplate
@@ -25,8 +26,8 @@ export const Band = observer(({ template, children }) => {
 					overflow: 'hidden',
 					position: 'relative',
 					border: '1px solid #c3bfbf',
-					marginTop: (-(template.height || 6) * 9) / 10,
-					height: template.height || 60,
+					marginTop: (-minMax(template.height, 0, 60) * 8) / 10,
+					height: minMax(template.height, 0, 60),
 					width: template.width || 60,
 					borderRadius: template.borderRadius || 5,
 					marginBottom: template.space,

@@ -20,14 +20,13 @@ export const serviceTemplate = {
 	copyOffset: 5,
 	clear() {
 		this.copyStack = []
-		;((this.indexPaste = 1), (this.copyOffset = 5))
+		this.indexPaste = 1
+		this.copyOffset = 5
 	},
 	_moveX(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {
 			if (index > -1) {
-				storeTemplate.objects[index].setPosX(
-					round(storeTemplate.objects[index].pos_x + value)
-				)
+				storeTemplate.objects[index].setPosX(round(storeTemplate.objects[index].pos_x + value))
 				storeTemplate.objects[index] = storeTemplate.objects[index].copy()
 			}
 		})
@@ -35,9 +34,7 @@ export const serviceTemplate = {
 	_moveY(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {
 			if (index > -1) {
-				storeTemplate.objects[index].setPosY(
-					round(storeTemplate.objects[index].pos_y + value)
-				)
+				storeTemplate.objects[index].setPosY(round(storeTemplate.objects[index].pos_y + value))
 				storeTemplate.objects[index] = storeTemplate.objects[index].copy()
 			}
 		})
@@ -79,9 +76,7 @@ export const serviceTemplate = {
 	},
 
 	copy() {
-		this.copyStack = storeTemplate.selectedObjects.map(object =>
-			object.getProps()
-		)
+		this.copyStack = storeTemplate.selectedObjects.map(object => object.getProps())
 		this.indexPaste = 1
 	},
 	paste() {
@@ -104,9 +99,7 @@ export const serviceTemplate = {
 
 	async handleSave() {
 		if (storeTemplate.name?.length < 3) {
-			serviceNotifications.error(
-				'Название шаблона должно быть не менее 3 символов'
-			)
+			serviceNotifications.error('Название шаблона должно быть не менее 3 символов')
 			storeApp.setErrorName(true)
 			return
 		}
@@ -139,6 +132,7 @@ export const serviceTemplate = {
 		try {
 			await storeTemplates.updateTemplate(template)
 			serviceNotifications.success('Шаблон успешно изменён')
+			storeApp.setErrorName(false)
 		} catch (error) {
 			serviceNotifications.error(error)
 		}
@@ -148,6 +142,7 @@ export const serviceTemplate = {
 			const res = await storeTemplates.newTemplate(template)
 			storeTemplate.loadTemplate(res.data)
 			serviceNotifications.success('Шаблон успешно сохранён')
+			storeApp.setErrorName(false)
 		} catch (error) {
 			serviceNotifications.error(error)
 		}

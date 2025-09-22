@@ -3,6 +3,7 @@ import { round } from '../../shared/utils'
 import { storeFonts } from '../fonts/store'
 import { storeImages } from '../images/store'
 import { factoryElement } from './factory-element'
+
 export class BaseElement {
 	/////
 	mm = MM
@@ -115,8 +116,31 @@ export class BaseElement {
 	copy() {
 		return factoryElement(this)
 	}
-
-	style(scale = 1, element) {
+	size(scale = 1) {
+		const element = document.getElementById(this.id)
+		const rectElement = element?.getBoundingClientRect()
+		const rectParent = element?.parentElement?.getBoundingClientRect()
+		return {
+			top: round((rectElement?.top - rectParent?.top) / this.mm / scale),
+			left: round((rectElement?.left - rectParent?.left) / this.mm / scale),
+			width: round(rectElement?.width / this.mm / scale),
+			height: round(rectElement?.height / this.mm / scale),
+			right: round((rectParent?.width - (rectElement?.left - rectParent?.left) - rectElement?.width) / this.mm / scale),
+			bottom: round(
+				(rectParent?.height - (rectElement?.top - rectParent?.top) - rectElement?.height) / this.mm / scale
+			),
+		}
+	}
+	_size() {
+		const element = document.getElementById(this.id)
+		const rectElement = element?.getBoundingClientRect()
+		return {
+			width: round(rectElement?.width),
+			height: round(rectElement?.height),
+		}
+	}
+	style(scale = 1) {
+		const element = document.getElementById(this.id)
 		let width, height, _width, _height
 		let left = this.pos_x * this.mm * scale
 		let top = this.pos_y * this.mm * scale
@@ -134,42 +158,23 @@ export class BaseElement {
 			height = this.height * this.mm * scale
 		}
 
-		_width ??= width
-		_height ??= height
-		if (_width !== 'auto' && _height !== 'auto') {
-			if (this.rotation === 90) {
-				left -= (_width + _height) / 2
-				top -= (_width - _height) / 2
-			} else if (this.rotation === 180) {
-				left -= _width
-				top -= _height
-			} else if (this.rotation === 270) {
-				left -= (_height - _width) / 2
-				top -= (_width + _height) / 2
-			}
-		}
-
 		return {
-			left,
-			top,
-			width,
-			height,
+			left: round(left),
+			top: round(top),
+			width: width === 'auto' ? 'auto' : round(width),
+			height: height === 'auto' ? 'auto' : round(height),
 			fontSize: this.font_size * scale + 'pt',
-			justifyContent:
-				this.text_align === 2
-					? 'center'
-					: this.text_align === 3
-						? 'flex-end'
-						: 'flex-start',
+			justifyContent: this.text_align === 2 ? 'center' : this.text_align === 3 ? 'flex-end' : 'flex-start',
 			rotate: this.rotation + 'deg',
 			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,
 			fontFamily: this.fontFamily,
+			transformOrigin: 'top left',
 		}
 	}
 
 	render(scale = 1, preview = false): React.ReactNode {
-		return this.data
+		return typeof this.data === 'string' ? this.data.replace(/  /g, ' \u00A0') : this.data
 	}
 
 	setName(name: string) {

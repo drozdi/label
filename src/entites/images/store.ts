@@ -1,10 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { KEY_IMAGE_DEFAULT } from '../../shared/constants'
-import {
-	requestIimagesList,
-	requestImagesAdd,
-	requestImagesDelete,
-} from './api'
+import { requestIimagesList, requestImagesAdd, requestImagesDelete } from './api'
 
 class StoreImages {
 	isLoading: boolean = false
@@ -17,7 +13,7 @@ class StoreImages {
 	}
 	get list(): IImage[] {
 		this.load()
-		return this._list
+		return this._list || []
 	}
 	get default(): IImage | undefined {
 		return this.findById(this.id)
@@ -41,8 +37,7 @@ class StoreImages {
 			this.isLoaded = true
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -56,8 +51,7 @@ class StoreImages {
 			this._list.push(res.data)
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -73,8 +67,7 @@ class StoreImages {
 			}
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -85,13 +78,13 @@ class StoreImages {
 		localStorage.setItem(KEY_IMAGE_DEFAULT, String(id))
 	}
 	findById(id: number) {
-		return this._list.find(item => item.id === id)
+		return (this._list || []).find(item => item.id === id)
 	}
 	findByName(name: string) {
-		return this._list.find(item => item.name === name)
+		return (this._list || []).find(item => item.name === name)
 	}
 	findByTagImages(tagImages: string) {
-		return this._list.find(item => item.tag_images === tagImages)
+		return (this._list || []).find(item => item.tag_images === tagImages)
 	}
 }
 
