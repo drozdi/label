@@ -78,13 +78,13 @@ export const Template = observer(() => {
 		storeTemplate.selectedObjects.forEach(({ id, rotation, type }) => {
 			const element = document.getElementById(id) as HTMLElement
 			const content = element.querySelector('[data-content]')
+			const rect = element.getBoundingClientRect()
 			const rectContent = content?.getBoundingClientRect() ?? rect
 			if ('text' === type && content) {
 				content.style.width = 'auto'
 				content.style.height = 'auto'
 			}
 
-			const rect = element.getBoundingClientRect()
 			const clone = element.cloneNode(true) as HTMLElement
 
 			clone?.classList?.add?.(classes.clone)
