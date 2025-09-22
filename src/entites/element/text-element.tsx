@@ -29,8 +29,12 @@ export class TextElement extends BaseElement {
 	// 	const element = document.getElementById(this.id)
 	// 	if (element) {
 	// 		const content = element.querySelector('[data-content]')
-	// 		content.style.width = element.style.width
-	// 		content.style.height = element.style.height
+	// 		if (this.rotation === 90 || this.rotation === 270) {
+	// 			content.style.height = element.style.height
+	// 		} else {
+	// 			content.style.width = element.style.width
+	// 		}
+
 	// 		element.style.width = 'auto'
 	// 		element.style.height = 'auto'
 	// 	}
