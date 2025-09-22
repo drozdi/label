@@ -13,7 +13,7 @@
 	z-index: 11;
 }
 .clone {
-	opacity: 0.5;
+	opacity: 0.1;
 	z-index: 20;
 }
 .active:not(.clone)::before {
