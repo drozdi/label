@@ -41,18 +41,14 @@ class StoreFonts {
 			this.isLoaded = true
 			this._list.forEach(async item => {
 				try {
-					const myFont = new FontFace(
-						item.name,
-						`url(data:application/octet-stream;base64,${item.data})`
-					)
+					const myFont = new FontFace(item.name, `url(data:application/octet-stream;base64,${item.data})`)
 					await myFont.load()
 					document.fonts.add(myFont)
 				} catch (e) {}
 			})
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -62,17 +58,13 @@ class StoreFonts {
 		this.error = ''
 		try {
 			const res = await requestFontsAdd(name, data)
-			const myFont = new FontFace(
-				res.data.name,
-				`url(data:application/octet-stream;base64,${res.data.data})`
-			)
+			const myFont = new FontFace(res.data.name, `url(data:application/octet-stream;base64,${res.data.data})`)
 			await myFont.load()
 			document.fonts.add(myFont)
 			this._list.push(res.data)
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -88,8 +80,7 @@ class StoreFonts {
 			}
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

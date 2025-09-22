@@ -3,11 +3,13 @@ import dotenv from 'dotenv'
 import { defineConfig } from 'vite'
 dotenv.config()
 
+console.log(process.env)
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [react()],
 	server: {
-		host: true,
-		port: 3100,
+		host: process.env.VITE_SERVER_HOST || true,
+		port: parseInt(process.env.VITE_SERVER_PORT, 10) || 3100,
+		open: process.env.VITE_SERVER_OPEN === 'true',
 	},
 })
