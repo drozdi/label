@@ -1,6 +1,23 @@
 import { storeFonts } from '../fonts/store'
 import { BaseElement } from './base-element'
 
+/**
+ * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+ *
+ * @param {String} text The text to be rendered.
+ * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
+ *
+ * @see https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+ */
+function getTextWidth(text: string, font: string) {
+	// re-use canvas object for better performance
+	const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'))
+	const context = canvas.getContext('2d')
+	context.font = font
+	const metrics = context.measureText(text)
+	return metrics.width
+}
+
 export class TextElement extends BaseElement {
 	constructor(object: Record<string, any>) {
 		super({
@@ -18,32 +35,10 @@ export class TextElement extends BaseElement {
 	get multiProperties() {
 		return ['enabled', 'rotation', 'font_id', 'font_size', 'text_align']
 	}
-	render(scale = 1, preview = false) {
-		return (
-			<>
-				<div data-content>{super.render(scale, preview)}</div>
-			</>
-		)
+	style(scale = 1) {
+		return {
+			...super.style(scale),
+			width: getTextWidth((this.data || '') + ' ', `${this.font_size * scale}pt ${this.fontFamily}`),
+		}
 	}
-	// setData(value: string): void {
-	// 	const element = document.getElementById(this.id)
-	// 	if (element) {
-	// 		const content = element.querySelector('[data-content]')
-	// 		if (this.rotation === 90 || this.rotation === 270) {
-	// 			content.style.height = element.style.height
-	// 		} else {
-	// 			content.style.width = element.style.width
-	// 		}
-
-	// 		element.style.width = 'auto'
-	// 		element.style.height = 'auto'
-	// 	}
-	// 	super.setData(value)
-	// }
-	// style(scale = 1) {
-	// 	return { ...super.style(scale), overflow: 'hidden' }
-	// }
-	// getProps() {
-	// 	return { ...super.getProps(), width: 0, height: 0 }
-	// }
 }

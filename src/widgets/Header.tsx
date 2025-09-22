@@ -1,29 +1,13 @@
-import {
-	ActionIcon,
-	Button,
-	Group,
-	List,
-	Popover,
-	useComputedColorScheme,
-	useMantineColorScheme,
-} from '@mantine/core'
+import { ActionIcon, Button, Group, Popover, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { observer } from 'mobx-react-lite'
-import {
-	TbArrowDown,
-	TbArrowLeft,
-	TbArrowRight,
-	TbArrowUp,
-	TbMoon,
-	TbQuestionMark,
-	TbSettings,
-	TbSun,
-} from 'react-icons/tb'
+import { TbMoon, TbQuestionMark, TbSettings, TbSun } from 'react-icons/tb'
 import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { HeaderMain } from '../features/header/header-main'
 import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
+import { Info } from '../features/info/info'
 
 export const Header = observer(() => {
 	const { loadTemplateFlag, settingsFlag } = storeApp
@@ -37,10 +21,7 @@ export const Header = observer(() => {
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{!loadTemplateFlag && <HeaderPrint />}
 			<Group>
-				<ActionIcon
-					color={settingsFlag ? 'lime' : ''}
-					onClick={() => storeApp.setSettingsFlag(!settingsFlag)}
-				>
+				<ActionIcon color={settingsFlag ? 'lime' : ''} onClick={() => storeApp.setSettingsFlag(!settingsFlag)}>
 					<TbSettings />
 				</ActionIcon>
 
@@ -51,36 +32,12 @@ export const Header = observer(() => {
 						</ActionIcon>
 					</Popover.Target>
 					<Popover.Dropdown>
-						<List spacing='xs' size='sm' center>
-							<List.Item>
-								"Shift" - для сохранения пропорций при редактирование
-							</List.Item>
-							<List.Item>"Ctrl" - для выделения элементов</List.Item>
-							<List.Item>"Del" - удалить выбранные элемент</List.Item>
-							<List.Item>"Ctrl" + "z" - Отменить последнее действие</List.Item>
-							<List.Item>"Ctrl" + "y" - Вернуть отменённое действие</List.Item>
-							<List.Item>"Ctrl" + "s" - Сохранить шаблон</List.Item>
-							<List.Item>
-								"Ctrl" + "c" - Копировать выбранные элементы
-							</List.Item>
-							<List.Item>
-								"Ctrl" + "v" - Вставить скопированые элементы
-							</List.Item>
-							<List.Item>
-								"<TbArrowDown />,
-								<TbArrowUp />,
-								<TbArrowLeft />,
-								<TbArrowRight />" - смещение по "x" и "y" координатам выбранного
-								элемента
-							</List.Item>
-						</List>
+						<Info />
 					</Popover.Dropdown>
 				</Popover>
 
 				<ActionIcon
-					onClick={() =>
-						setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')
-					}
+					onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
 					variant='default'
 					aria-label='Toggle color scheme'
 				>
@@ -95,16 +52,18 @@ export const Header = observer(() => {
 						}}
 					/>
 				</ActionIcon>
-				<Button
-					onClick={() =>
-						console.log({
-							...storeTemplate,
-							objects: storeTemplate.objects.map(o => o.getProps()),
-						})
-					}
-				>
-					check
-				</Button>
+				{import.meta.env.DEV && (
+					<Button
+						onClick={() =>
+							console.log({
+								...storeTemplate,
+								objects: storeTemplate.objects.map(o => o.getProps()),
+							})
+						}
+					>
+						check
+					</Button>
+				)}
 			</Group>
 		</Group>
 	)

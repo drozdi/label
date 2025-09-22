@@ -94,14 +94,6 @@ export const Template = observer(() => {
 				clone.querySelector('canvas').getContext('2d').drawImage(canvas, 0, 0)
 			}
 
-			if (rotation === 90 || rotation === 270) {
-				clone.style.width = `${rectContent.height}px`
-				clone.style.height = `${rectContent.width}px`
-			} else {
-				clone.style.width = `${rectContent.width}px`
-				clone.style.height = `${rectContent.height}px`
-			}
-
 			refTemplate.current?.appendChild(clone)
 
 			cloneElement.current.push({
@@ -277,14 +269,6 @@ export const Template = observer(() => {
 		cloneElement.current.forEach(item => {
 			item.clone?.remove()
 			item.element.style.opacity = 1
-
-			if (item.type === 'text' && (item.rotation === 90 || item.rotation === 270)) {
-				item.element.style.width = item.height + 'px'
-				item.element.style.height = item.width + 'px'
-			} else if (item.type === 'text') {
-				item.element.style.width = item.width + 'px'
-				item.element.style.height = item.height + 'px'
-			}
 		})
 
 		hideLine()
@@ -450,6 +434,8 @@ export const Template = observer(() => {
 					'KeyV',
 					'NumpadSubtract',
 					'NumpadAdd',
+					'Equal',
+					'Minus',
 				].includes(event.code)
 			) {
 				return
@@ -481,11 +467,11 @@ export const Template = observer(() => {
 					serviceTemplate.copy()
 				} else if (event.code === 'KeyV') {
 					serviceTemplate.paste()
-				} else if (event.code === 'NumpadSubtract') {
+				} else if (event.code === 'NumpadSubtract' || event.code === 'Minus') {
 					if (storeTemplate.scale > 1) {
 						storeTemplate.setScale(storeTemplate.scale - (event.shiftKey ? 0.01 : 0.1))
 					}
-				} else if (event.code === 'NumpadAdd') {
+				} else if (event.code === 'NumpadAdd' || event.code === 'Equal') {
 					if (storeTemplate.scale < 4) {
 						storeTemplate.setScale(storeTemplate.scale + (event.shiftKey ? 0.01 : 0.1))
 					}

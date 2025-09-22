@@ -4,8 +4,7 @@ import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeTemplate } from '../../entites/template/store'
 import { Item } from '../../shared/ui'
 
-export const ItemDataMatrix = observer(({ dataMatrix }) => {
-	const { current } = storeTemplate
+export const ItemDataMatrix = observer(({ dataMatrix }: { dataMatrix: Record<string, any> }) => {
 	const handleSelect = async () => {
 		const dm = await storeDataMatrix.selectedDM(dataMatrix)
 		storeTemplate.setName(dm.dm)

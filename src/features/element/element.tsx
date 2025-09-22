@@ -245,6 +245,7 @@ export const Element = observer(
 			hideLine()
 			cloneElement.current?.remove()
 			sPosition.current = null
+			delete cloneElement.current
 			cloneElement.current = null
 		}
 

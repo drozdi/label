@@ -695,7 +695,7 @@ export const Import = observer(() => {
 			obj.name = storeDataMatrix.fakeBodyDM
 			obj.type = 'barcode'
 			obj.code_type = 'datamatrix'
-
+			obj.temp = true
 			const res = regParse(
 				/(?:XRB)?(?<x>[0-9]*),(?<y>[0-9]*),(?<enlarge>[0-9]*),(?<rotation>[0123]*)[SabR]*,(?<legth>.*)[CR]*\s*(?<data>.*)?/,
 				str,
