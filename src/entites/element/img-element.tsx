@@ -29,6 +29,7 @@ export class ImgElement extends BaseElement {
 				fit='contain'
 				src={`data:image/bmp;base64,${this.imageData}`}
 				alt={this.imageName}
+				draggable={false}
 				onDragStart={event => event.preventDefault()}
 			/>
 		)
