@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx'
-import { KEY_TIME_AUTO_SAVE } from '../../shared/constants'
+import { KEY_TIME_AUTO_SAVE, TIME_AUTO_SAVE } from '../../shared/constants'
 
 class StoreApp implements AppContext {
-	timeAutoSave = Number(localStorage.getItem(KEY_TIME_AUTO_SAVE) || 10)
+	timeAutoSave = Number(localStorage.getItem(KEY_TIME_AUTO_SAVE) || TIME_AUTO_SAVE)
 	showAppLoader = true
 	fontFamilyFlag = false
 	variableFlag = false
@@ -45,8 +45,8 @@ class StoreApp implements AppContext {
 	setGridFlag(val: boolean) {
 		this.gridFlag = val
 	}
-	setImageBg(val: string) {
-		this.imageBg = val
+	setImageBg(bg: string) {
+		this.imageBg = bg
 	}
 	setLoadTemplateFlag(val: boolean) {
 		this.loadTemplateFlag = val

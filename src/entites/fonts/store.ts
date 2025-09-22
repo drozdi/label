@@ -9,7 +9,7 @@ const map = {
 	'ARIALI04.TTF': 'ARIALI04.TTF',
 }
 
-class StoreFonts {
+class StoreFonts implements IStoreFonts {
 	isLoading: boolean = false
 	isLoaded: boolean = false
 	error: string = ''

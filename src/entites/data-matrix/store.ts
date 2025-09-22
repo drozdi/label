@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import { requestDataMatrixList } from './api'
 
-class StoreDataMatrix {
-	list = [
+class StoreDataMatrix implements IStoreDataMatrix {
+	list: IDataMatrix[] = [
 		{
 			id: 1,
 			name: 'Молочная продукция',
@@ -181,17 +181,17 @@ class StoreDataMatrix {
 	constructor() {
 		makeAutoObservable(this)
 	}
-	_sizes = []
-	isLoaded = false
-	isLoading = false
-	error = ''
-	fakeBodyDM = '0104603721020607215>(egukLfdK5r93zoJf'
+	_sizes: IDataMatrix[] = []
+	isLoaded: boolean = false
+	isLoading: boolean = false
+	error: string = ''
+	fakeBodyDM: string = '0104603721020607215>(egukLfdK5r93zoJf'
 
 	get sizes() {
 		this.load()
 		return this._sizes
 	}
-	async load(reloading: boolean = false) {
+	async load(reloading: boolean = false): Promise<void> {
 		if (reloading) {
 			this.isLoaded = false
 			this._sizes = []
@@ -207,13 +207,12 @@ class StoreDataMatrix {
 			this.isLoaded = true
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
 	}
-	async selectedDM(dm) {
+	async selectedDM(dm: IDataMatrix): Promise<IDataMatrix> {
 		await this.load()
 		const dm_element = {
 			dm: dm.dm,
@@ -227,7 +226,7 @@ class StoreDataMatrix {
 		}
 		return dm_element
 	}
-	_selectedDM(dm) {
+	_selectedDM(dm: IDataMatrix): IDataMatrix {
 		this.load()
 		const dm_element = {
 			dm: dm.dm,
@@ -241,13 +240,13 @@ class StoreDataMatrix {
 		}
 		return dm_element
 	}
-	findById(dm) {
+	findById(dm: number): IDataMatrix | undefined {
 		return this.list.find(item => item.id === dm)
 	}
-	findByDM(dm) {
+	findByDM(dm: string): IDataMatrix | undefined {
 		return this.list.find(item => item.dm === dm)
 	}
-	findByName(dm) {
+	findByName(dm: string): IDataMatrix | undefined {
 		return this.list.find(item => item.name === dm)
 	}
 }

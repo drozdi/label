@@ -1,11 +1,8 @@
-import { createContext, useCallback, useContext, useRef } from "react";
+import { createContext, useCallback, useContext, useRef } from 'react'
 
 const Context = createContext({})
 
-export function ProvideGuideLine ({ children }: {
-	children: React.ReactNode
-}) {
-
+export function ProvideGuideLine({ children }: { children: React.ReactNode }) {
 	const verticalLine = useRef<HTMLElement>(null)
 	const horizontalLine = useRef<HTMLElement>(null)
 	const snap = useRef({
@@ -63,19 +60,23 @@ export function ProvideGuideLine ({ children }: {
 		}
 	}, [])
 
-	return <Context.Provider value={{
-		snap,
-		verticalLine,
-		horizontalLine,
-		showVerticalLine,
-		showHorizontalLine,
-		hideVerticalLine,
-		hideHorizontalLine,
-		showLine,
-		hideLine,
-	}}>
-		{children}
-	</Context.Provider>
+	return (
+		<Context.Provider
+			value={{
+				snap,
+				verticalLine,
+				horizontalLine,
+				showVerticalLine,
+				showHorizontalLine,
+				hideVerticalLine,
+				hideHorizontalLine,
+				showLine,
+				hideLine,
+			}}
+		>
+			{children}
+		</Context.Provider>
+	)
 }
 
 export function useGuideLine() {
