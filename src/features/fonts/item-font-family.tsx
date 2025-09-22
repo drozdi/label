@@ -8,7 +8,7 @@ import { storeTemplate } from '../../entites/template/store'
 import { Item } from '../../shared/ui'
 
 export const ItemFontFamily = observer(({ font }) => {
-	const current = storeTemplate.selectedObjects[0]
+	const current = storeTemplate.current
 	const [oldId] = useState(current?.font_id)
 	const handleMouseOver = () => {
 		storeTemplate.setFontId(font.id)
@@ -18,10 +18,7 @@ export const ItemFontFamily = observer(({ font }) => {
 	}
 	const handleSelect = () => {
 		storeTemplate.setFontId(font.id)
-		histroyAppend(
-			storeTemplate.objects,
-			`Шрифт "${current?.name}" - ${storeFonts.findById(font.id)?.name}`
-		)
+		histroyAppend(storeTemplate.objects, `Шрифт "${current?.name}" - ${storeFonts.findById(font.id)?.name}`)
 		storeApp?.setFontFamilyFlag(false)
 	}
 	return (
