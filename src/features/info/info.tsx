@@ -4,6 +4,7 @@ import { TbArrowDown, TbArrowLeft, TbArrowRight, TbArrowUp } from 'react-icons/t
 export function Info() {
 	return (
 		<List spacing='xs' size='sm' center>
+			<List.Item>Также на редактор этикеток можно зайти через браузер по адресу http://localhost:13724</List.Item>
 			<List.Item>"Shift" - для сохранения пропорций при редактирование</List.Item>
 			<List.Item>"Ctrl" - для выделения элементов</List.Item>
 			<List.Item>"Del" - удалить выбранные элемент</List.Item>
