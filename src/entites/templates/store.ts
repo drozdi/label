@@ -29,7 +29,7 @@ class StoreTemplates implements IStoreTemplates {
 	async load(reloading = false) {
 		if (reloading) {
 			this.isLoaded = false
-			this._list = []
+			//this._list = []
 		}
 		if (this.isLoaded) {
 			return
