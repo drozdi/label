@@ -1,3 +1,4 @@
+import { Box } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { factoryElement } from '../../entites/element'
 import { histroyAppend } from '../../entites/history/store'
@@ -8,12 +9,16 @@ import { genId } from '../../shared/utils'
 export const ItemElement = observer(
 	({
 		label,
+		icon,
 		callback,
 		element,
+		component = 'div',
 	}: {
 		label: string
+		icon: React.ReactNode
 		callback: () => void
 		element: Record<string, any>
+		component: React.ReactNode
 	}) => {
 		const handleSelect = () => {
 			const id = genId()
@@ -29,6 +34,13 @@ export const ItemElement = observer(
 			})
 			callback?.()
 		}
-		return <Item onClick={handleSelect}>{label}</Item>
+		return (
+			<Item onClick={handleSelect}>
+				<Box component={component} align='stretch' justify='center' ta='center' lh='1'>
+					<Box fz='3rem'>{icon}</Box>
+					{label}
+				</Box>
+			</Item>
+		)
 	}
 )

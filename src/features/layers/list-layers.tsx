@@ -28,8 +28,8 @@ export const ListLayers = observer(() => {
 						{['text', 'block'].includes(object.type)
 							? object.data
 							: object.type === 'img'
-								? 'img: ' + object.imageName
-								: object.name}
+							? 'Картинка: ' + object.imageName
+							: object.name}
 					</Text>
 					<Box>
 						<Switch

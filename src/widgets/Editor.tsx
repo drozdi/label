@@ -43,7 +43,7 @@ export const Editor = observer(() => {
 				h='100%'
 				style={{
 					display: 'grid',
-					gridTemplateColumns: '18rem 1fr 18rem',
+					gridTemplateColumns: 'minmax(min-content, auto) minmax(auto, 1fr) minmax(min-content, auto)',
 					gridTemplateRows: '1fr',
 					overflow: 'hidden',
 					width: '100%',
@@ -51,31 +51,50 @@ export const Editor = observer(() => {
 					margin: '0 auto',
 				}}
 			>
-				<Box
+				<Stack
 					h='100%'
-					px='xs'
+					w='18rem'
+					justify='space-between'
 					style={{
-						display: 'grid',
-						gridTemplateColumns: '1fr 2rem',
-						gridTemplateRows: '1fr',
-						gap: 'var(--mantine-spacing-xs)',
 						borderRight: '1px solid var(--mantine-color-default-border)',
+						overflowX: 'hidden',
+						overflowY: 'auto',
 					}}
 				>
-					<Stack justify='space-between'>
-						{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
-						{import.meta.env.DEV && (
-							<Box>
-								<Button fullWidth onClick={() => storeApp.setJsonCodeFlag(true)}>
-									JsonCode
-								</Button>
-							</Box>
-						)}
-					</Stack>
-					<Box pt='xs'>
-						<ToolbarTools />
+					<Box
+						h='100%'
+						px='xs'
+						style={{
+							display: 'grid',
+							gridTemplateColumns: 'minmax(auto, 1fr) minmax(min-content, auto)',
+							gridTemplateRows: '1fr',
+							gap: 'var(--mantine-spacing-xs)',
+							overflowX: 'hidden',
+							overflowY: 'auto',
+						}}
+					>
+						<Box
+							h='100%'
+							style={{
+								overflowX: 'hidden',
+								overflowY: 'auto',
+							}}
+						>
+							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
+						</Box>
+						<Box pt='xs'>
+							<ToolbarTools />
+						</Box>
 					</Box>
-				</Box>
+
+					{import.meta.env.DEV && (
+						<Box>
+							<Button fullWidth onClick={() => storeApp.setJsonCodeFlag(true)}>
+								JsonCode
+							</Button>
+						</Box>
+					)}
+				</Stack>
 				<ScrollArea h='100%' p='xs' pt='0'>
 					<Band>
 						<Template />
@@ -83,6 +102,7 @@ export const Editor = observer(() => {
 				</ScrollArea>
 				<Box
 					h='100%'
+					w='18rem'
 					px='xs'
 					style={{
 						overflowX: 'hidden',
