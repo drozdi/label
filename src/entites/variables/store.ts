@@ -1,13 +1,10 @@
 import { makeAutoObservable } from 'mobx'
 import { requestVariablesList } from './api'
-class StoreVariables {
+class StoreVariables implements IStoreVariables {
 	isLoading = false
 	isLoaded = false
 	error = ''
-	_list: {
-		data: string
-		name: string
-	}[] = []
+	_list = []
 	constructor() {
 		makeAutoObservable(this)
 	}
@@ -31,8 +28,7 @@ class StoreVariables {
 			this.isLoaded = true
 		} catch (error) {
 			console.error(error)
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

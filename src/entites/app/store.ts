@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { KEY_TIME_AUTO_SAVE, TIME_AUTO_SAVE } from '../../shared/constants'
 
-class StoreApp implements AppContext {
+class StoreApp implements IAppContext {
 	timeAutoSave = Number(localStorage.getItem(KEY_TIME_AUTO_SAVE) || TIME_AUTO_SAVE)
 	showAppLoader = true
 	fontFamilyFlag = false

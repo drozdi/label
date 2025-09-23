@@ -1,7 +1,7 @@
 import { round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
-export class LinesElement extends BaseElement {
+export class LinesElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
 		const parseObject = {
 			width: object.width - object.pos_x,

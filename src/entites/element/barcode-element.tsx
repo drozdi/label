@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { minMax, round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
-export class BarcodeElement extends BaseElement {
+export class BarcodeElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
 		super({
 			radius: 1.833,
@@ -38,7 +38,7 @@ export class BarcodeElement extends BaseElement {
 			margin: 0,
 			lineHeight: 1,
 		}
-		const [body, setBody] = useState(this.data.length >= 13 ? this.data : '0000000000000')
+		const [body, setBody] = useState(this.data?.length >= 13 ? this.data : '0000000000000')
 		useEffect(() => {
 			try {
 				if (this.code_type === 'ean13' || this.code_type === 'code128') {
@@ -80,10 +80,10 @@ export class BarcodeElement extends BaseElement {
 								this.code_type === 'qrcode'
 									? this.height * this.mm_qr * scale
 									: this.code_type === 'datamatrix' && this.min_size === 0
-										? this.height * 1.833 * this.mm * scale
-										: this.code_type === 'datamatrix' && this.min_size !== 0
-											? this.height * this.min_size * this.mm * scale
-											: this.height * this.mm * scale
+									? this.height * 1.833 * this.mm * scale
+									: this.code_type === 'datamatrix' && this.min_size !== 0
+									? this.height * this.min_size * this.mm * scale
+									: this.height * this.mm * scale
 							) + 'px',
 					}}
 				></canvas>
@@ -119,9 +119,6 @@ export class BarcodeElement extends BaseElement {
 				)}
 			</>
 		)
-	}
-	get size() {
-		return round(Math.max(this.width, this.height))
 	}
 	get min_size() {
 		return this.radius

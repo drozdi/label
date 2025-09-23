@@ -1,6 +1,6 @@
 import { BaseElement } from './base-element'
 
-export class BoxElement extends BaseElement {
+export class BoxElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
 		super({
 			width: 15,

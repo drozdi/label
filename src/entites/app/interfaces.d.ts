@@ -1,4 +1,4 @@
-interface AppContext {
+interface IAppContext {
 	fontFamilyFlag?: boolean
 	variableFlag?: boolean
 	imageFlag?: boolean

@@ -4,7 +4,7 @@ import { storeFonts } from '../fonts/store'
 import { storeImages } from '../images/store'
 import { factoryElement } from './factory-element'
 
-export class BaseElement {
+export class BaseElement implements IObject {
 	/////
 	mm = MM
 	cm = CM
@@ -129,14 +129,6 @@ export class BaseElement {
 			bottom: round(
 				(rectParent?.height - (rectElement?.top - rectParent?.top) - rectElement?.height) / this.mm / scale
 			),
-		}
-	}
-	_size() {
-		const element = document.getElementById(this.id)
-		const rectElement = element?.getBoundingClientRect()
-		return {
-			width: round(rectElement?.width),
-			height: round(rectElement?.height),
 		}
 	}
 	style(scale = 1) {

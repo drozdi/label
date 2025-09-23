@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
 import { debounce } from '../../shared/utils'
 
-class StoreHistory {
+class StoreHistory implements IStoreHistory {
 	histories = []
 	curIndex = -1
 	fn?: Function = undefined

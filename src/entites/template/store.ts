@@ -129,10 +129,10 @@ class StoreTemplate {
 		}
 		this.setActiveObject(this.currId)
 	}
-	deleteCurrentObject() {
-		this.deleteObject(this.currId)
-	}
 	loadObjects(objects: any[] = []) {
+		while (this.objects.length) {
+			this.objects.pop()
+		}
 		this.objects = []
 		objects.forEach(object => {
 			this.objects.push(factoryElement(object) as never)
@@ -180,7 +180,7 @@ class StoreTemplate {
 		}
 		this.scale = value
 		localStorage.setItem(KEY_SCALE_DEFAULT, String(value))
-		this.objects = this.objects.map(object => object.copy())
+		this.loadObjects(this.objects.map(object => object.copy()))
 	}
 	changeDpi(dpi: null | string) {
 		let newDpi: null | string | number = dpi || '12'

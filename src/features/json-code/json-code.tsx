@@ -1,13 +1,14 @@
-import { Button, Group, Modal, Stack, Textarea } from '@mantine/core'
+import { Button, Group, JsonInput, Modal, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { DEF_TEMPLATE } from '../../shared/constants'
 import { genId } from '../../shared/utils'
 
 export const JsonCode = observer(() => {
-	const refText = useRef()
+	const refText = useRef<HTMLElement>(null)
+	const [value, setValue] = useState('')
 	function handleImport() {
 		storeTemplate.clear()
 		const parse = {
@@ -42,13 +43,9 @@ export const JsonCode = observer(() => {
 		})
 	}
 	return (
-		<Modal
-			opened={storeApp.jsonCodeFlag}
-			onClose={() => storeApp.setJsonCodeFlag(false)}
-			size='xl'
-		>
+		<Modal opened={storeApp.jsonCodeFlag} onClose={() => storeApp.setJsonCodeFlag(false)} size='xl'>
 			<Stack>
-				<Textarea rows={20} ref={refText} />
+				<JsonInput rows={20} ref={refText} />
 
 				<Group>
 					<Button variant='filled' onClick={handleImport}>
@@ -57,10 +54,7 @@ export const JsonCode = observer(() => {
 					<Button variant='filled' onClick={handleExport}>
 						Экспорт
 					</Button>
-					<Button
-						variant='filled'
-						onClick={() => storeApp.setJsonCodeFlag(false)}
-					>
+					<Button variant='filled' onClick={() => storeApp.setJsonCodeFlag(false)}>
 						Закрыть
 					</Button>
 				</Group>

@@ -1,5 +1,6 @@
 import { Box, Button, ScrollArea, Stack, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
@@ -18,6 +19,23 @@ import { ProvideGuideLine } from '../services/guide-line/context'
 
 export const Editor = observer(() => {
 	const { fontFamilyFlag, variableFlag, imageFlag, dataMatrixFlag } = storeApp
+	useEffect(() => {
+		const mouseDown = (event: MouseEvent) => {
+			if (event.altKey && event.ctrlKey && event.button === 2) {
+				storeApp.setJsonCodeFlag(true)
+				event.preventDefault()
+				event.stopPropagation()
+			}
+		}
+		document.addEventListener('mousedown', mouseDown)
+		return () => {
+			try {
+				document.removeEventListener('mousedown', mouseDown)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+	}, [])
 	return (
 		<ProvideGuideLine>
 			<LabelTolbar />
@@ -46,11 +64,13 @@ export const Editor = observer(() => {
 				>
 					<Stack justify='space-between'>
 						{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
-						<Box>
-							<Button fullWidth onClick={() => storeApp.setJsonCodeFlag(true)}>
-								JsonCode
-							</Button>
-						</Box>
+						{import.meta.env.DEV && (
+							<Box>
+								<Button fullWidth onClick={() => storeApp.setJsonCodeFlag(true)}>
+									JsonCode
+								</Button>
+							</Box>
+						)}
 					</Stack>
 					<Box pt='xs'>
 						<ToolbarTools />
