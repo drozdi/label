@@ -83,6 +83,7 @@ interface IObject {
 	setLineThickness(value: string | number): void
 	setRadius(value: string | number): void
 	setEnabled(value: boolean): void
+	setTemp(value: boolean): void
 	setFontId(value: string | number): void
 	setData(value: string): void
 	setHumanReadable(value: string | number): void

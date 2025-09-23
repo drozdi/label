@@ -159,7 +159,7 @@ export const Import = observer(() => {
 			setReference(...arr)
 		},
 		parseDMATRIX(str: string) {
-			//storeApp.setDataMatrixFlag(true)
+			storeApp?.setDataMatrixFlag(true)
 			const obj = genObj({
 				name: storeDataMatrix.fakeBodyDM,
 				type: 'barcode',
@@ -212,6 +212,9 @@ export const Import = observer(() => {
 			obj.height = obj.width
 
 			storeTemplate.addObject(obj)
+			if (!storeTemplate.isOne()) {
+				storeTemplate.setActiveObject(obj.id)
+			}
 		},
 		parseTEXT(str: string) {
 			const obj = genObj({
@@ -624,20 +627,20 @@ export const Import = observer(() => {
 				res.t === 'A'
 					? 6
 					: res.t === 'B'
-						? 8
-						: res.t === 'C'
-							? 10
-							: res.t === 'D'
-								? 12
-								: res.t === 'E'
-									? 14
-									: res.t === 'F'
-										? 18
-										: res.t === 'G'
-											? 24
-											: res.t === 'H'
-												? 30
-												: 12
+					? 8
+					: res.t === 'C'
+					? 10
+					: res.t === 'D'
+					? 12
+					: res.t === 'E'
+					? 14
+					: res.t === 'F'
+					? 18
+					: res.t === 'G'
+					? 24
+					: res.t === 'H'
+					? 30
+					: 12
 
 			obj.pos_x = res.x / storeTemplate.dpi
 			obj.pos_y = res.y / storeTemplate.dpi
@@ -645,10 +648,10 @@ export const Import = observer(() => {
 				res.r === '3' || res.r === '7'
 					? 270
 					: res.r === '2' || res.r === '6'
-						? 180
-						: res.r === '1' || res.r === '5'
-							? 90
-							: 0
+					? 180
+					: res.r === '1' || res.r === '5'
+					? 90
+					: 0
 			obj.data = res.data
 
 			serviceNotifications.alert(
@@ -690,7 +693,6 @@ export const Import = observer(() => {
 				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
 			)
 		},
-
 		datamatrixElement(obj: Record<string, any>, str: string, body: string) {
 			obj.name = storeDataMatrix.fakeBodyDM
 			obj.type = 'barcode'
@@ -720,6 +722,10 @@ export const Import = observer(() => {
 			obj.radius = dm.size / storeTemplate.dpi
 
 			obj.data = body || res.data
+
+			if (!storeTemplate.isOne()) {
+				storeTemplate.setActiveObject(obj.id)
+			}
 		},
 		putbmpElement(obj: Record<string, any>, str: string) {
 			obj.name = 'img'
@@ -808,10 +814,10 @@ export const Import = observer(() => {
 				res.readable === '1' || res.readable === '2'
 					? 1
 					: res.readable === '3' || res.readable === '4'
-						? 2
-						: res.readable === '5' || res.readable === '6'
-							? 3
-							: 0
+					? 2
+					: res.readable === '5' || res.readable === '6'
+					? 3
+					: 0
 
 			obj.rotation = res.rotation === '3' ? 270 : res.rotation === '2' ? 182 : res.rotation === '1' ? 90 : 0
 			obj.data = res.data
@@ -874,7 +880,7 @@ export const Import = observer(() => {
 			} else if (tsplParser.test(refText.current.value)) {
 				tsplParser.parse(refText.current.value)
 			}
-			storeTemplate.loadObjects(storeTemplate.objects)
+			storeTemplate.loadObjects([...storeTemplate.objects])
 			storeApp.setImportFlag(false)
 		} catch (e) {
 			console.error(e)

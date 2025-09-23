@@ -229,6 +229,10 @@ export class BaseElement implements IObject {
 	setEnabled(value: boolean) {
 		this.enabled = value
 	}
+	setTemp(temp: boolean) {
+		this.temp = temp
+	}
+
 	setFontId(value: string | number) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)
