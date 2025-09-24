@@ -16,6 +16,7 @@ export const Header = observer(() => {
 	const computedColorScheme = useComputedColorScheme('light', {
 		getInitialValueInEffect: true,
 	})
+
 	return (
 		<Group justify='space-between' p='xs'>
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
@@ -25,13 +26,13 @@ export const Header = observer(() => {
 					<TbSettings />
 				</ActionIcon>
 
-				<Popover position='bottom' withArrow shadow='md' opened={openedInfo}>
+				<Popover position='bottom' offset={0} shadow='md' opened={openedInfo}>
 					<Popover.Target>
-						<ActionIcon onMouseEnter={info.open} onMouseLeave={info.close}>
+						<ActionIcon color={openedInfo ? 'lime' : ''} onMouseEnter={info.open} onMouseLeave={info.close}>
 							<TbQuestionMark />
 						</ActionIcon>
 					</Popover.Target>
-					<Popover.Dropdown>
+					<Popover.Dropdown onMouseEnter={info.open} onMouseLeave={info.close}>
 						<Info />
 					</Popover.Dropdown>
 				</Popover>

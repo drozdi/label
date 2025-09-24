@@ -1,4 +1,4 @@
-interface AppContext {
+interface IAppContext {
 	fontFamilyFlag?: boolean
 	variableFlag?: boolean
 	imageFlag?: boolean
@@ -26,8 +26,8 @@ interface AppContext {
 	setShowAppLoader?: (flag: boolean) => void
 
 	imageBg?: string
-	setImageBg?: (bg?: string) => void
+	setImageBg?: (bg: string) => void
 	serverError?: boolean
 	setServerError?: (flag: boolean) => void
-	async silent: (fn: Function) => void
+	silent: (fn: Function) => void
 }

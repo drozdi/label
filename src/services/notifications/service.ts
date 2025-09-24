@@ -28,6 +28,7 @@ function send(item) {
 		...item,
 	})
 }
+
 export const serviceNotifications = {
 	error: (title: string, message?: string) => {
 		send({

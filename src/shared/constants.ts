@@ -4,6 +4,8 @@ export const KEY_TIME_AUTO_SAVE = 'default.time.auto.save'
 export const KEY_SCALE_DEFAULT = 'default.scale'
 export const KEY_API_HOST = 'api.host'
 
+export const TIME_AUTO_SAVE = 120
+
 export const URL_API = 'http://10.76.10.102:8033/api/v1/'
 
 //export const MM = 3.709575175750246

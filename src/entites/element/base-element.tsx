@@ -4,7 +4,7 @@ import { storeFonts } from '../fonts/store'
 import { storeImages } from '../images/store'
 import { factoryElement } from './factory-element'
 
-export class BaseElement {
+export class BaseElement implements IObject {
 	/////
 	mm = MM
 	cm = CM
@@ -131,14 +131,6 @@ export class BaseElement {
 			),
 		}
 	}
-	_size() {
-		const element = document.getElementById(this.id)
-		const rectElement = element?.getBoundingClientRect()
-		return {
-			width: round(rectElement?.width),
-			height: round(rectElement?.height),
-		}
-	}
 	style(scale = 1) {
 		const element = document.getElementById(this.id)
 		let width, height, _width, _height
@@ -237,6 +229,10 @@ export class BaseElement {
 	setEnabled(value: boolean) {
 		this.enabled = value
 	}
+	setTemp(temp: boolean) {
+		this.temp = temp
+	}
+
 	setFontId(value: string | number) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)

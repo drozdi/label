@@ -1,8 +1,18 @@
 import { api } from '../../shared/api'
 
 // Получить все шаблоны
-export async function requestTemplateList() {
-	const res = await api.get(`/template_list/`)
+export async function requestTemplateList(
+	{ size, number }: IRequestTemplateList = {
+		size: 100,
+		number: 0,
+	}
+) {
+	const res = await api.get(`/template_list/`, {
+		params: {
+			size,
+			number,
+		},
+	})
 	return res.data.data.response
 }
 

@@ -9,7 +9,7 @@ import { BaseElement } from './base-element'
  *
  * @see https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
  */
-function getTextWidth(text: string, font: string) {
+function getTextWidth(text: string, font: string): number {
 	// re-use canvas object for better performance
 	const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'))
 	const context = canvas.getContext('2d')
@@ -18,7 +18,7 @@ function getTextWidth(text: string, font: string) {
 	return metrics.width
 }
 
-export class TextElement extends BaseElement {
+export class TextElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
 		super({
 			font_id: storeFonts.id,

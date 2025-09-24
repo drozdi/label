@@ -6,7 +6,7 @@ import { ImgElement } from './img-element'
 import { LinesElement } from './lines-element'
 import { TextElement } from './text-element'
 
-export function factoryElement(object: Record<string, any>): BaseElement {
+export function factoryElement(object: Record<string, any>): IObject {
 	const corecctProps = object.getCorrectProps?.() || object
 
 	switch (corecctProps.type) {

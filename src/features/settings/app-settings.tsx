@@ -9,12 +9,8 @@ export const AppSettings = observer(() => {
 	const [apiHostFlag, setApiHostFlag] = useState(false)
 	const [apiPortFlag, setApiPortFlag] = useState(false)
 	const [timeAutoSave, setTimeAutoSave] = useState(storeApp.timeAutoSave)
-	const [apiHost, setApiHost] = useState(
-		localStorage.getItem('api.host') || URL_API
-	)
-	const [apiSplit, setApiSplit] = useState(
-		apiHost.replace('http://', '').replace('/api/v1/', '').split(':')
-	)
+	const [apiHost, setApiHost] = useState(localStorage.getItem('api.host') || URL_API)
+	const [apiSplit, setApiSplit] = useState(apiHost.replace('http://', '').replace('/api/v1/', '').split(':'))
 	const handleApiHost = (i, val) => {
 		if (i === 0) {
 			setApiSplit([val, apiSplit[1]])
@@ -24,9 +20,7 @@ export const AppSettings = observer(() => {
 	}
 
 	useEffect(() => {
-		setApiSplit(
-			apiHost.replace('http://', '').replace('/api/v1/', '').split(':')
-		)
+		setApiSplit(apiHost.replace('http://', '').replace('/api/v1/', '').split(':'))
 	}, [apiHost])
 
 	const setApi = () => {
@@ -45,16 +39,24 @@ export const AppSettings = observer(() => {
 				type='text'
 				label='Адрес БД:'
 				value={apiSplit[0]}
+				edit={apiHostFlag}
 				onChange={value => handleApiHost(0, value)}
 				onClick={() => setApi()}
+				onEdit={edit => {
+					setApiPortFlag(edit)
+				}}
 			/>
 			<ItemEditable
 				editable
 				type='text'
 				label='Порт БД:'
 				value={apiSplit[1]}
+				edit={apiPortFlag}
 				onChange={value => handleApiHost(1, value)}
 				onClick={() => setApi()}
+				onEdit={edit => {
+					setApiHostFlag(edit)
+				}}
 			/>
 			<ItemEditable
 				editable

@@ -14,7 +14,7 @@ class StoreTemplate {
 	direction_y = 0
 	reference_x = 0
 	reference_y = 0
-	objects = []
+	objects: IObject[] = []
 	scale = Number(localStorage.getItem(KEY_SCALE_DEFAULT) || 1)
 	id = 0
 	name = ''
@@ -97,7 +97,7 @@ class StoreTemplate {
 
 	setActiveObject(id: number | string) {
 		this.currId = String(id)
-		this.currIndex = this.objects.findIndex(object => String(object.id) === String(this.currId))
+		this.currIndex = this.objects.findIndex(object => String(object.id) === this.currId)
 		if (this.currIndex === -1) {
 			this.currId = 0
 		}
@@ -129,17 +129,17 @@ class StoreTemplate {
 		}
 		this.setActiveObject(this.currId)
 	}
-	deleteCurrentObject() {
-		this.deleteObject(this.currId)
-	}
 	loadObjects(objects: any[] = []) {
+		while (this.objects.length) {
+			this.objects.pop()
+		}
 		this.objects = []
 		objects.forEach(object => {
 			this.objects.push(factoryElement(object) as never)
 		})
 	}
 	addObject(object: Record<string, any>) {
-		this.objects.push(factoryElement(object) as never)
+		this.objects.push(factoryElement(object))
 	}
 	private _loadTemplate(template) {
 		this.width_mm = template.width_mm
@@ -180,7 +180,7 @@ class StoreTemplate {
 		}
 		this.scale = value
 		localStorage.setItem(KEY_SCALE_DEFAULT, String(value))
-		this.objects = this.objects.map(object => object.copy())
+		this.loadObjects(this.objects.map(object => object.copy()))
 	}
 	changeDpi(dpi: null | string) {
 		let newDpi: null | string | number = dpi || '12'
@@ -322,6 +322,14 @@ class StoreTemplate {
 		this.selectedIndex.forEach(index => {
 			if (index > -1) {
 				this.objects[index].setEnabled(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
+	}
+	setTemp(value: boolean) {
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setTemp(value)
 				this.objects[index] = this.objects[index].copy()
 			}
 		})

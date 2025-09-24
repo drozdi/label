@@ -18,3 +18,20 @@ interface IResponseFontList {
 	total_records: number
 	response: IFont[]
 }
+
+interface IStoreFonts {
+	isLoading: boolean
+	isLoaded: boolean
+	error: string
+	_list: IFont[]
+	id: number
+	list: IFont[]
+	default: IFont | undefined
+	load(reloading: boolean): Promise<void>
+	add(name: string, data: string): Promise<void>
+	remove(id: number): Promise<void>
+	setId(id: number): void
+	findById(id: number): IFont | undefined
+	findByName(name: string): IFont | undefined
+	findByTagFonts(tagFonts: string): IFont | undefined
+}

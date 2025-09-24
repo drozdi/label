@@ -1,5 +1,6 @@
 import { Box, Button, ScrollArea, Stack, Tabs, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
@@ -18,6 +19,23 @@ import { ProvideGuideLine } from '../services/guide-line/context'
 
 export const Editor = observer(() => {
 	const { fontFamilyFlag, variableFlag, imageFlag, dataMatrixFlag } = storeApp
+	useEffect(() => {
+		const mouseDown = (event: MouseEvent) => {
+			if (event.altKey && event.ctrlKey && event.button === 2) {
+				storeApp.setJsonCodeFlag(true)
+				event.preventDefault()
+				event.stopPropagation()
+			}
+		}
+		document.addEventListener('mousedown', mouseDown)
+		return () => {
+			try {
+				document.removeEventListener('mousedown', mouseDown)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+	}, [])
 	return (
 		<ProvideGuideLine>
 			<LabelTolbar />
@@ -25,7 +43,7 @@ export const Editor = observer(() => {
 				h='100%'
 				style={{
 					display: 'grid',
-					gridTemplateColumns: '18rem 1fr 18rem',
+					gridTemplateColumns: 'minmax(min-content, auto) minmax(auto, 1fr) minmax(min-content, auto)',
 					gridTemplateRows: '1fr',
 					overflow: 'hidden',
 					width: '100%',
@@ -33,29 +51,50 @@ export const Editor = observer(() => {
 					margin: '0 auto',
 				}}
 			>
-				<Box
+				<Stack
 					h='100%'
-					px='xs'
+					w='18rem'
+					justify='space-between'
 					style={{
-						display: 'grid',
-						gridTemplateColumns: '1fr 2rem',
-						gridTemplateRows: '1fr',
-						gap: 'var(--mantine-spacing-xs)',
 						borderRight: '1px solid var(--mantine-color-default-border)',
+						overflowX: 'hidden',
+						overflowY: 'auto',
 					}}
 				>
-					<Stack justify='space-between'>
-						{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
+					<Box
+						h='100%'
+						px='xs'
+						style={{
+							display: 'grid',
+							gridTemplateColumns: 'minmax(auto, 1fr) minmax(min-content, auto)',
+							gridTemplateRows: '1fr',
+							gap: 'var(--mantine-spacing-xs)',
+							overflowX: 'hidden',
+							overflowY: 'auto',
+						}}
+					>
+						<Box
+							h='100%'
+							style={{
+								overflowX: 'hidden',
+								overflowY: 'auto',
+							}}
+						>
+							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
+						</Box>
+						<Box pt='xs'>
+							<ToolbarTools />
+						</Box>
+					</Box>
+
+					{import.meta.env.DEV && (
 						<Box>
 							<Button fullWidth onClick={() => storeApp.setJsonCodeFlag(true)}>
 								JsonCode
 							</Button>
 						</Box>
-					</Stack>
-					<Box pt='xs'>
-						<ToolbarTools />
-					</Box>
-				</Box>
+					)}
+				</Stack>
 				<ScrollArea h='100%' p='xs' pt='0'>
 					<Band>
 						<Template />
@@ -63,6 +102,7 @@ export const Editor = observer(() => {
 				</ScrollArea>
 				<Box
 					h='100%'
+					w='18rem'
 					px='xs'
 					style={{
 						overflowX: 'hidden',

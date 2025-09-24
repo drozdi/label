@@ -73,6 +73,7 @@
 		"@tiptap/pm": "^2.25.0",
 		"@tiptap/react": "^2.25.0",
 		"@tiptap/starter-kit": "^2.25.0",
+		"dotenv": "^17.2.1",
 		"axios": "^1.10.0",
 		"bwip-js": "^4.7.0",
 		"dayjs": "^1.11.13",

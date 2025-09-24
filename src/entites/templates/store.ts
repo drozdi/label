@@ -13,7 +13,7 @@ import {
 	requestTemplateSave,
 	requestTemplateUpdate,
 } from './api'
-class StoreTemplates {
+class StoreTemplates implements IStoreTemplates {
 	isLoaded = false
 	isLoading = false
 	_list = []
@@ -26,10 +26,10 @@ class StoreTemplates {
 	constructor() {
 		makeAutoObservable(this)
 	}
-	async load(reloading: boolean = false) {
+	async load(reloading = false) {
 		if (reloading) {
 			this.isLoaded = false
-			this._list = []
+			//this._list = []
 		}
 		if (this.isLoaded) {
 			return

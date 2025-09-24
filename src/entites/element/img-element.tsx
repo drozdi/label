@@ -2,7 +2,7 @@ import { Image } from '@mantine/core'
 import { storeImages } from '../images/store'
 import { BaseElement } from './base-element'
 
-export class ImgElement extends BaseElement {
+export class ImgElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
 		super({
 			image_id: storeImages.default?.id,

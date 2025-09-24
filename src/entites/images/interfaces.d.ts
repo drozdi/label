@@ -18,3 +18,20 @@ interface IResponseImageList {
 	total_records: number
 	response: IImage[]
 }
+
+interface IStoreImages {
+	isLoading: boolean
+	isLoaded: boolean
+	error: string
+	_list: IImage[]
+	id: number
+	list: IImage[]
+	default: IImage | undefined
+	load(reloading = false): Promise<void>
+	add(name: string, data: string): Promise<void>
+	remove(id: number): Promise<void>
+	setId(id: number): void
+	findById(id: number): IImage | undefined
+	findByName(name: string): IImage | undefined
+	findByTagImages(tagImages: string): IImage | undefined
+}
