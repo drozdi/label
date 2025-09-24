@@ -3,12 +3,6 @@ import dotenv from 'dotenv'
 import { defineConfig } from 'vite'
 dotenv.config()
 
-<<<<<<< HEAD
-// https://vitejs.dev/config/
-=======
-console.log(process.env)
-// https://vite.dev/config/
->>>>>>> 2eaa6d4dc940c55c66854b15bf01ffd94cc492b2
 export default defineConfig({
 	plugins: [react()],
 	server: {
