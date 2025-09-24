@@ -9,7 +9,7 @@ import { HeaderPrint } from '../features/header/header-print'
 import { HeaderTemplates } from '../features/header/header-templates'
 import { Info } from '../features/info/info'
 
-export const Header = observer(() => {
+export const Header = observer(({ leftSection, rightSection }) => {
 	const { loadTemplateFlag, settingsFlag } = storeApp
 	const [openedInfo, info] = useDisclosure(false)
 	const { setColorScheme } = useMantineColorScheme()
@@ -19,6 +19,7 @@ export const Header = observer(() => {
 
 	return (
 		<Group justify='space-between' p='xs'>
+			{leftSection}
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{!loadTemplateFlag && <HeaderPrint />}
 			<Group>
@@ -66,6 +67,7 @@ export const Header = observer(() => {
 					</Button>
 				)}
 			</Group>
+			{rightSection}
 		</Group>
 	)
 })

@@ -1,32 +1,16 @@
-import {
-	ActionIcon,
-	Button,
-	CloseButton,
-	FileButton,
-	Group,
-	Image,
-	ScrollArea,
-	Stack,
-	Text,
-	TextInput,
-	Title,
-} from '@mantine/core'
+import { ActionIcon, Button, FileButton, Group, Image, Stack, Text, TextInput, Title } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { TbFilePlus } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
+import { Container } from '../../shared/ui'
 import { useImagesUpload } from './hooks/use-images-upload'
 import { ListImage } from './list-image'
 
 export const ContainerImage = observer(() => {
-	const { file, image, name, upload, cancel, save, writeName } =
-		useImagesUpload()
+	const { file, image, name, upload, cancel, save, writeName } = useImagesUpload()
 
 	return (
-		<Stack h='100%'>
-			<Group mt='xs' justify='space-between'>
-				Изображения
-				<CloseButton onClick={() => storeApp?.setImageFlag(false)} />
-			</Group>
+		<Container label='Изображения' p='xs' onClose={() => storeApp?.setImageFlag(false)}>
 			{file ? (
 				<>
 					<Stack>
@@ -35,14 +19,10 @@ export const ContainerImage = observer(() => {
 						</Title>
 						<Image src={'data:image/bmp;base64,' + image} />
 						<Text size='xs'>
-							Загружен файл "{file?.name || 'unknow'}". Оставьте текущее
-							название или введите своё на латинице. Максимум 8 символов
+							Загружен файл "{file?.name || 'unknow'}". Оставьте текущее название или введите своё на латинице. Максимум
+							8 символов
 						</Text>
-						<TextInput
-							value={name}
-							onChange={({ target }) => writeName(target.value)}
-							required
-						/>
+						<TextInput value={name} onChange={({ target }) => writeName(target.value)} required />
 						<Group justify='space-between'>
 							<Button variant='filled' onClick={save}>
 								Сохранить
@@ -65,9 +45,7 @@ export const ContainerImage = observer(() => {
 					)}
 				</FileButton>
 			)}
-			<ScrollArea h='100%'>
-				<ListImage />
-			</ScrollArea>
-		</Stack>
+			<ListImage />
+		</Container>
 	)
 })

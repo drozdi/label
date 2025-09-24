@@ -1,4 +1,5 @@
-import { Box, Button, ScrollArea, Stack, Tabs, Text } from '@mantine/core'
+import { Divider, Group, Tabs, Text } from '@mantine/core'
+
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
@@ -12,10 +13,13 @@ import { ContainerImage } from '../features/images/container-image'
 import { ListLayers } from '../features/layers/list-layers'
 import { ListProperties } from '../features/properties/list-properties'
 import { Template } from '../features/template/template'
-import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
-import { ToolbarTools } from '../features/toolbars/tools/toolbar-tools'
+import { ToolbarHistory } from '../features/toolbars/history/toolbar-history'
+import { ToolbarLabel } from '../features/toolbars/label/toolbar-label'
+import { ToolbarRotate } from '../features/toolbars/rotate/toolbar-rotate'
+import { ToolbarTemplate } from '../features/toolbars/template/toolbar-template'
 import { ContainerVariable } from '../features/variables/container-variable'
-import { ProvideGuideLine } from '../services/guide-line/context'
+
+import { Layout } from './Layout'
 
 export const Editor = observer(() => {
 	const { fontFamilyFlag, variableFlag, imageFlag, dataMatrixFlag } = storeApp
@@ -36,81 +40,28 @@ export const Editor = observer(() => {
 			}
 		}
 	}, [])
+
 	return (
-		<ProvideGuideLine>
-			<LabelTolbar />
-			<Box
-				h='100%'
+		<>
+			<Group
+				p='xs'
+				justify='space-between'
 				style={{
-					display: 'grid',
-					gridTemplateColumns: 'minmax(min-content, auto) minmax(auto, 1fr) minmax(min-content, auto)',
-					gridTemplateRows: '1fr',
-					overflow: 'hidden',
-					width: '100%',
-					//maxWidth: 'var(--mantine-breakpoint-xl)',
-					margin: '0 auto',
+					borderBottom: '1px solid var(--mantine-color-default-border)',
 				}}
 			>
-				<Stack
-					h='100%'
-					w='18rem'
-					justify='space-between'
-					style={{
-						borderRight: '1px solid var(--mantine-color-default-border)',
-						overflowX: 'hidden',
-						overflowY: 'auto',
-					}}
-				>
-					<Box
-						h='100%'
-						px='xs'
-						style={{
-							display: 'grid',
-							gridTemplateColumns: 'minmax(auto, 1fr) minmax(min-content, auto)',
-							gridTemplateRows: '1fr',
-							gap: 'var(--mantine-spacing-xs)',
-							overflowX: 'hidden',
-							overflowY: 'auto',
-						}}
-					>
-						<Box
-							h='100%'
-							style={{
-								overflowX: 'hidden',
-								overflowY: 'auto',
-							}}
-						>
-							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
-						</Box>
-						<Box pt='xs'>
-							<ToolbarTools />
-						</Box>
-					</Box>
-
-					{import.meta.env.DEV && (
-						<Box>
-							<Button fullWidth onClick={() => storeApp.setJsonCodeFlag(true)}>
-								JsonCode
-							</Button>
-						</Box>
-					)}
-				</Stack>
-				<ScrollArea h='100%' p='xs' pt='0'>
-					<Band>
-						<Template />
-					</Band>
-				</ScrollArea>
-				<Box
-					h='100%'
-					w='18rem'
-					px='xs'
-					style={{
-						overflowX: 'hidden',
-						overflowY: 'auto',
-						borderLeft: '1px solid var(--mantine-color-default-border)',
-					}}
-				>
-					{fontFamilyFlag ? (
+				<Group>
+					<ToolbarRotate />
+					<Divider orientation='vertical' />
+					<ToolbarTemplate />
+				</Group>
+				<ToolbarLabel />
+				<ToolbarHistory />
+			</Group>
+			<Layout
+				leftSection={dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
+				rightSection={
+					fontFamilyFlag ? (
 						<ContainerFontFamily />
 					) : variableFlag ? (
 						<ContainerVariable />
@@ -156,9 +107,13 @@ export const Editor = observer(() => {
 								<ListHistory />
 							</Tabs.Panel>
 						</Tabs>
-					)}
-				</Box>
-			</Box>
-		</ProvideGuideLine>
+					)
+				}
+			>
+				<Band>
+					<Template />
+				</Band>
+			</Layout>
+		</>
 	)
 })

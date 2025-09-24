@@ -9,7 +9,7 @@ import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
 import { ListTemplate } from '../features/templates/list-template'
 import { Preview } from '../features/templates/preview'
-import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
+import { ToolbarLabel } from '../features/toolbars/label/toolbar-label'
 
 export const Templates = observer(() => {
 	const { selected: templateSelected } = storeTemplates
@@ -57,7 +57,7 @@ export const Templates = observer(() => {
 	return (
 		<>
 			<Box>
-				<LabelTolbar template={templateSelected} />
+				<ToolbarLabel template={templateSelected} />
 			</Box>
 			<Group grow justify='space-between' h='100%'>
 				<ScrollArea h='100%' flex='none' w='18rem' p='xs'>

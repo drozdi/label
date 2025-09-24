@@ -1,23 +1,16 @@
 import { Group, NumberInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../../../entites/template/store'
+import { Toolbar } from '../../../shared/ui'
 import { LabelTolbarInput } from './label-tolbar-input'
 import { LabelTolbarSelect } from './label-tolbar-select'
 
 const w = 60
 
-export const LabelTolbar = observer(({ template, disabled }) => {
+export const ToolbarLabel = observer(({ template, disabled, ...props }) => {
 	template = template || storeTemplate
 	return (
-		<Group
-			fz={12}
-			p='xs'
-			align='flex-start'
-			justify='space-between'
-			style={{
-				borderBottom: '1px solid var(--mantine-color-default-border)',
-			}}
-		>
+		<Toolbar fz={12} {...props}>
 			<LabelTolbarSelect
 				disabled={disabled}
 				w={w * 1.5}
@@ -99,6 +92,6 @@ export const LabelTolbar = observer(({ template, disabled }) => {
 					onChange={v => template.changeRefY?.(v)}
 				/>
 			</Group>
-		</Group>
+		</Toolbar>
 	)
 })

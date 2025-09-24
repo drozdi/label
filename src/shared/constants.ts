@@ -16,6 +16,9 @@ export const MM_QR = 3.999575175750246
 export const STEP = 0.1
 export const ROUND = 10
 export const SNAP_THRESHOLD = 5 //px
+export const NEW_TEMPLATE_NAME = 'Новый шаблон'
+export const WIDTH_MOBILE = 612
+export const MEDIA_MOBILE = `(max-width: ${WIDTH_MOBILE}px)`
 
 export const VERSION = '2.0.0'
 
