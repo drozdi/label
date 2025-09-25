@@ -23,6 +23,9 @@ class StoreHistory implements IStoreHistory {
 		return this.curIndex > -1 ? this.histories[this.curIndex] : undefined
 	}
 	clear() {
+		while (this.histories.length) {
+			this.histories.pop()
+		}
 		this.histories = []
 		this.curIndex = -1
 	}

@@ -16,6 +16,7 @@ import { storeApp } from '../../entites/app/store'
 import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeFonts } from '../../entites/fonts/store'
 import { storeImages } from '../../entites/images/store'
+import { List } from '../../shared/ui'
 import { ItemElement } from './item-element'
 
 export const ListElement = observer(() => {
@@ -124,10 +125,10 @@ export const ListElement = observer(() => {
 		},
 	]
 	return (
-		<Stack gap={2}>
+		<List>
 			{elements.map(({ label, icon, callback, ...element }, index) => (
 				<ItemElement key={index} label={label} icon={icon} component={Stack} callback={callback} element={element} />
 			))}
-		</Stack>
+		</List>
 	)
 })

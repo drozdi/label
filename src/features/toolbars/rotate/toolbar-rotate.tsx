@@ -1,15 +1,12 @@
-import { Button, Group, Textarea } from '@mantine/core'
-import { modals } from '@mantine/modals'
+import { ActionIcon } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { storeApp } from '../../entites/app/store'
-import { storePrinter } from '../../entites/printer/store'
-import { storeTemplate } from '../../entites/template/store'
-import { storeTemplates } from '../../entites/templates/store'
-import { serviceNotifications } from '../../services/notifications/service'
-import { servicePrinter } from '../../services/printer/service'
+import { TbRotate2, TbRotateClockwise2 } from 'react-icons/tb'
+import { storeHistory } from '../../../entites/history/store'
+import { storeTemplate } from '../../../entites/template/store'
+import { Toolbar } from '../../../shared/ui'
+import { round } from '../../../shared/utils'
 
-export const HeaderPrint = observer(() => {
-	const { importFlag, previewFlag, errorName } = storeApp
+export const ToolbarRotate = observer(props => {
 	const handleRotateRight = () => {
 		const { width_mm, height_mm, width, height } = storeTemplate
 		storeTemplate.changeWidth(height_mm)
@@ -104,56 +101,14 @@ export const HeaderPrint = observer(() => {
 		)
 		storeHistory.append(storeTemplate.objects, 'Поворот на 90')
 	}
-	const handlePrintCode = async () => {
-		if (!storeTemplates.selected) {
-			serviceNotifications.alert('Сохраните шаблон или выберите из БД')
-			return
-		}
-		const res = await servicePrinter.codePrint(storeTemplates.selected.id)
-		if (res === undefined) return
-		modals.open({
-			title: `Код для принтера на "${storePrinter.getConfig().type_printer}"`,
-			size: 'lg',
-			children: <Textarea readOnly rows={20} size='lg' defaultValue={res.trim()} />,
-		})
-	}
-	const handlePrintTrial = async () => {
-		if (!storeTemplates.selected) {
-			serviceNotifications.alert('Сохраните шаблон или выберите из БД')
-			return
-		}
-		const res = await servicePrinter.trialPrint(storeTemplates.selected.id)
-		if (res === undefined) return
-		modals.open({
-			title: `Код для принтера на "${storePrinter.getConfig().type_printer}"`,
-			size: 'lg',
-			children: <Textarea readOnly rows={20} size='lg' defaultValue={res.trim()} />,
-		})
-	}
-	const handlePrintExample = async () => {
-		if (!storeTemplates.selected) {
-			serviceNotifications.alert('Сохраните шаблон или выберите из БД')
-			return
-		}
-		const res = await servicePrinter.examplePrint(storeTemplates.selected.id)
-		if (res === undefined) return
-		serviceNotifications.success(`Код для принтера на "${storePrinter.getConfig().type_printer}"`, res.trim())
-	}
-
 	return (
-		<Group>
-			<Button variant='outline' color={importFlag ? 'lime' : ''} onClick={() => storeApp?.setImportFlag(!importFlag)}>
-				Импорт кода
-			</Button>
-			<Button variant='outline' onClick={handlePrintCode}>
-				Код печати
-			</Button>
-			<Button variant='outline' onClick={handlePrintExample}>
-				Пример печати
-			</Button>
-			<Button variant='outline' onClick={handlePrintTrial}>
-				Пробная печать
-			</Button>
-		</Group>
+		<Toolbar {...props}>
+			<ActionIcon variant='filled' onClick={handleRotateLeft}>
+				<TbRotate2 />
+			</ActionIcon>
+			<ActionIcon variant='filled' onClick={handleRotateRight}>
+				<TbRotateClockwise2 />
+			</ActionIcon>
+		</Toolbar>
 	)
 })

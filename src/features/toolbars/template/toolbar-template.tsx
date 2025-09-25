@@ -1,15 +1,15 @@
-import { ActionIcon, FileButton, Popover, Slider, Stack } from '@mantine/core'
+import { ActionIcon, FileButton, Popover, Slider } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { observer } from 'mobx-react-lite'
 import { useCallback } from 'react'
-import { TbArrowBack, TbArrowForward, TbBackground, TbGrid3X3, TbZoomIn } from 'react-icons/tb'
+import { TbBackground, TbGrid3X3, TbZoomIn } from 'react-icons/tb'
 import { storeApp } from '../../../entites/app/store'
-import { storeHistory } from '../../../entites/history/store'
 import { storeTemplate } from '../../../entites/template/store'
+import { Toolbar } from '../../../shared/ui'
 
 const allowedExtensions = ['bmp', 'jpeg', 'png']
 
-export const ToolbarTools = observer(() => {
+export const ToolbarTemplate = observer(props => {
 	const { gridFlag, imageBg } = storeApp
 	const [opened, { close, open }] = useDisclosure(false)
 
@@ -42,9 +42,10 @@ export const ToolbarTools = observer(() => {
 			}
 		}
 	}, [])
+
 	return (
-		<Stack align='center' justify='flex-start' maw='none'>
-			<Popover width={300} shadow='md' position='right' offset={0} opened={opened}>
+		<Toolbar {...props}>
+			<Popover width={300} shadow='md' offset={0} opened={opened}>
 				<Popover.Target>
 					<ActionIcon onMouseEnter={open} onMouseLeave={close}>
 						<TbZoomIn />
@@ -86,13 +87,6 @@ export const ToolbarTools = observer(() => {
 			<ActionIcon color={gridFlag ? 'lime' : ''} title='Сетка разметки' onClick={() => storeApp.setGridFlag(!gridFlag)}>
 				<TbGrid3X3 />
 			</ActionIcon>
-			<br />
-			<ActionIcon title='Назад' disabled={storeHistory.canGoBack} onClick={() => storeHistory.back()}>
-				<TbArrowBack />
-			</ActionIcon>
-			<ActionIcon title='Вперед' disabled={storeHistory.canGoForward} onClick={() => storeHistory.forward()}>
-				<TbArrowForward />
-			</ActionIcon>
-		</Stack>
+		</Toolbar>
 	)
 })

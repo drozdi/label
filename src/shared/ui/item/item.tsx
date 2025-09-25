@@ -3,14 +3,7 @@ import clsx from 'clsx'
 import { TbX } from 'react-icons/tb'
 import classes from './item.module.css'
 
-export const Item = ({
-	active,
-	children,
-	className,
-	disabled,
-	onRemove,
-	...props
-}: Record<string, any>) => {
+export const Item = ({ active, children, className, disabled, onRemove, ...props }: Record<string, any>) => {
 	return (
 		<div
 			{...props}

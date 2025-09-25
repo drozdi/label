@@ -1,16 +1,12 @@
-import { ScrollArea, Stack, Title } from '@mantine/core'
+import { ScrollArea } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { Container } from '../../shared/ui'
 import { ListElement } from './list-element'
 
-export const ContainerElement = observer(() => {
+export const ContainerElement = observer(props => {
 	return (
-		<Stack h='100%'>
-			<Title mt='xs' order={5}>
-				Добавить элемент
-			</Title>
-			<ScrollArea h='100%'>
-				<ListElement />
-			</ScrollArea>
-		</Stack>
+		<Container as={ScrollArea} p='xs' h='100%' label='Добавить элемент' {...props}>
+			<ListElement />
+		</Container>
 	)
 })

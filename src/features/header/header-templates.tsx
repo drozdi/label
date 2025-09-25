@@ -16,11 +16,8 @@ export const HeaderTemplates = observer(() => {
 	}
 
 	return (
-		<Group gap='xs'>
-			<Button
-				variant='outline'
-				onClick={() => storeApp?.setLoadTemplateFlag(false)}
-			>
+		<Group>
+			<Button variant='outline' onClick={() => storeApp?.setLoadTemplateFlag(false)}>
 				Закрыть
 			</Button>
 			<FileButton onChange={handleImport} accept='.tdmc'>

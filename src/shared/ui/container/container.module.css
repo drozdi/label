@@ -1,0 +1,6 @@
+.root {
+	position: relative;
+}
+.mobile {
+	max-width: 3rem;
+}
