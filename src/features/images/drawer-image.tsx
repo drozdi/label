@@ -1,16 +1,32 @@
-import { ActionIcon, Button, FileButton, Group, Image, Stack, Text, TextInput, Title } from '@mantine/core'
+import {
+	ActionIcon,
+	Button,
+	Drawer,
+	FileButton,
+	Group,
+	Image,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+	Title,
+} from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { TbFilePlus } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
-import { Container } from '../../shared/ui'
 import { useImagesUpload } from './hooks/use-images-upload'
 import { ListImage } from './list-image'
 
-export const ContainerImage = observer(props => {
+export const DrawerImage = observer(() => {
 	const { file, image, name, upload, cancel, save, writeName } = useImagesUpload()
 
 	return (
-		<Container label='Изображения' p='xs' {...props} onClose={() => storeApp?.setImageFlag(false)}>
+		<Drawer
+			title='Изображения'
+			scrollAreaComponent={ScrollArea}
+			opened={storeApp?.imageFlag}
+			onClose={() => storeApp?.setImageFlag(false)}
+		>
 			{file ? (
 				<>
 					<Stack>
@@ -46,6 +62,6 @@ export const ContainerImage = observer(props => {
 				</FileButton>
 			)}
 			<ListImage />
-		</Container>
+		</Drawer>
 	)
 })

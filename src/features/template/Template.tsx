@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useEffect, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
+import { storeGuideLine } from '../../entites/guide-line/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
@@ -27,6 +28,10 @@ export const Template = observer(() => {
 	const isDrag = useRef<boolean>(false)
 	const isSelecting = useRef<boolean>(false)
 	const refRectSelected = useRef<HTMLDivElement>(null)
+	const refLine = useRef<{
+		x: number[]
+		y: number[]
+	}>({ x: [], y: [] })
 
 	const sPosition = useRef<{
 		minX?: number
@@ -59,7 +64,6 @@ export const Template = observer(() => {
 			offsetY: number
 		}[]
 	>([])
-	const guideElements = useRef<HTMLElement[]>([])
 
 	const { verticalLine, horizontalLine, snap, hideLine, showLine } = useGuideLine()
 
@@ -72,18 +76,38 @@ export const Template = observer(() => {
 
 	const handleDragMouseDown = useCallback((event: React.MouseEvent<HTMLElement>) => {
 		rectParent.current = (refTemplate.current as HTMLElement)?.getBoundingClientRect()
+		refLine.current = {
+			x: storeGuideLine.divisionsX,
+			y: storeGuideLine.divisionsY,
+		}
 
-		guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
+		storeTemplate.inverseIds.forEach(id => {
+			const { rotation } = storeTemplate.findById(id)
+			const guide = document.getElementById(id)
+			const guideRect = guide.getBoundingClientRect()
 
-		storeTemplate.selectedObjects.forEach(({ id, rotation, type }) => {
+			const guideLeft = guideRect.left - rectParent.current.left
+			const guideTop = guideRect.top - rectParent.current.top
+
+			refLine.current.x.push(guideLeft)
+			refLine.current.x.push(
+				guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth) / 2
+			)
+			refLine.current.x.push(guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth))
+
+			refLine.current.y.push(guideTop)
+			refLine.current.y.push(
+				guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight) / 2
+			)
+			refLine.current.y.push(guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight))
+		})
+
+		refLine.current.x.sort((a, b) => a - b)
+		refLine.current.y.sort((a, b) => a - b)
+
+		storeTemplate.selectedObjects.forEach(({ id, rotation }) => {
 			const element = document.getElementById(id) as HTMLElement
-			const content = element.querySelector('[data-content]')
 			const rect = element.getBoundingClientRect()
-			const rectContent = content?.getBoundingClientRect() ?? rect
-			if ('text' === type && content) {
-				content.style.width = 'auto'
-				content.style.height = 'auto'
-			}
 
 			const clone = element.cloneNode(true) as HTMLElement
 
@@ -108,7 +132,6 @@ export const Template = observer(() => {
 				rotation,
 				element,
 				clone,
-				type,
 				offsetX: event.clientX - rect.left,
 				offsetY: event.clientY - rect.top,
 			})
@@ -134,99 +157,47 @@ export const Template = observer(() => {
 		snap.current.isX = false
 		snap.current.isY = false
 
-		guideElements.current.forEach(guide => {
-			const { rotation } = storeTemplate.findById(guide.id)
-			const guideRect = guide.getBoundingClientRect()
+		cloneElement.current.forEach(clone => {
+			let newX = event.clientX - rectParent.current.left - clone.offsetX
+			let newY = event.clientY - rectParent.current.top - clone.offsetY
 
-			const guideLeft = guideRect.left - rectParent.current.left
-			const guideCenterX =
-				guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth) / 2
-			const guideRight = guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth)
-
-			const guideTop = guideRect.top - rectParent.current.top
-			const guideCenterY = guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight) / 2
-			const guideBottom = guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight)
-
-			cloneElement.current.forEach(clone => {
-				let newX = event.clientX - rectParent.current.left - clone.offsetX
-				let newY = event.clientY - rectParent.current.top - clone.offsetY
-
-				if (Math.abs(newX - guideLeft) < SNAP_THRESHOLD) {
-					dx = guideLeft - clone.left
-					snap.current.x = guideLeft
+			for (let x of refLine.current.x) {
+				if (Math.abs(newX - x) < SNAP_THRESHOLD) {
+					dx = x - clone.left
+					snap.current.x = x
 					snap.current.isX = true
-				} else if (Math.abs(newX - guideCenterX) < SNAP_THRESHOLD) {
-					dx = guideCenterX - clone.left
-					snap.current.x = guideCenterX
+					break
+				} else if (Math.abs(newX + clone.width / 2 - x) < SNAP_THRESHOLD) {
+					dx = x - clone.width / 2 - clone.left
+					snap.current.x = x
 					snap.current.isX = true
-				} else if (Math.abs(newX - guideRight) < SNAP_THRESHOLD) {
-					dx = guideRight - clone.left
-					snap.current.x = guideRight
+					break
+				} else if (Math.abs(newX + clone.width - x) < SNAP_THRESHOLD) {
+					dx = x - clone.width - clone.left
+					snap.current.x = x
 					snap.current.isX = true
-				} else if (Math.abs(newX + clone.width / 2 - guideLeft) < SNAP_THRESHOLD) {
-					dx = guideLeft - clone.width / 2 - clone.left
-					snap.current.x = guideLeft
-					snap.current.isX = true
-				} else if (Math.abs(newX + clone.width / 2 - guideCenterX) < SNAP_THRESHOLD) {
-					dx = guideCenterX - clone.width / 2 - clone.left
-					snap.current.x = guideCenterX
-					snap.current.isX = true
-				} else if (Math.abs(newX + clone.width / 2 - guideRight) < SNAP_THRESHOLD) {
-					dx = guideRight - clone.width / 2 - clone.left
-					snap.current.x = guideRight
-					snap.current.isX = true
-				} else if (Math.abs(newX + clone.width - guideLeft) < SNAP_THRESHOLD) {
-					dx = guideLeft - clone.width - clone.left
-					snap.current.x = guideLeft
-					snap.current.isX = true
-				} else if (Math.abs(newX + clone.width - guideCenterX) < SNAP_THRESHOLD) {
-					dx = guideCenterX - clone.width - clone.left
-					snap.current.x = guideCenterX
-					snap.current.isX = true
-				} else if (Math.abs(newX + clone.width - guideRight) < SNAP_THRESHOLD) {
-					dx = guideRight - clone.width - clone.left
-					snap.current.x = guideRight
-					snap.current.isX = true
+					break
 				}
+			}
 
-				if (Math.abs(newY - guideTop) < SNAP_THRESHOLD) {
-					dy = guideTop - clone.top
-					snap.current.y = guideTop
+			for (let y of refLine.current.y) {
+				if (Math.abs(newY - y) < SNAP_THRESHOLD) {
+					dy = y - clone.top
+					snap.current.y = y
 					snap.current.isY = true
-				} else if (Math.abs(newY - guideCenterY) < SNAP_THRESHOLD) {
-					dy = guideCenterY - clone.top
-					snap.current.y = guideCenterY
+					break
+				} else if (Math.abs(newY + clone.height / 2 - y) < SNAP_THRESHOLD) {
+					dy = y - clone.height / 2 - clone.top
+					snap.current.y = y
 					snap.current.isY = true
-				} else if (Math.abs(newY - guideBottom) < SNAP_THRESHOLD) {
-					dy = guideBottom - clone.top
-					snap.current.y = guideBottom
+					break
+				} else if (Math.abs(newY + clone.height - y) < SNAP_THRESHOLD) {
+					dy = y - clone.height - clone.top
+					snap.current.y = y
 					snap.current.isY = true
-				} else if (Math.abs(newY + clone.height / 2 - guideTop) < SNAP_THRESHOLD) {
-					dy = guideTop - clone.height / 2 - clone.top
-					snap.current.y = guideTop
-					snap.current.isY = true
-				} else if (Math.abs(newY + clone.height / 2 - guideCenterY) < SNAP_THRESHOLD) {
-					dy = guideCenterY - clone.height / 2 - clone.top
-					snap.current.y = guideCenterY
-					snap.current.isY = true
-				} else if (Math.abs(newY + clone.height / 2 - guideBottom) < SNAP_THRESHOLD) {
-					dy = guideBottom - clone.height / 2 - clone.top
-					snap.current.y = guideBottom
-					snap.current.isY = true
-				} else if (Math.abs(newY + clone.height - guideTop) < SNAP_THRESHOLD) {
-					dy = guideTop - clone.height - clone.top
-					snap.current.y = guideTop
-					snap.current.isY = true
-				} else if (Math.abs(newY + clone.height - guideCenterY) < SNAP_THRESHOLD) {
-					dy = guideCenterY - clone.height - clone.top
-					snap.current.y = guideCenterY
-					snap.current.isY = true
-				} else if (Math.abs(newY + clone.height - guideBottom) < SNAP_THRESHOLD) {
-					dy = guideBottom - clone.height - clone.top
-					snap.current.y = guideBottom
-					snap.current.isY = true
+					break
 				}
-			})
+			}
 		})
 
 		showLine()
@@ -252,6 +223,7 @@ export const Template = observer(() => {
 			item.clone.style.top = item.top + dy + (item.rotation === 180 || item.rotation === 270 ? item.height : 0) + 'px'
 		})
 	}, [])
+
 	const handleDragMouseUp = useCallback((event: MouseEvent) => {
 		if (!isDrag.current) {
 			return
@@ -279,6 +251,10 @@ export const Template = observer(() => {
 		}
 		delete cloneElement.current
 		cloneElement.current = []
+		refLine.current = {
+			x: [],
+			y: [],
+		}
 		isDrag.current = false
 	}, [])
 

@@ -1,6 +1,6 @@
 import { Group } from '@mantine/core'
 
-export function Toolbar({
+export function Header({
 	as: Tag = Group,
 	children,
 	...props

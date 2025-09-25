@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import { useCallback } from 'react'
 import { TbBackground, TbGrid3X3, TbZoomIn } from 'react-icons/tb'
 import { storeApp } from '../../../entites/app/store'
-import { storeTemplate } from '../../../entites/template/store'
+import { serviceTemplate } from '../../../services/template/service'
 import { Toolbar } from '../../../shared/ui'
 
 const allowedExtensions = ['bmp', 'jpeg', 'png']
@@ -33,12 +33,12 @@ export const ToolbarTemplate = observer(props => {
 		event.preventDefault()
 		event.stopPropagation()
 		if (delta < 0) {
-			if (storeTemplate.scale < 4) {
-				storeTemplate.setScale(storeTemplate.scale + (event.shiftKey ? 0.01 : 0.1))
+			if (serviceTemplate.scale < 4) {
+				serviceTemplate.setScale(serviceTemplate.scale + (event.shiftKey ? 0.01 : 0.1))
 			}
 		} else if (delta > 0) {
-			if (storeTemplate.scale > 1) {
-				storeTemplate.setScale(storeTemplate.scale - (event.shiftKey ? 0.01 : 0.1))
+			if (serviceTemplate.scale > 1) {
+				serviceTemplate.setScale(serviceTemplate.scale - (event.shiftKey ? 0.01 : 0.1))
 			}
 		}
 	}, [])
@@ -57,14 +57,16 @@ export const ToolbarTemplate = observer(props => {
 						max={4}
 						step={0.01}
 						label={value => `${Math.round(value * 100)}`}
-						value={storeTemplate.scale}
+						value={serviceTemplate.scale}
 						marks={[
 							{ value: 1, label: '100%' },
 							{ value: 2, label: '200%' },
 							{ value: 3, label: '300%' },
 							{ value: 4, label: '400%' },
 						]}
-						onChange={value => storeTemplate.setScale(Math.round(value * 100) / 100)}
+						onChange={value => {
+							serviceTemplate.setScale(Math.round(value * 100) / 100)
+						}}
 					/>
 					<br />
 				</Popover.Dropdown>

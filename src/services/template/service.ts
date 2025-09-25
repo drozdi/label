@@ -1,4 +1,5 @@
 import { storeApp } from '../../entites/app/store'
+import { storeGuideLine } from '../../entites/guide-line/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
@@ -18,11 +19,42 @@ export const serviceTemplate = {
 	copyStack: [],
 	indexPaste: 1,
 	copyOffset: 5,
+	get id() {
+		return storeTemplate.id
+	},
+	get scale() {
+		return storeTemplate.scale
+	},
 	clear() {
 		this.copyStack = []
 		this.indexPaste = 1
 		this.copyOffset = 5
 	},
+	loadTemplate(template, copy: boolean = false) {
+		storeTemplate.loadTemplate(template, copy)
+		storeGuideLine.setWidth(storeTemplate.width)
+		storeGuideLine.setHeight(storeTemplate.height)
+	},
+	setScale(value: number | string) {
+		storeTemplate.setScale(value)
+		storeGuideLine.setWidth(storeTemplate.width)
+		storeGuideLine.setHeight(storeTemplate.height)
+	},
+	changeWidth(width: number | string) {
+		storeTemplate.changeWidth(width)
+		storeGuideLine.setWidth(storeTemplate.width)
+	},
+	changeHeight(height: number | string) {
+		storeTemplate.changeHeight(height)
+		storeGuideLine.setHeight(storeTemplate.height)
+	},
+
+	setName(v) {
+		const name = storeTemplate.current?.name
+		storeTemplate.current?.setName(v)
+		histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
+	},
+
 	_moveX(value: number) {
 		storeTemplate.selectedIndex.forEach(index => {
 			if (index > -1) {
@@ -69,11 +101,6 @@ export const serviceTemplate = {
 			})
 		})
 	},
-	setName(v) {
-		const name = storeTemplate.current?.name
-		storeTemplate.current?.setName(v)
-		histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
-	},
 
 	copy() {
 		this.copyStack = storeTemplate.selectedObjects.map(object => object.getProps())
@@ -96,7 +123,6 @@ export const serviceTemplate = {
 			storeTemplate.selected = selected
 		}
 	},
-
 	async handleSave() {
 		if (storeTemplate.name?.length < 3) {
 			serviceNotifications.error('Название шаблона должно быть не менее 3 символов')

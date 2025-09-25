@@ -1,109 +1,14 @@
-import { Button, Group, Textarea } from '@mantine/core'
+import { Button, Textarea } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
 import { storeApp } from '../../entites/app/store'
 import { storePrinter } from '../../entites/printer/store'
-import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { serviceNotifications } from '../../services/notifications/service'
 import { servicePrinter } from '../../services/printer/service'
+import { Header } from '../../shared/ui'
 
 export const HeaderPrint = observer(() => {
-	const { importFlag, previewFlag, errorName } = storeApp
-	const handleRotateRight = () => {
-		const { width_mm, height_mm, width, height } = storeTemplate
-		storeTemplate.changeWidth(height_mm)
-		storeTemplate.changeHeight(width_mm)
-		storeTemplate.loadObjects(
-			storeTemplate.objects.map(item => {
-				let newItem = {
-					...(item.getCorrectProps?.() || item),
-				}
-				if (item.properties.includes('rotation')) {
-					const rotation = (newItem.rotation + 90) % 360
-					newItem = {
-						...newItem,
-						pos_x: round(height_mm - newItem.pos_y),
-						pos_y: round(newItem.pos_x),
-						rotation: rotation,
-					}
-				} else if ('lines' === item.type) {
-					let { width, height, pos_x, pos_y, line_thickness } = newItem
-
-					width -= pos_x
-					pos_y = height
-					height = line_thickness
-
-					newItem = {
-						...newItem,
-						pos_y: round(pos_x),
-						pos_x: round(height_mm - pos_y - height),
-						width: round(height_mm - pos_y),
-						height: round(pos_x),
-						line_thickness: round(width),
-					}
-				} else {
-					newItem = {
-						...newItem,
-						pos_y: round(newItem.pos_x),
-						pos_x: round(height_mm - newItem.height - newItem.pos_y),
-						width: round(newItem.height),
-						height: round(newItem.width),
-					}
-				}
-
-				return newItem
-			})
-		)
-		storeHistory.append(storeTemplate.objects, 'Поворот на -90')
-	}
-	const handleRotateLeft = () => {
-		const { width_mm, height_mm } = storeTemplate
-		storeTemplate.changeWidth(height_mm)
-		storeTemplate.changeHeight(width_mm)
-		storeTemplate.loadObjects(
-			storeTemplate.objects.map(item => {
-				let newItem = {
-					...(item.getCorrectProps?.() || item),
-				}
-				if (item.properties.includes('rotation')) {
-					const rotation = (newItem.rotation + 270) % 360
-					newItem = {
-						...newItem,
-						pos_x: round(newItem.pos_y),
-						pos_y: round(width_mm - newItem.pos_x),
-						rotation: rotation,
-					}
-				} else if ('lines' === item.type) {
-					let { width, height, pos_x, pos_y, line_thickness } = newItem
-
-					width -= pos_x
-					pos_y = height
-					height = line_thickness
-
-					newItem = {
-						...newItem,
-						pos_x: round(pos_y),
-						pos_y: round(width_mm - pos_x - width),
-						width: round(height + pos_y),
-						height: round(width_mm - pos_x - width),
-						line_thickness: round(width),
-					}
-				} else {
-					newItem = {
-						...newItem,
-						pos_x: round(newItem.pos_y),
-						pos_y: round(width_mm - newItem.pos_x - newItem.width),
-						width: round(newItem.height),
-						height: round(newItem.width),
-					}
-				}
-
-				return newItem
-			})
-		)
-		storeHistory.append(storeTemplate.objects, 'Поворот на 90')
-	}
 	const handlePrintCode = async () => {
 		if (!storeTemplates.selected) {
 			serviceNotifications.alert('Сохраните шаблон или выберите из БД')
@@ -141,8 +46,12 @@ export const HeaderPrint = observer(() => {
 	}
 
 	return (
-		<Group>
-			<Button variant='outline' color={importFlag ? 'lime' : ''} onClick={() => storeApp?.setImportFlag(!importFlag)}>
+		<Header>
+			<Button
+				variant='outline'
+				color={storeApp.importFlag ? 'lime' : ''}
+				onClick={() => storeApp?.setImportFlag(!storeApp.importFlag)}
+			>
 				Импорт кода
 			</Button>
 			<Button variant='outline' onClick={handlePrintCode}>
@@ -154,6 +63,6 @@ export const HeaderPrint = observer(() => {
 			<Button variant='outline' onClick={handlePrintTrial}>
 				Пробная печать
 			</Button>
-		</Group>
+		</Header>
 	)
 })

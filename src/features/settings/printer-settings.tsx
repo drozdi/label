@@ -27,7 +27,7 @@ export const PrinterSettings = observer(() => {
 		setShiftY(config.SHIFT_Y)
 	}, [config])
 
-	const setValue = (value, func) => {
+	const setValue = (value: string, func: Function) => {
 		func(value)
 	}
 
