@@ -1,18 +1,12 @@
 import { storeApp } from '../../entites/app/store'
-import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { DEF_TEMPLATE } from '../../shared/constants'
-import { debounce, genId, round } from '../../shared/utils'
+import { genId, round } from '../../shared/utils'
+import { useHistory } from '../history/hooks/use-history'
 import { serviceNotifications } from '../notifications/service'
 
-const histroyAppendDebounce = debounce((...args: any[]) => {
-	storeHistory.append(...args)
-}, 500)
-
-const histroyAppend = (...args: any[]) => {
-	storeHistory.append(...args)
-}
+const history = useHistory()
 
 export const serviceTemplate = {
 	copyStack: [],
@@ -33,7 +27,7 @@ export const serviceTemplate = {
 	setName(v) {
 		const name = storeTemplate.current?.name
 		storeTemplate.current?.setName(v)
-		histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
+		history.append(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
 	},
 
 	_moveX(value: number) {
@@ -56,7 +50,7 @@ export const serviceTemplate = {
 		this._moveX(dx)
 		this._moveY(dy)
 		if (dx !== 0 || dy !== 0) {
-			histroyAppendDebounce(storeTemplate.objects, `Смещение элементов`)
+			history.appendDebounce(storeTemplate.objects, `Смещение элементов`)
 		}
 	},
 	moveX(value: number) {
@@ -64,20 +58,20 @@ export const serviceTemplate = {
 			return
 		}
 		this._moveX(value)
-		histroyAppendDebounce(storeTemplate.objects, `Смещение элементов`)
+		history.appendDebounce(storeTemplate.objects, `Смещение элементов`)
 	},
 	moveY(value: number) {
 		if (value === 0) {
 			return
 		}
 		this._moveY(value)
-		histroyAppendDebounce(storeTemplate.objects, `Смещение элементов`)
+		history.appendDebounce(storeTemplate.objects, `Смещение элементов`)
 	},
 	deleteObject() {
 		;[...storeTemplate.selected].forEach(id => {
 			const object = storeTemplate.findById(id)
 			storeTemplate.deleteObject(id)
-			histroyAppend(storeTemplate.objects, `Удаление "${object.name}"`, {
+			history.append(storeTemplate.objects, `Удаление "${object.name}"`, {
 				title: `Тип: ${object.type} ${object.code_type}`,
 			})
 		})

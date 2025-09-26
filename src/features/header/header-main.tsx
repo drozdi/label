@@ -1,18 +1,19 @@
 import { Button, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeApp } from '../../entites/app/store'
-import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
+import { useHistory } from '../../services/history/hooks/use-history'
 import { serviceTemplate } from '../../services/template/service'
 import { NEW_TEMPLATE_NAME } from '../../shared/constants'
 import { Header } from '../../shared/ui'
 
 export const HeaderMain = observer(() => {
+	const history = useHistory()
 	const newTemplate = async () => {
 		storeTemplates.clear()
 		storeTemplate.clear()
-		storeHistory.clear()
+		history.clear()
 		await storeTemplates.load(true)
 		let prefix = -1
 		storeTemplates.list.map(template => {
@@ -46,7 +47,7 @@ export const HeaderMain = observer(() => {
 				variant='outline'
 				onClick={() => {
 					storeTemplate.clear(false)
-					storeHistory.append(storeTemplate.objects, 'Очистка')
+					history.append(storeTemplate.objects, 'Очистка')
 				}}
 			>
 				Очистить

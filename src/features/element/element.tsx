@@ -5,10 +5,10 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
+import { useTemplate } from '../../services/template/hooks/use-template'
 import { SNAP_THRESHOLD } from '../../shared/constants'
 import { minMax, round, roundInt } from '../../shared/utils'
 import classes from './element.module.css'
-import { resizeObject } from './utils/resize'
 
 function aspect(width: number, height: number): number {
 	return width / height
@@ -19,6 +19,7 @@ export const Element = observer(
 		if (preview && !object.enabled) {
 			return ''
 		}
+		const template = useTemplate()
 		const refWrap = useRef<HTMLDivElement>(null)
 		const rectParent = useRef<DOMRect>({} as DOMRect)
 		const rectElement = useRef<DOMRect>({} as DOMRect)
@@ -239,10 +240,10 @@ export const Element = observer(
 			const [dx, dy] = calcOffset(event).map(val => round(val / storeTemplate.mm / scale))
 
 			if (object.rotation === 90 || object.rotation === 270) {
-				resizeObject(dy, dx)
+				template.resizeObject(dy, dx)
 				object.rotation === 270 && storeTemplate.moveY(dy)
 			} else {
-				resizeObject(dx, dy)
+				template.resizeObject(dx, dy)
 				object.rotation === 180 && storeTemplate.moveY(dy)
 				object.rotation === 180 && storeTemplate.moveX(dx)
 			}

@@ -9,6 +9,7 @@ export const AppSettings = observer(() => {
 	const [apiHostFlag, setApiHostFlag] = useState(false)
 	const [apiPortFlag, setApiPortFlag] = useState(false)
 	const [timeAutoSave, setTimeAutoSave] = useState(storeApp.timeAutoSave)
+	const [historyCount, setHistoryCount] = useState(storeApp.historyCount)
 	const [apiHost, setApiHost] = useState(localStorage.getItem('api.host') || URL_API)
 	const [apiSplit, setApiSplit] = useState(apiHost.replace('http://', '').replace('/api/v1/', '').split(':'))
 	const handleApiHost = (i, val) => {
@@ -65,6 +66,14 @@ export const AppSettings = observer(() => {
 				value={timeAutoSave}
 				onChange={value => setTimeAutoSave(value)}
 				onClick={() => storeApp.setTimeAutoSave(timeAutoSave)}
+			/>
+			<ItemEditable
+				editable
+				type='text'
+				label='Кол-во пунктов истории:'
+				value={historyCount}
+				onChange={value => setHistoryCount(value)}
+				onClick={() => storeApp.setHistoryCount(historyCount)}
 			/>
 			<ItemEditable type='text' label='Версия:' value={VERSION} />
 		</Stack>

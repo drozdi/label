@@ -2,8 +2,8 @@ import { Box, Tooltip } from '@mantine/core'
 import { useViewportSize } from '@mantine/hooks'
 import { observer } from 'mobx-react-lite'
 import { factoryElement } from '../../entites/element'
-import { histroyAppend } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
+import { useHistory } from '../../services/history/hooks/use-history'
 import { WIDTH_MOBILE } from '../../shared/constants'
 import { Item } from '../../shared/ui'
 import { genId } from '../../shared/utils'
@@ -22,6 +22,7 @@ export const ItemElement = observer(
 		element: Record<string, any>
 		component: React.ReactNode
 	}) => {
+		const history = useHistory()
 		const isMobile = useViewportSize().width < WIDTH_MOBILE
 		const handleSelect = () => {
 			const id = genId()
@@ -32,7 +33,7 @@ export const ItemElement = observer(
 			})
 			storeTemplate.addObject(object)
 			storeTemplate.setActiveObject(id)
-			histroyAppend(storeTemplate.objects, `Добавление "${object.name}"`, {
+			history.append(storeTemplate.objects, `Добавление "${object.name}"`, {
 				title: `Тип: ${object.type} ${object.code_type}`,
 			})
 			callback?.()
