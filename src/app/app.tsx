@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
 import { requestFontsList } from '../entites/fonts/api'
-import { storeGuideLine } from '../entites/guide-line/store'
 import { storeHistory } from '../entites/history/store'
 import { storeTemplate } from '../entites/template/store'
 import { AutoSave } from '../features/auto-save/auto-save'
@@ -31,8 +30,6 @@ export const App = observer(() => {
 			storeTemplate.loadObjects(JSON.parse(JSON.stringify(objects)))
 		}
 		storeTemplate.clear()
-		storeGuideLine.setWidth(storeTemplate.width)
-		storeGuideLine.setHeight(storeTemplate.height)
 		check()
 	}, [])
 

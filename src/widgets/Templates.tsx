@@ -4,11 +4,11 @@ import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
 import { storeHistory } from '../entites/history/store'
+import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
 import { ListTemplate } from '../features/templates/list-template'
 import { Preview } from '../features/templates/preview'
-import { serviceTemplate } from '../services/template/service'
 
 export const Templates = observer(() => {
 	const { selected: templateSelected } = storeTemplates
@@ -22,11 +22,11 @@ export const Templates = observer(() => {
 
 	const handleSelect = () => {
 		storeHistory.clear()
-		serviceTemplate.loadTemplate(storeTemplates.selected)
+		storeTemplate.loadTemplate(storeTemplates.selected)
 		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleCopy = () => {
-		serviceTemplate.loadTemplate(storeTemplates.selected, true)
+		storeTemplate.loadTemplate(storeTemplates.selected, true)
 		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleExport = async () => {
@@ -39,8 +39,8 @@ export const Templates = observer(() => {
 			//onCancel: () => console.log('Cancel'),
 			onConfirm: async () => {
 				await storeTemplates.deleteTemplate(templateSelected.id)
-				if (serviceTemplate.id === templateSelected.id) {
-					serviceTemplate.id = 0
+				if (storeTemplate.id === templateSelected.id) {
+					storeTemplate.id = 0
 				}
 			},
 			confirmProps: {

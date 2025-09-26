@@ -6,7 +6,7 @@ import { storeTemplate } from '../../../entites/template/store'
 import { Toolbar } from '../../../shared/ui'
 import { round } from '../../../shared/utils'
 
-export const ToolbarRotate = observer(props => {
+export const ToolbarRotate = observer(({ disabled, ...props }: { disabled?: boolean; [key: string]: any }) => {
 	const handleRotateRight = () => {
 		const { width_mm, height_mm, width, height } = storeTemplate
 		storeTemplate.changeWidth(height_mm)
@@ -103,10 +103,10 @@ export const ToolbarRotate = observer(props => {
 	}
 	return (
 		<Toolbar {...props}>
-			<ActionIcon variant='filled' onClick={handleRotateLeft}>
+			<ActionIcon disabled={disabled} variant='filled' onClick={handleRotateLeft}>
 				<TbRotate2 />
 			</ActionIcon>
-			<ActionIcon variant='filled' onClick={handleRotateRight}>
+			<ActionIcon disabled={disabled} variant='filled' onClick={handleRotateRight}>
 				<TbRotateClockwise2 />
 			</ActionIcon>
 		</Toolbar>
