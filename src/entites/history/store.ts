@@ -14,20 +14,23 @@ class StoreHistory implements IStoreHistory {
 	get length() {
 		return this.histories.length
 	}
-	get current() {
+	get currIndex() {
+		return this.histories.findIndex(item => item.id === this.curr)
+	}
+	get current(): IHistory | undefined {
 		return this.findById(this.curr)
 	}
-	get isFirst() {
+	get isFirst(): boolean {
 		return this.curr === this.histories[0]?.id
 	}
-	get isLast() {
+	get isLast(): boolean {
 		return this.curr === this.histories[this.histories.length - 1]?.id
 	}
-	get canGoBack() {
-		return this.histories.length > 0 && !this.isFirst
+	get canGoBack(): boolean {
+		return this.currIndex > 0
 	}
-	get canGoForward() {
-		return this.histories.length > 0 && !this.isLast
+	get canGoForward(): boolean {
+		return this.currIndex !== -1 && this.currIndex < this.histories.length - 1
 	}
 	clear() {
 		while (this.histories.length) {
@@ -44,15 +47,13 @@ class StoreHistory implements IStoreHistory {
 	}
 	back() {
 		if (this.canGoBack) {
-			const index = this.histories.findIndex(item => item.id === this.curr)
-			this.curr = this.histories[index - 1]?.id || -1
+			this.curr = this.histories[this.currIndex + 1]?.id || -1
 			this.fn?.(this.findById(this.curr))
 		}
 	}
 	forward() {
 		if (this.canGoForward) {
-			const index = this.histories.findIndex(item => item.id === this.curr)
-			this.curr = this.histories[index + 1]?.id || -1
+			this.curr = this.histories[this.currIndex - 1]?.id || -1
 			this.fn?.(this.findById(this.curr))
 		}
 	}
