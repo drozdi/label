@@ -1,4 +1,4 @@
-import { Button, Group, TextInput } from '@mantine/core'
+import { Button, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
@@ -6,6 +6,7 @@ import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { serviceTemplate } from '../../services/template/service'
 import { NEW_TEMPLATE_NAME } from '../../shared/constants'
+import { Header } from '../../shared/ui'
 
 export const HeaderMain = observer(() => {
 	const newTemplate = async () => {
@@ -24,7 +25,7 @@ export const HeaderMain = observer(() => {
 		storeApp.setErrorName(false)
 	}
 	return (
-		<Group>
+		<Header>
 			<Button variant='outline' onClick={newTemplate}>
 				Создать
 			</Button>
@@ -60,6 +61,6 @@ export const HeaderMain = observer(() => {
 			>
 				Предпросмотр
 			</Button>
-		</Group>
+		</Header>
 	)
 })

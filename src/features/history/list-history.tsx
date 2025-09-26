@@ -18,7 +18,10 @@ export const ListHistory = observer(() => {
 								className={classes.item + (id === storeHistory.curIndex ? ' ' + classes.active : '')}
 								{...props}
 								size='sm'
-								onClick={() => storeHistory.goTo(id)}
+								onClick={() => {
+									console.log(id)
+									storeHistory.goTo(id)
+								}}
 							>
 								{time}: {label}
 							</Text>

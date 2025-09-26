@@ -2,6 +2,7 @@ import { CM, MM, MM_QR } from '../../shared/constants'
 import { round } from '../../shared/utils'
 import { storeFonts } from '../fonts/store'
 import { storeImages } from '../images/store'
+import { allProperties } from './constants'
 import { factoryElement } from './factory-element'
 
 export class BaseElement implements IObject {
@@ -34,11 +35,16 @@ export class BaseElement implements IObject {
 	image_rel = null
 
 	constructor(object: Record<string, any>) {
-		for (const prop in object) {
+		for (const prop of allProperties) {
 			if (object[prop] !== undefined) {
 				this[prop] = object[prop]
 			}
-		} //*/
+		}
+		// for (const prop in object) {
+		// 	if (object[prop] !== undefined) {
+		// 		this[prop] = object[prop]
+		// 	}
+		// }
 		/*this.name = object.name
 		this.text_align = object.text_align
 		this.human_readable = object.human_readable

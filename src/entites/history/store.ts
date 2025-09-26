@@ -30,7 +30,7 @@ class StoreHistory implements IStoreHistory {
 		this.curIndex = -1
 	}
 	fundById(id: number) {
-		return this.histories.find(item => item.id === id)
+		return this.histories.find(item => String(item.id) === String(id))
 	}
 	back() {
 		if (this.curIndex > 0) {

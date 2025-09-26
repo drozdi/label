@@ -5,6 +5,7 @@ interface IAppContext {
 	loadTemplateFlag?: boolean
 	settingsFlag?: boolean
 	dataMatrixFlag?: boolean
+	elementFlag?: boolean
 	importFlag?: boolean
 	gridFlag?: boolean
 	previewFlag?: boolean
@@ -24,6 +25,7 @@ interface IAppContext {
 	setJsonCodeFlag?: (flag: boolean) => void
 	setErrorName?: (flag: boolean) => void
 	setShowAppLoader?: (flag: boolean) => void
+	setElementFlag?: (flag: boolean) => void
 
 	imageBg?: string
 	setImageBg?: (bg: string) => void

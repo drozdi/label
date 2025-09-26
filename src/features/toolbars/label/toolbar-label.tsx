@@ -1,6 +1,7 @@
 import { Group, NumberInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeTemplate } from '../../../entites/template/store'
+import { serviceTemplate } from '../../../services/template/service'
 import { Toolbar } from '../../../shared/ui'
 import { LabelTolbarInput } from './label-tolbar-input'
 import { LabelTolbarSelect } from './label-tolbar-select'
@@ -28,7 +29,7 @@ export const ToolbarLabel = observer(({ template, disabled, ...props }) => {
 				label='Ширина'
 				name='width'
 				value={template.width_mm}
-				onChange={v => template.changeWidth?.(v)}
+				onChange={v => serviceTemplate.changeWidth(v)}
 			/>
 			<LabelTolbarInput
 				disabled={disabled}
@@ -36,7 +37,7 @@ export const ToolbarLabel = observer(({ template, disabled, ...props }) => {
 				label='Высота'
 				name='height'
 				value={template.height_mm}
-				onChange={v => template.changeHeight?.(v)}
+				onChange={v => serviceTemplate.changeHeight(v)}
 			/>
 			<LabelTolbarInput
 				disabled={disabled}

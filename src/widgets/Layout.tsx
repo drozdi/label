@@ -27,6 +27,7 @@ export const Layout = observer(
 					gridTemplateRows: '1fr',
 					overflow: 'hidden',
 					width: '100%',
+					borderTop: '1px solid var(--mantine-color-default-border)',
 				}}
 			>
 				<Stack

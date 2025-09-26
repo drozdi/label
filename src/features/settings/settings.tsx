@@ -8,12 +8,7 @@ import { PrinterSettings } from './printer-settings'
 
 export const Settings = observer(() => {
 	return (
-		<Modal
-			opened={storeApp.settingsFlag}
-			onClose={() => storeApp.setSettingsFlag(false)}
-			title='Настройки'
-			size='xl'
-		>
+		<Modal opened={storeApp.settingsFlag} onClose={() => storeApp.setSettingsFlag(false)} title='Настройки' size='xl'>
 			<Tabs defaultValue='app'>
 				<Tabs.List>
 					<Tabs.Tab value='app'>Приложение</Tabs.Tab>
@@ -21,16 +16,16 @@ export const Settings = observer(() => {
 					<Tabs.Tab value='fonts'>Шрифты</Tabs.Tab>
 					<Tabs.Tab value='images'>Изображения</Tabs.Tab>
 				</Tabs.List>
-				<Tabs.Panel keepMounted value='app' pt='xs'>
+				<Tabs.Panel keepMounted value='app'>
 					<AppSettings />
 				</Tabs.Panel>
-				<Tabs.Panel keepMounted value='printer' pt='xs'>
+				<Tabs.Panel keepMounted value='printer'>
 					<PrinterSettings />
 				</Tabs.Panel>
-				<Tabs.Panel keepMounted value='fonts' pt='xs'>
+				<Tabs.Panel keepMounted value='fonts'>
 					<ManagerFontFamily />
 				</Tabs.Panel>
-				<Tabs.Panel keepMounted value='images' pt='xs'>
+				<Tabs.Panel keepMounted value='images'>
 					<ManagerImages />
 				</Tabs.Panel>
 			</Tabs>

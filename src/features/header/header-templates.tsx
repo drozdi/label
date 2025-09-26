@@ -1,8 +1,9 @@
-import { Button, FileButton, Group } from '@mantine/core'
+import { Button, FileButton } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeApp } from '../../entites/app/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { serviceNotifications } from '../../services/notifications/service'
+import { Header } from '../../shared/ui'
 
 export const HeaderTemplates = observer(() => {
 	const handleImport = file => {
@@ -16,7 +17,7 @@ export const HeaderTemplates = observer(() => {
 	}
 
 	return (
-		<Group>
+		<Header>
 			<Button variant='outline' onClick={() => storeApp?.setLoadTemplateFlag(false)}>
 				Закрыть
 			</Button>
@@ -27,6 +28,6 @@ export const HeaderTemplates = observer(() => {
 					</Button>
 				)}
 			</FileButton>
-		</Group>
+		</Header>
 	)
 })

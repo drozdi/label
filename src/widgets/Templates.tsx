@@ -4,12 +4,11 @@ import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
 import { storeHistory } from '../entites/history/store'
-import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
 import { ListTemplate } from '../features/templates/list-template'
 import { Preview } from '../features/templates/preview'
-import { ToolbarLabel } from '../features/toolbars/label/toolbar-label'
+import { serviceTemplate } from '../services/template/service'
 
 export const Templates = observer(() => {
 	const { selected: templateSelected } = storeTemplates
@@ -23,11 +22,11 @@ export const Templates = observer(() => {
 
 	const handleSelect = () => {
 		storeHistory.clear()
-		storeTemplate.loadTemplate(storeTemplates.selected)
+		serviceTemplate.loadTemplate(storeTemplates.selected)
 		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleCopy = () => {
-		storeTemplate.loadTemplate(storeTemplates.selected, true)
+		serviceTemplate.loadTemplate(storeTemplates.selected, true)
 		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleExport = async () => {
@@ -40,8 +39,8 @@ export const Templates = observer(() => {
 			//onCancel: () => console.log('Cancel'),
 			onConfirm: async () => {
 				await storeTemplates.deleteTemplate(templateSelected.id)
-				if (storeTemplate.id === templateSelected.id) {
-					storeTemplate.id = 0
+				if (serviceTemplate.id === templateSelected.id) {
+					serviceTemplate.id = 0
 				}
 			},
 			confirmProps: {
@@ -56,10 +55,14 @@ export const Templates = observer(() => {
 
 	return (
 		<>
-			<Box>
-				<ToolbarLabel template={templateSelected} />
-			</Box>
-			<Group grow justify='space-between' h='100%'>
+			<Group
+				grow
+				justify='space-between'
+				h='100%'
+				style={{
+					borderTop: '1px solid var(--mantine-color-default-border)',
+				}}
+			>
 				<ScrollArea h='100%' flex='none' w='18rem' p='xs'>
 					<ListTemplate />
 				</ScrollArea>

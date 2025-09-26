@@ -7,6 +7,7 @@ class StoreApp implements IAppContext {
 	fontFamilyFlag = false
 	variableFlag = false
 	imageFlag = false
+	elementFlag = false
 	gridFlag = false
 	imageBg = ''
 	loadTemplateFlag = false
@@ -25,6 +26,9 @@ class StoreApp implements IAppContext {
 		this.showAppLoader = false
 		await fn?.()
 		this.showAppLoader = old
+	}
+	setElementFlag(val: boolean) {
+		this.elementFlag = val
 	}
 	setShowAppLoader(val: boolean) {
 		this.showAppLoader = val

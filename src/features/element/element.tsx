@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
+import { storeGuideLine } from '../../entites/guide-line/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
 import { SNAP_THRESHOLD } from '../../shared/constants'
@@ -20,9 +21,12 @@ export const Element = observer(
 			return ''
 		}
 		const refWrap = useRef<HTMLDivElement>(null)
-		const guideElements = useRef<HTMLElement[]>([])
 		const rectParent = useRef<DOMRect>({} as DOMRect)
 		const rectElement = useRef<DOMRect>({} as DOMRect)
+		const refLine = useRef<{
+			x: number[]
+			y: number[]
+		}>({ x: [], y: [] })
 
 		const style = useMemo(
 			() => ({
@@ -88,7 +92,10 @@ export const Element = observer(
 					storeTemplate.setActiveObject(element.id)
 				}
 
-				guideElements.current = storeTemplate.inverseIds.map(id => document.getElementById(id) as HTMLElement)
+				refLine.current = {
+					x: storeGuideLine.divisionsX,
+					y: storeGuideLine.divisionsY,
+				}
 
 				rectElement.current = element.getBoundingClientRect()
 				rectParent.current = (element.parentNode as HTMLElement)?.getBoundingClientRect()
@@ -96,6 +103,34 @@ export const Element = observer(
 				cloneElement.current = element.cloneNode(true) as HTMLElement
 				cloneElement.current?.classList?.add?.(classes.clone)
 				;(element.parentNode as HTMLElement).appendChild(cloneElement.current)
+
+				storeTemplate.inverseIds.forEach(id => {
+					const { rotation } = storeTemplate.findById(id)
+					const guide = document.getElementById(id)
+					const guideRect = guide.getBoundingClientRect()
+
+					const guideLeft = guideRect.left - rectParent.current.left
+					const guideTop = guideRect.top - rectParent.current.top
+
+					refLine.current.x.push(guideLeft)
+					refLine.current.x.push(
+						guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth) / 2
+					)
+					refLine.current.x.push(
+						guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth)
+					)
+
+					refLine.current.y.push(guideTop)
+					refLine.current.y.push(
+						guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight) / 2
+					)
+					refLine.current.y.push(
+						guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight)
+					)
+				})
+
+				refLine.current.x.sort((a, b) => a - b)
+				refLine.current.y.sort((a, b) => a - b)
 
 				sPosition.current = {
 					minX: rectElement.current.left + 2,
@@ -142,61 +177,32 @@ export const Element = observer(
 					: minMax(event.clientY, sPosition.current.minY, sPosition.current.maxY) - sPosition.current.y
 			}
 
-			guideElements.current.forEach(guide => {
-				const { rotation } = storeTemplate.findById(guide.id)
-				const guideRect = guide.getBoundingClientRect()
+			let newX = event.clientX - rectParent.current.left
+			let newY = event.clientY - rectParent.current.top
 
-				const guideLeft = guideRect.left - rectParent.current.left
-				const guideCenterX =
-					guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth) / 2
-				const guideRight = guideLeft + (rotation === 90 || rotation === 270 ? guide.offsetHeight : guide.offsetWidth)
-
-				const guideTop = guideRect.top - rectParent.current.top
-				const guideCenterY =
-					guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight) / 2
-				const guideBottom = guideTop + (rotation === 90 || rotation === 270 ? guide.offsetWidth : guide.offsetHeight)
-
-				let newX = event.clientX - rectParent.current.left
-				let newY = event.clientY - rectParent.current.top
-
-				if (sPosition.current?.dir === 'e' || sPosition.current?.dir === 'se') {
-					if (Math.abs(newX - guideLeft) < SNAP_THRESHOLD) {
-						dx = guideLeft - (sPosition.current.width + sPosition.current.left)
-						snap.current.x = guideLeft
-						snap.current.isX = true
-					} else if (Math.abs(newX - guideCenterX) < SNAP_THRESHOLD) {
-						dx = guideCenterX - (sPosition.current.width + sPosition.current.left)
-						snap.current.x = guideCenterX
-						snap.current.isX = true
-					} else if (Math.abs(newX - guideRight) < SNAP_THRESHOLD) {
-						dx = guideRight - (sPosition.current.width + sPosition.current.left)
-						snap.current.x = guideRight
-						snap.current.isX = true
-					}
+			for (let x of refLine.current.x) {
+				if (Math.abs(newX - x) < SNAP_THRESHOLD) {
+					dx = x - (sPosition.current.width + sPosition.current.left)
+					snap.current.x = x
+					snap.current.isX = true
 					if (event.shiftKey) {
 						dy = dx * a
 					}
+					break
 				}
+			}
 
-				if (sPosition.current?.dir === 's' || sPosition.current?.dir === 'se') {
-					if (Math.abs(newY - guideTop) < SNAP_THRESHOLD) {
-						dy = guideTop - (sPosition.current.height + sPosition.current.top)
-						snap.current.y = guideTop
-						snap.current.isY = true
-					} else if (Math.abs(newY - guideCenterY) < SNAP_THRESHOLD) {
-						dy = guideCenterY - (sPosition.current.height + sPosition.current.top)
-						snap.current.y = guideCenterY
-						snap.current.isY = true
-					} else if (Math.abs(newY - guideBottom) < SNAP_THRESHOLD) {
-						dy = guideBottom - (sPosition.current.height + sPosition.current.top)
-						snap.current.y = guideBottom
-						snap.current.isY = true
-					}
+			for (let y of refLine.current.y) {
+				if (Math.abs(newY - y) < SNAP_THRESHOLD) {
+					dy = y - (sPosition.current.height + sPosition.current.top)
+					snap.current.y = y
+					snap.current.isY = true
 					if (event.shiftKey) {
-						dx = dy / a
+						dy = dx * a
 					}
+					break
 				}
-			})
+			}
 
 			return [roundInt(dx), roundInt(dy)]
 		}, [])
