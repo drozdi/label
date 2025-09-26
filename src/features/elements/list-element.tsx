@@ -69,7 +69,7 @@ export const ListElement = observer(() => {
 			radius: 1.833,
 			width: 2,
 			height: 10,
-			data: '978020137962',
+			data: '046037210206',
 		},
 		{
 			label: 'code128',
@@ -81,7 +81,7 @@ export const ListElement = observer(() => {
 			radius: 1.833,
 			width: 2,
 			height: 10,
-			data: 'barcode046037210206',
+			data: '046037210206',
 		},
 		{
 			label: 'qrcode',
@@ -93,7 +93,7 @@ export const ListElement = observer(() => {
 			radius: 1.833,
 			width: 10,
 			height: 10,
-			data: 'barcode046037210206',
+			data: '046037210206',
 		},
 		{
 			label: 'Изображение из бд',
