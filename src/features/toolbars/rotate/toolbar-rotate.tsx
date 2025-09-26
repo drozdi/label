@@ -1,12 +1,13 @@
 import { ActionIcon } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { TbRotate2, TbRotateClockwise2 } from 'react-icons/tb'
-import { storeHistory } from '../../../entites/history/store'
 import { storeTemplate } from '../../../entites/template/store'
+import { useHistory } from '../../../services/history/hooks/use-history'
 import { Toolbar } from '../../../shared/ui'
 import { round } from '../../../shared/utils'
 
 export const ToolbarRotate = observer(({ disabled, ...props }: { disabled?: boolean; [key: string]: any }) => {
+	const history = useHistory()
 	const handleRotateRight = () => {
 		const { width_mm, height_mm, width, height } = storeTemplate
 		storeTemplate.changeWidth(height_mm)
@@ -52,7 +53,7 @@ export const ToolbarRotate = observer(({ disabled, ...props }: { disabled?: bool
 				return newItem
 			})
 		)
-		storeHistory.append(storeTemplate.objects, 'Поворот на -90')
+		history.append(storeTemplate.objects, 'Поворот на -90')
 	}
 	const handleRotateLeft = () => {
 		const { width_mm, height_mm } = storeTemplate
@@ -99,7 +100,7 @@ export const ToolbarRotate = observer(({ disabled, ...props }: { disabled?: bool
 				return newItem
 			})
 		)
-		storeHistory.append(storeTemplate.objects, 'Поворот на 90')
+		history.append(storeTemplate.objects, 'Поворот на 90')
 	}
 	return (
 		<Toolbar {...props}>

@@ -1,10 +1,11 @@
 import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
-import { debounce } from '../../shared/utils'
+
+let id = 1
 
 class StoreHistory implements IStoreHistory {
 	histories = []
-	curIndex = -1
+	curr = -1
 	fn?: Function = undefined
 	constructor(fn = () => {}) {
 		makeAutoObservable(this)
@@ -13,68 +14,69 @@ class StoreHistory implements IStoreHistory {
 	get length() {
 		return this.histories.length
 	}
+	get current() {
+		return this.findById(this.curr)
+	}
+	get isFirst() {
+		return this.curr === this.histories[0]?.id
+	}
+	get isLast() {
+		return this.curr === this.histories[this.histories.length - 1]?.id
+	}
 	get canGoBack() {
-		return this.curIndex <= 0
+		return this.histories.length > 0 && !this.isFirst
 	}
 	get canGoForward() {
-		return this.curIndex === this.histories.length - 1
-	}
-	get current() {
-		return this.curIndex > -1 ? this.histories[this.curIndex] : undefined
+		return this.histories.length > 0 && !this.isLast
 	}
 	clear() {
 		while (this.histories.length) {
 			this.histories.pop()
 		}
 		this.histories = []
-		this.curIndex = -1
+		this.curr = -1
 	}
-	fundById(id: number) {
-		return this.histories.find(item => String(item.id) === String(id))
+	findById(id: number) {
+		return this.histories.find(item => item.id === id)
+	}
+	isCurrent(id: number) {
+		return id === this.curr
 	}
 	back() {
-		if (this.curIndex > 0) {
-			this.curIndex--
-			this.fn?.(this.fundById(this.curIndex))
+		if (this.canGoBack) {
+			const index = this.histories.findIndex(item => item.id === this.curr)
+			this.curr = this.histories[index - 1]?.id || -1
+			this.fn?.(this.findById(this.curr))
 		}
 	}
 	forward() {
-		if (this.curIndex < this.histories.length - 1) {
-			this.curIndex++
-			this.fn?.(this.fundById(this.curIndex))
+		if (this.canGoForward) {
+			const index = this.histories.findIndex(item => item.id === this.curr)
+			this.curr = this.histories[index + 1]?.id || -1
+			this.fn?.(this.findById(this.curr))
 		}
 	}
 	goTo(index: number) {
-		if (index >= 0 && index < this.histories.length) {
-			this.curIndex = index
-			this.fn?.(this.fundById(this.curIndex))
-		}
+		console.log(index)
+		this.curr = index
+		this.fn?.(this.findById(this.curr))
 	}
 	append(objects: any[], label = '', props: Record<string, any> = {}) {
-		const t = dayjs().format('HH:mm:ss')
-		const tmp = JSON.stringify(this.fundById(this.curIndex)?.objects || [])
+		const tmp = JSON.stringify(this.findById(this.curr)?.objects || [])
 		const last = JSON.stringify(this.histories[0]?.objects || [])
 		const items = JSON.stringify(objects)
 		if (tmp !== items && last !== items) {
-			this.curIndex = this.histories.length
+			this.curr = id++
 			this.histories.unshift({
 				objects: JSON.parse(items),
 				label,
-				time: t,
+				time: dayjs().format('HH:mm:ss'),
 				props,
-				id: this.histories.length,
+				id: this.curr,
 			})
 		} else if (last === items) {
-			this.goTo(this.histories.length - 1)
+			this.goTo(this.histories[0]?.id || -1)
 		}
 	}
 }
 export const storeHistory = new StoreHistory()
-
-export const histroyAppendDebounce = debounce((...args: any[]) => {
-	storeHistory.append(...args)
-}, 500)
-
-export const histroyAppend = (...args: any[]) => {
-	storeHistory.append(...args)
-}

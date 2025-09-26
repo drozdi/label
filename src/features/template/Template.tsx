@@ -4,6 +4,7 @@ import { storeApp } from '../../entites/app/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
+import { useTemplate } from '../../services/template/hooks/use-template'
 import { serviceTemplate } from '../../services/template/service'
 import { SNAP_THRESHOLD, STEP } from '../../shared/constants'
 import { minMax, round, roundInt } from '../../shared/utils'
@@ -12,8 +13,6 @@ import classes from '../element/element.module.css'
 import { BackgroundBg } from './background-bg'
 import { BackgroundGrid } from './background-grid'
 import claseesBG from './background.module.css'
-import { deleteObject } from './utils/delete'
-import { move, moveX, moveY } from './utils/move'
 
 export const Template = observer(() => {
 	const {
@@ -23,6 +22,7 @@ export const Template = observer(() => {
 		objects: Record<string, any>[]
 		current: Record<string, any>
 	} = storeTemplate
+	const template = useTemplate()
 	const refTemplate = useRef<HTMLDivElement>(null)
 	const isDrag = useRef<boolean>(false)
 	const isSelecting = useRef<boolean>(false)
@@ -234,7 +234,10 @@ export const Template = observer(() => {
 		const [dx, dy] = calckOffset(event)
 
 		if (Math.abs(dx) > SNAP_THRESHOLD - 1 || Math.abs(dy) > SNAP_THRESHOLD - 1) {
-			move(round(dx / storeTemplate.mm / storeTemplate.scale), round(dy / storeTemplate.mm / storeTemplate.scale))
+			template.move(
+				round(dx / storeTemplate.mm / storeTemplate.scale),
+				round(dy / storeTemplate.mm / storeTemplate.scale)
+			)
 		}
 
 		cloneElement.current.forEach(item => {
@@ -420,15 +423,15 @@ export const Template = observer(() => {
 			event.preventDefault()
 
 			if (event.code === 'Delete') {
-				deleteObject()
+				template.deleteObject()
 			} else if (event.code === 'ArrowRight') {
-				moveX(STEP)
+				template.moveX(STEP)
 			} else if (event.code === 'ArrowLeft') {
-				moveX(-STEP)
+				template.moveX(-STEP)
 			} else if (event.code === 'ArrowUp') {
-				moveY(-STEP)
+				template.moveY(-STEP)
 			} else if (event.code === 'ArrowDown') {
-				moveY(STEP)
+				template.moveY(STEP)
 			}
 
 			if (event.ctrlKey) {

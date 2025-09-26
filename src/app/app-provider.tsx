@@ -74,7 +74,6 @@ const theme = createTheme({
 				size: 'xs',
 				rows: 3,
 				radius: 0,
-				rightSectionWidth: 'auto',
 				rightSectionProps: {
 					style: {
 						alignItems: 'flex-start',
@@ -87,7 +86,6 @@ const theme = createTheme({
 				variant: 'filled',
 				size: 'xs',
 				radius: 0,
-				rightSectionWidth: 'auto',
 			},
 		}),
 		NumberInput: NumberInput.extend({
@@ -95,7 +93,6 @@ const theme = createTheme({
 				variant: 'filled',
 				size: 'xs',
 				radius: 0,
-				rightSectionWidth: 'auto',
 			},
 		}),
 	},

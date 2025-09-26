@@ -3,16 +3,17 @@ import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
-import { storeHistory } from '../entites/history/store'
 import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
 import { ListTemplate } from '../features/templates/list-template'
 import { Preview } from '../features/templates/preview'
+import { useHistory } from '../services/history/hooks/use-history'
 
 export const Templates = observer(() => {
 	const { selected: templateSelected } = storeTemplates
 	const { objects = [] } = templateSelected || {}
+	const history = useHistory()
 
 	useEffect(() => {
 		if (templateSelected?.id) {
@@ -21,7 +22,7 @@ export const Templates = observer(() => {
 	}, [templateSelected?.id])
 
 	const handleSelect = () => {
-		storeHistory.clear()
+		history.clear()
 		storeTemplate.loadTemplate(storeTemplates.selected)
 		storeApp?.setLoadTemplateFlag(false)
 	}

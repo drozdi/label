@@ -4,8 +4,8 @@ import { useCallback, useMemo } from 'react'
 import { TbAlignCenter, TbAlignLeft, TbAlignRight, TbBaselineDensitySmall, TbX } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
 import { labelsHumanReadable, labelsTextAlign } from '../../entites/element/constants'
-import { histroyAppend, histroyAppendDebounce } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
+import { useHistory } from '../../services/history/hooks/use-history'
 import { STEP } from '../../shared/constants'
 import { ItemAction } from './item-action'
 import { ItemEditable } from './item-editable'
@@ -47,13 +47,13 @@ export const ListProperties = observer(() => {
 		})
 		return [...props]
 	}, [storeTemplate.selected])
-
 	const allowProp = useCallback(
 		(prop: string) => {
 			return properties.includes(prop)
 		},
 		[properties]
 	)
+	const history = useHistory()
 	return (
 		<Stack maw='auto' gap={0}>
 			{allowProp('enabled') && (
@@ -70,7 +70,7 @@ export const ListProperties = observer(() => {
 					onChange={v => {
 						const name = current?.name
 						storeTemplate.setName(v)
-						histroyAppend(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
+						history.append(storeTemplate.objects, `Переименование "${name}" в "${v}"`)
 					}}
 				/>
 			)}
@@ -83,7 +83,7 @@ export const ListProperties = observer(() => {
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setWidth(v)
-						histroyAppendDebounce(storeTemplate.objects, `"${current?.name}" ширина: ${v}`)
+						history.appendDebounce(storeTemplate.objects, `"${current?.name}" ширина: ${v}`)
 					}}
 				/>
 			)}
@@ -96,7 +96,7 @@ export const ListProperties = observer(() => {
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setHeight(v)
-						histroyAppendDebounce(storeTemplate.objects, `"${current?.name}" высота: ${v}`)
+						history.appendDebounce(storeTemplate.objects, `"${current?.name}" высота: ${v}`)
 					}}
 				/>
 			)}
@@ -109,7 +109,7 @@ export const ListProperties = observer(() => {
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setPosX(v)
-						histroyAppendDebounce(storeTemplate.objects, `Перемещение "${current?.name}" по x в "${v}"`)
+						history.appendDebounce(storeTemplate.objects, `Перемещение "${current?.name}" по x в "${v}"`)
 					}}
 				/>
 			)}
@@ -122,7 +122,7 @@ export const ListProperties = observer(() => {
 					unit='mm'
 					onChange={v => {
 						storeTemplate.setPosY(v)
-						histroyAppendDebounce(storeTemplate.objects, `Перемещение "${current?.name}" по y в "${v}"`)
+						history.appendDebounce(storeTemplate.objects, `Перемещение "${current?.name}" по y в "${v}"`)
 					}}
 				/>
 			)}
@@ -133,7 +133,7 @@ export const ListProperties = observer(() => {
 					options={['0', '90', '180', '270']}
 					onChange={v => {
 						storeTemplate.setRotation(v)
-						histroyAppendDebounce(storeTemplate.objects, `Поворот "${current?.name}" на ${v}`)
+						history.appendDebounce(storeTemplate.objects, `Поворот "${current?.name}" на ${v}`)
 					}}
 					value={current.rotation}
 				/>
@@ -158,7 +158,7 @@ export const ListProperties = observer(() => {
 					labels={labelsTextAlign}
 					onChange={v => {
 						storeTemplate.setTextAlign(v)
-						histroyAppendDebounce(storeTemplate.objects, `Выравнивание "${current?.name}": ${labelsTextAlign[v]}`)
+						history.appendDebounce(storeTemplate.objects, `Выравнивание "${current?.name}": ${labelsTextAlign[v]}`)
 					}}
 					value={current.text_align}
 				/>
@@ -171,7 +171,7 @@ export const ListProperties = observer(() => {
 					unit='pt'
 					onChange={v => {
 						storeTemplate.setFontSize(v)
-						histroyAppendDebounce(storeTemplate.objects, `Размер текста "${current?.name}": ${v}`)
+						history.appendDebounce(storeTemplate.objects, `Размер текста "${current?.name}": ${v}`)
 					}}
 				/>
 			)}
@@ -183,7 +183,7 @@ export const ListProperties = observer(() => {
 					step={STEP}
 					onChange={v => {
 						storeTemplate.setLineThickness(v)
-						histroyAppendDebounce(storeTemplate.objects, `Толщина "${current?.name}": ${value}`)
+						history.appendDebounce(storeTemplate.objects, `Толщина "${current?.name}": ${value}`)
 					}}
 				/>
 			)}
@@ -195,7 +195,7 @@ export const ListProperties = observer(() => {
 					step={STEP}
 					onChange={v => {
 						storeTemplate.setRadius(v)
-						histroyAppendDebounce(storeTemplate.objects, `Радиус "${current?.name}": ${v}`)
+						history.appendDebounce(storeTemplate.objects, `Радиус "${current?.name}": ${v}`)
 					}}
 				/>
 			)}
@@ -221,7 +221,7 @@ export const ListProperties = observer(() => {
 					placeholder='Введите текст'
 					value={current.data}
 					onChange={v => {
-						histroyAppendDebounce(storeTemplate.objects, `Изменение текста "${current?.data}" в "${v}"`)
+						history.appendDebounce(storeTemplate.objects, `Изменение текста "${current?.data}" в "${v}"`)
 						storeTemplate.setData(v)
 					}}
 				/>
@@ -251,7 +251,7 @@ export const ListProperties = observer(() => {
 					value={current.human_readable}
 					onChange={v => {
 						storeTemplate.setHumanReadable(v)
-						histroyAppendDebounce(storeTemplate.objects, `Выравнивание "${current?.name}" - ${labelsHumanReadable[v]}`)
+						history.appendDebounce(storeTemplate.objects, `Выравнивание "${current?.name}" - ${labelsHumanReadable[v]}`)
 					}}
 				/>
 			)}

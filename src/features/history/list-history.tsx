@@ -15,13 +15,10 @@ export const ListHistory = observer(() => {
 						{storeHistory.histories.map(({ time, label, props, id }) => (
 							<Text
 								key={id}
-								className={classes.item + (id === storeHistory.curIndex ? ' ' + classes.active : '')}
+								className={classes.item + (storeHistory.isCurrent(id) ? ' ' + classes.active : '')}
 								{...props}
 								size='sm'
-								onClick={() => {
-									console.log(id)
-									storeHistory.goTo(id)
-								}}
+								onClick={() => storeHistory.goTo(id)}
 							>
 								{time}: {label}
 							</Text>
