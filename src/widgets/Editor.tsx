@@ -60,7 +60,7 @@ export const Editor = observer(() => {
 						<Tabs.List>
 							<Tabs.Tab value='properties'>Свойства</Tabs.Tab>
 							<Tabs.Tab value='layers'>Слои</Tabs.Tab>
-							<Tabs.Tab value='histories'>История</Tabs.Tab>
+							{storeApp.historyCount > 0 && <Tabs.Tab value='histories'>История</Tabs.Tab>}
 						</Tabs.List>
 						<Tabs.Panel value='properties'>
 							{storeTemplate.objects.length === 0 ? (

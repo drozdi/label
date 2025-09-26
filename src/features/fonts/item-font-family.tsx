@@ -12,10 +12,10 @@ export const ItemFontFamily = observer(({ font }) => {
 	const history = useHistory()
 	const [oldId] = useState(current?.font_id)
 	const handleMouseOver = () => {
-		storeTemplate.setFontId(font.id)
+		storeApp.fontFamilyFlag && storeTemplate.setFontId(font.id)
 	}
 	const handleMouseOut = () => {
-		storeTemplate.setFontId(oldId)
+		storeApp.fontFamilyFlag && storeTemplate.setFontId(oldId)
 	}
 	const handleSelect = () => {
 		storeTemplate.setFontId(font.id)

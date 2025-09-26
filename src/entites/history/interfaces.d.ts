@@ -1,14 +1,14 @@
 interface IHistory {
 	objects: any
 	label: string
-	time: t
+	time: any
 	props: Record<string, any>
 	id: number
 }
 
 interface IStoreHistory {
 	histories: IHistory[]
-	curIndex: number
+	curr: number
 	fn?: Function
 	length: number
 	canGoBack: boolean
