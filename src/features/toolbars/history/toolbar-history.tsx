@@ -4,13 +4,23 @@ import { TbArrowBack, TbArrowForward } from 'react-icons/tb'
 import { storeHistory } from '../../../entites/history/store'
 import { Toolbar } from '../../../shared/ui'
 
-export const ToolbarHistory = observer(props => {
+export const ToolbarHistory = observer(({ disabled, ...props }: { disabled?: boolean; [key: string]: any }) => {
 	return (
 		<Toolbar {...props}>
-			<ActionIcon title='Назад' disabled={storeHistory.canGoBack} onClick={() => storeHistory.back()}>
+			<ActionIcon
+				disabled={disabled}
+				title='Назад'
+				disabled={storeHistory.canGoBack}
+				onClick={() => storeHistory.back()}
+			>
 				<TbArrowBack />
 			</ActionIcon>
-			<ActionIcon title='Вперед' disabled={storeHistory.canGoForward} onClick={() => storeHistory.forward()}>
+			<ActionIcon
+				disabled={disabled}
+				title='Вперед'
+				disabled={storeHistory.canGoForward}
+				onClick={() => storeHistory.forward()}
+			>
 				<TbArrowForward />
 			</ActionIcon>
 		</Toolbar>

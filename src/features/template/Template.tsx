@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useEffect, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
-import { storeGuideLine } from '../../entites/guide-line/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
@@ -77,8 +76,8 @@ export const Template = observer(() => {
 	const handleDragMouseDown = useCallback((event: React.MouseEvent<HTMLElement>) => {
 		rectParent.current = (refTemplate.current as HTMLElement)?.getBoundingClientRect()
 		refLine.current = {
-			x: storeGuideLine.divisionsX,
-			y: storeGuideLine.divisionsY,
+			x: storeTemplate.divisionsX,
+			y: storeTemplate.divisionsY,
 		}
 
 		storeTemplate.inverseIds.forEach(id => {

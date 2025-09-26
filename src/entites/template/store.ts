@@ -8,6 +8,7 @@ class StoreTemplate {
 	// размеры этикетки
 	width_mm = 58
 	height_mm = 58
+	indent_mm = 3
 	radius_label = 5
 	gap_mm = 2
 	direction_x = 1
@@ -18,6 +19,8 @@ class StoreTemplate {
 	scale = Number(localStorage.getItem(KEY_SCALE_DEFAULT) || 1)
 	id = 0
 	name = ''
+
+	num = 5
 
 	/////
 	mm = MM
@@ -56,6 +59,9 @@ class StoreTemplate {
 	get height() {
 		return roundInt(this.height_mm * this.mm * this.scale)
 	}
+	get indent() {
+		return roundInt(this.indent_mm * this.mm * this.scale)
+	}
 	get borderRadius() {
 		return this.radius_label
 	}
@@ -93,6 +99,23 @@ class StoreTemplate {
 	}
 	get inverseObjects() {
 		return this.inverseIds.map(id => this.findById(id))
+	}
+
+	get divisionsX() {
+		const step = (this.width - this.indent * 2) / (this.num + 1)
+		return new Array(this.num + 2).fill(0).map((item, index) => {
+			return this.indent + step * index
+		})
+	}
+	get divisionsY() {
+		const step = (this.height - this.indent * 2) / (this.num + 1)
+		return new Array(this.num + 2).fill(0).map((item, index) => {
+			return this.indent + step * index
+		})
+	}
+
+	setNum(num: number) {
+		this.num = num
 	}
 
 	setActiveObject(id: number | string) {
@@ -200,6 +223,12 @@ class StoreTemplate {
 			height = parseInt(height, 10)
 		}
 		this.height_mm = height
+	}
+	changeIndent(indent: number | string) {
+		if (typeof indent === 'string') {
+			indent = parseInt(indent, 10)
+		}
+		this.indent_mm = indent
 	}
 	changeRadius(radius: number | string) {
 		if (typeof radius === 'string') {

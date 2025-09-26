@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { storeApp } from '../../entites/app/store'
-import { storeGuideLine } from '../../entites/guide-line/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useGuideLine } from '../../services/guide-line/context'
 import { SNAP_THRESHOLD } from '../../shared/constants'
@@ -93,8 +92,8 @@ export const Element = observer(
 				}
 
 				refLine.current = {
-					x: storeGuideLine.divisionsX,
-					y: storeGuideLine.divisionsY,
+					x: storeTemplate.divisionsX,
+					y: storeTemplate.divisionsY,
 				}
 
 				rectElement.current = element.getBoundingClientRect()

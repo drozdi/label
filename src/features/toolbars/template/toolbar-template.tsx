@@ -4,12 +4,12 @@ import { observer } from 'mobx-react-lite'
 import { useCallback } from 'react'
 import { TbBackground, TbGrid3X3, TbZoomIn } from 'react-icons/tb'
 import { storeApp } from '../../../entites/app/store'
-import { serviceTemplate } from '../../../services/template/service'
+import { storeTemplate } from '../../../entites/template/store'
 import { Toolbar } from '../../../shared/ui'
 
 const allowedExtensions = ['bmp', 'jpeg', 'png']
 
-export const ToolbarTemplate = observer(props => {
+export const ToolbarTemplate = observer(({ disabled, ...props }: { disabled?: boolean; [key: string]: any }) => {
 	const { gridFlag, imageBg } = storeApp
 	const [opened, { close, open }] = useDisclosure(false)
 
@@ -33,19 +33,19 @@ export const ToolbarTemplate = observer(props => {
 		event.preventDefault()
 		event.stopPropagation()
 		if (delta < 0) {
-			if (serviceTemplate.scale < 4) {
-				serviceTemplate.setScale(serviceTemplate.scale + (event.shiftKey ? 0.01 : 0.1))
+			if (storeTemplate.scale < 4) {
+				storeTemplate.setScale(storeTemplate.scale + (event.shiftKey ? 0.01 : 0.1))
 			}
 		} else if (delta > 0) {
-			if (serviceTemplate.scale > 1) {
-				serviceTemplate.setScale(serviceTemplate.scale - (event.shiftKey ? 0.01 : 0.1))
+			if (storeTemplate.scale > 1) {
+				storeTemplate.setScale(storeTemplate.scale - (event.shiftKey ? 0.01 : 0.1))
 			}
 		}
 	}, [])
 
 	return (
 		<Toolbar {...props}>
-			<Popover width={300} shadow='md' offset={0} opened={opened}>
+			<Popover disabled={disabled} width={300} shadow='md' offset={0} opened={opened}>
 				<Popover.Target>
 					<ActionIcon onMouseEnter={open} onMouseLeave={close}>
 						<TbZoomIn />
@@ -57,7 +57,7 @@ export const ToolbarTemplate = observer(props => {
 						max={4}
 						step={0.01}
 						label={value => `${Math.round(value * 100)}`}
-						value={serviceTemplate.scale}
+						value={storeTemplate.scale}
 						marks={[
 							{ value: 1, label: '100%' },
 							{ value: 2, label: '200%' },
@@ -65,13 +65,17 @@ export const ToolbarTemplate = observer(props => {
 							{ value: 4, label: '400%' },
 						]}
 						onChange={value => {
-							serviceTemplate.setScale(Math.round(value * 100) / 100)
+							storeTemplate.setScale(Math.round(value * 100) / 100)
 						}}
 					/>
 					<br />
 				</Popover.Dropdown>
 			</Popover>
-			<FileButton onChange={selectedBG} accept={allowedExtensions.map(ext => 'image/' + ext).join(', ')}>
+			<FileButton
+				disabled={disabled}
+				onChange={selectedBG}
+				accept={allowedExtensions.map(ext => 'image/' + ext).join(', ')}
+			>
 				{props => (
 					<ActionIcon
 						{...props}
@@ -86,7 +90,12 @@ export const ToolbarTemplate = observer(props => {
 					</ActionIcon>
 				)}
 			</FileButton>
-			<ActionIcon color={gridFlag ? 'lime' : ''} title='Сетка разметки' onClick={() => storeApp.setGridFlag(!gridFlag)}>
+			<ActionIcon
+				disabled={disabled}
+				color={gridFlag ? 'lime' : ''}
+				title='Сетка разметки'
+				onClick={() => storeApp.setGridFlag(!gridFlag)}
+			>
 				<TbGrid3X3 />
 			</ActionIcon>
 		</Toolbar>

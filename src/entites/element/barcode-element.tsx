@@ -1,5 +1,5 @@
 import bwipjs from 'bwip-js'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { minMax, round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
@@ -38,37 +38,37 @@ export class BarcodeElement extends BaseElement implements IObject {
 			margin: 0,
 			lineHeight: 1,
 		}
-		const [body, setBody] = useState(this.data?.length >= 13 ? this.data : '0000000000000')
+
 		useEffect(() => {
 			try {
 				if (this.code_type === 'ean13' || this.code_type === 'code128') {
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
+						bcid: this.code_type,
 						scaleX: this.width,
 						scaleY: 2,
-						bcid: this.code_type,
-						text: body,
-						height: round(this.height * 2),
+						height: round(this.height),
+						text: this.data,
 					})
 				} else if (this.code_type === 'datamatrix') {
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
-						bcid: 'datamatrix',
-						text: '^FNC1' + this.name,
-						height: round(this.height * this.min_size),
+						bcid: this.code_type,
 						width: round(this.width * this.min_size),
+						height: round(this.height * this.min_size),
+						text: '^FNC1' + this.name,
 						parsefnc: true,
 					})
 				} else {
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: this.code_type,
-						text: this.data,
-						height: round(this.height),
 						width: round(this.width),
+						height: round(this.height),
+						text: this.data,
 					})
 				}
 			} catch (e) {
 				console.error('Error generating barcode:', e)
 			}
-		}, [this, prefix, body])
+		}, [this, this.data, prefix])
 
 		return (
 			<>

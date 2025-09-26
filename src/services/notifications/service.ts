@@ -1,5 +1,4 @@
-import { notifications } from '@mantine/notifications'
-import { useNotifications } from '../../entites/notifications/store'
+import { notifications, notificationsStore } from '@mantine/notifications'
 import classes from './notification.module.css'
 
 function checkMessage(notifications, message: string) {
@@ -12,7 +11,7 @@ function checkMessage(notifications, message: string) {
 }
 
 function send(item) {
-	const store = useNotifications()
+	const store = notificationsStore.getState()
 	if (false === checkMessage(store.notifications, item.message)) {
 		return
 	}

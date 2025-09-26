@@ -1,5 +1,4 @@
 import { storeApp } from '../../entites/app/store'
-import { storeGuideLine } from '../../entites/guide-line/store'
 import { storeHistory } from '../../entites/history/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
@@ -29,24 +28,6 @@ export const serviceTemplate = {
 		this.copyStack = []
 		this.indexPaste = 1
 		this.copyOffset = 5
-	},
-	loadTemplate(template, copy: boolean = false) {
-		storeTemplate.loadTemplate(template, copy)
-		storeGuideLine.setWidth(storeTemplate.width)
-		storeGuideLine.setHeight(storeTemplate.height)
-	},
-	setScale(value: number | string) {
-		storeTemplate.setScale(value)
-		storeGuideLine.setWidth(storeTemplate.width)
-		storeGuideLine.setHeight(storeTemplate.height)
-	},
-	changeWidth(width: number | string) {
-		storeTemplate.changeWidth(width)
-		storeGuideLine.setWidth(storeTemplate.width)
-	},
-	changeHeight(height: number | string) {
-		storeTemplate.changeHeight(height)
-		storeGuideLine.setHeight(storeTemplate.height)
 	},
 
 	setName(v) {
