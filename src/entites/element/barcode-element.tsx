@@ -80,10 +80,10 @@ export class BarcodeElement extends BaseElement implements IObject {
 								this.code_type === 'qrcode'
 									? this.height * this.mm_qr * scale
 									: this.code_type === 'datamatrix' && this.min_size === 0
-									? this.height * 1.833 * this.mm * scale
-									: this.code_type === 'datamatrix' && this.min_size !== 0
-									? this.height * this.min_size * this.mm * scale
-									: this.height * this.mm * scale
+										? this.height * 1.833 * this.mm * scale
+										: this.code_type === 'datamatrix' && this.min_size !== 0
+											? this.height * this.min_size * this.mm * scale
+											: this.height * this.mm * scale
 							) + 'px',
 					}}
 				></canvas>
