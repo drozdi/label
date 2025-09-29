@@ -4,9 +4,7 @@ import { TbFaceIdError } from 'react-icons/tb'
 import { URL_API } from '../shared/constants'
 
 export const ErrorServer = () => {
-	const [apiHost, setApiHost] = useState(
-		localStorage.getItem('api.host') || URL_API
-	)
+	const [apiHost, setApiHost] = useState(localStorage.getItem('api.host') || URL_API)
 	const setApi = host => {
 		localStorage.setItem('api.host', host)
 		window.location.reload()
@@ -21,6 +19,8 @@ export const ErrorServer = () => {
 				<TextInput
 					value={apiHost}
 					w='100%'
+					size='xl'
+					variant='underline'
 					onChange={({ target }) => setApiHost(target.value)}
 				/>
 				<Button variant='filled' onClick={() => setApi(apiHost)}>

@@ -13,6 +13,7 @@ import {
 } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
+import inputClasses from './input.module.css'
 
 const theme = createTheme({
 	components: {
@@ -61,11 +62,11 @@ const theme = createTheme({
 			},
 		}),
 		Input: Input.extend({
+			classNames: inputClasses,
 			defaultProps: {
 				variant: 'filled',
 				size: 'xs',
 				radius: 0,
-				rightSectionWidth: 'auto',
 			},
 		}),
 		Textarea: Textarea.extend({
