@@ -7,10 +7,10 @@ import { Toolbar } from '../../../shared/ui'
 export const ToolbarHistory = observer(({ disabled, ...props }: { disabled?: boolean; [key: string]: any }) => {
 	return (
 		<Toolbar {...props}>
-			<ActionIcon title='Назад' disabled={storeHistory.canGoBack} onClick={() => storeHistory.back()}>
+			<ActionIcon title='Назад' disabled={!storeHistory.canGoBack} onClick={() => storeHistory.back()}>
 				<TbArrowBack />
 			</ActionIcon>
-			<ActionIcon title='Вперед' disabled={storeHistory.canGoForward} onClick={() => storeHistory.forward()}>
+			<ActionIcon title='Вперед' disabled={!storeHistory.canGoForward} onClick={() => storeHistory.forward()}>
 				<TbArrowForward />
 			</ActionIcon>
 		</Toolbar>

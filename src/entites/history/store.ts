@@ -1,11 +1,11 @@
 import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
-
+import { genId } from '../../shared/utils'
 let id = 1
 
 class StoreHistory implements IStoreHistory {
 	histories = []
-	curr = -1
+	curr = ''
 	fn?: Function = undefined
 	constructor(fn = () => {}) {
 		makeAutoObservable(this)
@@ -27,19 +27,19 @@ class StoreHistory implements IStoreHistory {
 		return this.curr === this.histories[this.histories.length - 1]?.id
 	}
 	get canGoBack(): boolean {
-		return this.currIndex > 0
+		return this.currIndex !== -1 && this.currIndex < this.histories.length - 1
 	}
 	get canGoForward(): boolean {
-		return this.currIndex !== -1 && this.currIndex < this.histories.length - 1
+		return this.currIndex > 0
 	}
 	clear() {
 		while (this.histories.length) {
 			this.histories.pop()
 		}
 		this.histories = []
-		this.curr = -1
+		this.curr = ''
 	}
-	findById(id: number) {
+	findById(id: string) {
 		return this.histories.find(item => item.id === id)
 	}
 	isCurrent(id: number) {
@@ -57,8 +57,7 @@ class StoreHistory implements IStoreHistory {
 			this.fn?.(this.findById(this.curr))
 		}
 	}
-	goTo(index: number) {
-		console.log(index)
+	goTo(index: string) {
 		this.curr = index
 		this.fn?.(this.findById(this.curr))
 	}
@@ -67,7 +66,7 @@ class StoreHistory implements IStoreHistory {
 		const last = JSON.stringify(this.histories[0]?.objects || [])
 		const items = JSON.stringify(objects)
 		if (tmp !== items && last !== items) {
-			this.curr = id++
+			this.curr = genId()
 			this.histories.unshift({
 				objects: JSON.parse(items),
 				label,
@@ -76,7 +75,7 @@ class StoreHistory implements IStoreHistory {
 				id: this.curr,
 			})
 		} else if (last === items) {
-			this.goTo(this.histories[0]?.id || -1)
+			this.goTo(this.histories[0]?.id || '')
 		}
 	}
 }

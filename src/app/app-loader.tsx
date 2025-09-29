@@ -8,38 +8,36 @@ import { storeTemplates } from '../entites/templates/store'
 import { storeVariables } from '../entites/variables/store'
 import { Loader } from '../features/loader/loader'
 
-export const AppLoader = observer(
-	({ children }: { children: React.ReactNode }) => {
-		const visible = useMemo<boolean>(
-			() =>
-				storeTemplates.isLoading ||
-				storeImages.isLoading ||
-				storeFonts.isLoading ||
-				storeVariables.isLoading ||
-				storeDataMatrix.isLoading ||
-				storePrinter.isLoading,
-			[
-				storeTemplates.isLoading,
-				storeImages.isLoading,
-				storeFonts.isLoading,
-				storeVariables.isLoading,
-				storePrinter.isLoading,
-				storeDataMatrix.isLoading,
-			]
-		)
+export const AppLoader = observer(({ children }: { children: React.ReactNode }) => {
+	const visible = useMemo<boolean>(
+		() =>
+			storeTemplates.isLoading ||
+			storeImages.isLoading ||
+			storeFonts.isLoading ||
+			storeVariables.isLoading ||
+			storeDataMatrix.isLoading ||
+			storePrinter.isLoading,
+		[
+			storeTemplates.isLoading,
+			storeImages.isLoading,
+			storeFonts.isLoading,
+			storeVariables.isLoading,
+			storePrinter.isLoading,
+			storeDataMatrix.isLoading,
+		]
+	)
 
-		useEffect(() => {
-			storeFonts.load()
-			storeImages.load()
-			storeVariables.load()
-			storeDataMatrix.load()
-		}, [])
+	useEffect(() => {
+		storeFonts.load()
+		storeImages.load()
+		storeVariables.load()
+		storeDataMatrix.load()
+	}, [])
 
-		return (
-			<>
-				{children}
-				<Loader visible={visible} />
-			</>
-		)
-	}
-)
+	return (
+		<>
+			{children}
+			<Loader visible={visible} />
+		</>
+	)
+})
