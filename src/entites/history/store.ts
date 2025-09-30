@@ -1,11 +1,11 @@
 import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
-
+import { genId } from '../../shared/utils'
 let id = 1
 
 class StoreHistory implements IStoreHistory {
 	histories = []
-	curr = -1
+	curr = ''
 	fn?: Function = undefined
 	constructor(fn = () => {}) {
 		makeAutoObservable(this)
@@ -14,29 +14,32 @@ class StoreHistory implements IStoreHistory {
 	get length() {
 		return this.histories.length
 	}
-	get current() {
+	get currIndex() {
+		return this.histories.findIndex(item => item.id === this.curr)
+	}
+	get current(): IHistory | undefined {
 		return this.findById(this.curr)
 	}
-	get isFirst() {
+	get isFirst(): boolean {
 		return this.curr === this.histories[0]?.id
 	}
-	get isLast() {
+	get isLast(): boolean {
 		return this.curr === this.histories[this.histories.length - 1]?.id
 	}
-	get canGoBack() {
-		return this.histories.length > 0 && !this.isFirst
+	get canGoBack(): boolean {
+		return this.currIndex !== -1 && this.currIndex < this.histories.length - 1
 	}
-	get canGoForward() {
-		return this.histories.length > 0 && !this.isLast
+	get canGoForward(): boolean {
+		return this.currIndex > 0
 	}
 	clear() {
 		while (this.histories.length) {
 			this.histories.pop()
 		}
 		this.histories = []
-		this.curr = -1
+		this.curr = ''
 	}
-	findById(id: number) {
+	findById(id: string) {
 		return this.histories.find(item => item.id === id)
 	}
 	isCurrent(id: number) {
@@ -44,20 +47,17 @@ class StoreHistory implements IStoreHistory {
 	}
 	back() {
 		if (this.canGoBack) {
-			const index = this.histories.findIndex(item => item.id === this.curr)
-			this.curr = this.histories[index - 1]?.id || -1
+			this.curr = this.histories[this.currIndex + 1]?.id || -1
 			this.fn?.(this.findById(this.curr))
 		}
 	}
 	forward() {
 		if (this.canGoForward) {
-			const index = this.histories.findIndex(item => item.id === this.curr)
-			this.curr = this.histories[index + 1]?.id || -1
+			this.curr = this.histories[this.currIndex - 1]?.id || -1
 			this.fn?.(this.findById(this.curr))
 		}
 	}
-	goTo(index: number) {
-		console.log(index)
+	goTo(index: string) {
 		this.curr = index
 		this.fn?.(this.findById(this.curr))
 	}
@@ -66,7 +66,7 @@ class StoreHistory implements IStoreHistory {
 		const last = JSON.stringify(this.histories[0]?.objects || [])
 		const items = JSON.stringify(objects)
 		if (tmp !== items && last !== items) {
-			this.curr = id++
+			this.curr = genId()
 			this.histories.unshift({
 				objects: JSON.parse(items),
 				label,
@@ -75,7 +75,7 @@ class StoreHistory implements IStoreHistory {
 				id: this.curr,
 			})
 		} else if (last === items) {
-			this.goTo(this.histories[0]?.id || -1)
+			this.goTo(this.histories[0]?.id || '')
 		}
 	}
 }
