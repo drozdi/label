@@ -12,7 +12,7 @@ class StoreHistory implements IStoreHistory {
 		this.fn = fn
 	}
 	get length() {
-		return this.histories.length
+		return this.histories.length || 0
 	}
 	get currIndex() {
 		return this.histories.findIndex(item => item.id === this.curr)
@@ -33,7 +33,7 @@ class StoreHistory implements IStoreHistory {
 		return this.currIndex > 0
 	}
 	clear() {
-		while (this.histories.length) {
+		while (this.length) {
 			this.histories.pop()
 		}
 		this.histories = []
