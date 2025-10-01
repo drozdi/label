@@ -10,10 +10,12 @@ export const HISTORY_COUNT = 30
 
 export const URL_API = 'http://10.76.10.102:8033/api/v1/'
 
-//export const MM = 3.709575175750246
-export const MM = 3.8
-//export const CM = 37.09575175750246
-export const CM = 38
+export const MM = 3.709575175750246
+//export const MM = 3.8
+//export const MM = 3.7
+export const CM = 37.09575175750246
+//export const CM = 38
+//export const CM = 37
 export const MM_QR = 3.999575175750246
 export const STEP = 0.1
 export const ROUND = 10
@@ -26,8 +28,8 @@ export const VERSION = '2.0.0'
 
 export const DEF_TEMPLATE = {
 	dpi: 12,
-	width_mm: 100,
-	height_mm: 100,
+	width_mm: 58,
+	height_mm: 40,
 	radius_label: 5,
 	gap_mm: 3,
 	scale: 1,
@@ -35,5 +37,6 @@ export const DEF_TEMPLATE = {
 	direction_y: 0,
 	reference_x: 0,
 	reference_y: 0,
+	applicator_ezpl: null,
 	objects: [],
 }

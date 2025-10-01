@@ -13,6 +13,7 @@ export class Preview {
 	direction_y = 0
 	reference_x = 0
 	reference_y = 0
+	applicator_ezpl: null | 0 | 1 | 2 = null
 	objects = []
 	scale = 1
 	id = 0
@@ -39,6 +40,7 @@ export class Preview {
 			'direction_y',
 			'reference_x',
 			'reference_y',
+			'applicator_ezpl',
 			'scale',
 			'id',
 		]) {

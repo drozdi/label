@@ -52,6 +52,7 @@ class StoreImages {
 		} catch (error) {
 			console.error(error)
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			throw this.error
 		} finally {
 			this.isLoading = false
 		}
@@ -68,6 +69,7 @@ class StoreImages {
 		} catch (error) {
 			console.error(error)
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			throw this.error
 		} finally {
 			this.isLoading = false
 		}

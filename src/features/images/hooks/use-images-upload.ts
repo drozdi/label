@@ -17,9 +17,7 @@ export function useImagesUpload() {
 			return
 		}
 		if (file.size > 512000) {
-			serviceNotifications.error(
-				'Превышен максимальный размер файла. Максимальный разрешённый размер 515 Кб'
-			)
+			serviceNotifications.error('Превышен максимальный размер файла. Максимальный разрешённый размер 515 Кб')
 			return
 		}
 		const reader = new FileReader()
@@ -32,10 +30,14 @@ export function useImagesUpload() {
 		setFile(file)
 	}
 	const save = async () => {
-		await storeImages.add(name, image)
-		setImage(null)
-		setFile(null)
-		setName('')
+		try {
+			await storeImages.add(name, image)
+			setImage(null)
+			setFile(null)
+			setName('')
+		} catch (e) {
+			serviceNotifications.error(e)
+		}
 	}
 	const cancel = () => {
 		setFile(null)

@@ -108,6 +108,7 @@ export const serviceTemplate = {
 			serviceNotifications.error('Шаблон не может быть пустым')
 			return
 		}
+
 		const template = {
 			...DEF_TEMPLATE,
 			...storeTemplate,
@@ -123,6 +124,7 @@ export const serviceTemplate = {
 			currIndex: undefined,
 			selected: undefined,
 		}
+		console.log(template)
 		if (storeTemplate.id > 0) {
 			await this.handleUpdate(template)
 		} else {

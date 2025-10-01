@@ -23,7 +23,9 @@ export const Templates = observer(() => {
 
 	const handleSelect = () => {
 		history.clear()
+		console.log({ ...storeTemplates.selected })
 		storeTemplate.loadTemplate(storeTemplates.selected)
+		console.log({ ...storeTemplate })
 		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleCopy = () => {

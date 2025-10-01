@@ -1,14 +1,7 @@
-import {
-	Button,
-	FileButton,
-	Group,
-	SimpleGrid,
-	Stack,
-	Text,
-	TextInput,
-} from '@mantine/core'
+import { Button, FileButton, Group, SimpleGrid, Stack, Text, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { storeFonts } from '../../entites/fonts/store'
+import { serviceNotifications } from '../../services/notifications/service'
 import { Item } from '../../shared/ui'
 import { useFontsUpload } from './hooks/use-fonts-upload'
 
@@ -17,7 +10,11 @@ export const ManagerFontFamily = observer(() => {
 	const { list } = storeFonts
 	const handleClick = (id: number) => storeFonts.setId(id)
 	const handleRemove = async (id: number) => {
-		await storeFonts.remove(id)
+		try {
+			await storeFonts.remove(id)
+		} catch (e) {
+			serviceNotifications.error(e)
+		}
 	}
 	return (
 		<Stack>
@@ -47,14 +44,10 @@ export const ManagerFontFamily = observer(() => {
 			{file && (
 				<Stack gap={0}>
 					<Text size='xs'>
-						Загружен шрифт "{file?.name || 'unknow'}". Оставьте текущее название
-						или введите своё на латинице. Максимум 8 символов
+						Загружен шрифт "{file?.name || 'unknow'}". Оставьте текущее название или введите своё на латинице. Максимум
+						8 символов
 					</Text>
-					<TextInput
-						value={name}
-						onChange={({ target }) => writeName(target.value)}
-						required
-					/>
+					<TextInput value={name} onChange={({ target }) => writeName(target.value)} required />
 					<Group justify='space-between'>
 						<Button onClick={save}>Сохранить</Button>
 						<Button onClick={cancel}>Отмена</Button>
