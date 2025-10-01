@@ -1,5 +1,5 @@
 import bwipjs from 'bwip-js'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { minMax, round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
@@ -29,6 +29,7 @@ export class BarcodeElement extends BaseElement implements IObject {
 		return ['enabled']
 	}
 	render(scale = 1, preview = false): React.ReactNode {
+		const ref = useRef<HTMLDivElement>(null)
 		const prefix = preview ? '_preview' : ''
 		const style = {
 			fontSize: this.font_size,
@@ -39,15 +40,32 @@ export class BarcodeElement extends BaseElement implements IObject {
 			lineHeight: 1,
 		}
 
+		// console.log(this.width)
+		// console.log(this.width * this.mm)
+		// console.log({ ...this })
+
 		useEffect(() => {
 			try {
 				if (this.code_type === 'ean13' || this.code_type === 'code128') {
+					// let svg = bwipjs.toSVG({
+					// 	bcid: this.code_type,
+					// 	text: this.data,
+					// 	scaleX: this.width,
+					// 	scaleY: 2,
+					// 	height: round(this.height + 1) * 2,
+					// })
+					// let [, width, height] = /viewBox="0 0 (\d+) (\d+)"/.exec(svg)
+
+					// ref.current.style.display = 'inline-block'
+					// //ref.current.style.width = width + 'px'
+					// ref.current.style.height = this.height * this.mm * scale + 'px'
+					// ref.current.innerHTML = svg
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: this.code_type,
+						text: this.data,
 						scaleX: this.width,
 						scaleY: 2,
-						height: round(this.height),
-						text: this.data,
+						height: round(this.height + 1) * 2,
 					})
 				} else if (this.code_type === 'datamatrix') {
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
@@ -75,16 +93,15 @@ export class BarcodeElement extends BaseElement implements IObject {
 				<canvas
 					id={'mycanvas' + this.id + prefix}
 					style={{
-						height:
-							round(
-								this.code_type === 'qrcode'
-									? this.height * this.mm_qr * scale
-									: this.code_type === 'datamatrix' && this.min_size === 0
-										? this.height * 1.833 * this.mm * scale
-										: this.code_type === 'datamatrix' && this.min_size !== 0
-											? this.height * this.min_size * this.mm * scale
-											: this.height * this.mm * scale
-							) + 'px',
+						height: round(
+							this.code_type === 'qrcode'
+								? this.height * this.mm_qr * scale
+								: this.code_type === 'datamatrix' && this.min_size === 0
+									? this.height * 1.833 * this.mm * scale
+									: this.code_type === 'datamatrix' && this.min_size !== 0
+										? this.height * this.min_size * this.mm * scale
+										: this.height * this.mm * scale
+						),
 					}}
 				></canvas>
 				{this.human_readable === 1 ? (
