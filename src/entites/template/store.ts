@@ -15,6 +15,7 @@ class StoreTemplate {
 	direction_y = 0
 	reference_x = 0
 	reference_y = 0
+	applicator_ezpl: null | 0 | 1 | 2 = null
 	objects: IObject[] = []
 	scale = Number(localStorage.getItem(KEY_SCALE_DEFAULT) || 1)
 	id = 0
@@ -173,6 +174,7 @@ class StoreTemplate {
 		this.direction_y = template.direction_y
 		this.reference_x = template.reference_x
 		this.reference_y = template.reference_y
+		this.applicator_ezpl = template.applicator_ezpl
 		this.loadObjects(template.objects || [])
 	}
 	clear(all: boolean = true) {
@@ -265,6 +267,9 @@ class StoreTemplate {
 			value = parseInt(value, 10)
 		}
 		this.direction_y = value
+	}
+	changeApplicatorEzpl(vaule: null | 0 | 1 | 2) {
+		this.applicator_ezpl = vaule ? Number(vaule) : null
 	}
 
 	setName(name: string) {

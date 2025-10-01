@@ -75,7 +75,7 @@ class StoreHistory implements IStoreHistory {
 				id: this.curr,
 			})
 		} else if (last === items) {
-			this.goTo(this.histories[0]?.id || '')
+			//this.goTo(this.histories[0]?.id || '')
 		}
 	}
 }

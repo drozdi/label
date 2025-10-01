@@ -15,19 +15,18 @@ export function useFontsUpload() {
 		setName(name.replace(/(\.)|(...$)/g, ''))
 		setFile(file)
 	}
-	const writeName = value =>
-		setName(value.replace(/[!@#№%^:$&?*()_\-=+<>\.,;:а-яёйА-ЯЁЙ\s]/g, ''))
+	const writeName = value => setName(value.replace(/[!@#№%^:$&?*()_\-=+<>\.,;:а-яёйА-ЯЁЙ\s]/g, ''))
 
 	const save = () => {
 		const reader = new FileReader()
 		reader.onload = async () => {
-			await storeFonts.add(
-				name,
-				reader.result.replace(/data:application\/.*;base64,/g, '')
-			)
-
-			setFile(null)
-			setName('')
+			try {
+				await storeFonts.add(name, reader.result.replace(/data:application\/.*;base64,/g, ''))
+				setFile(null)
+				setName('')
+			} catch (e) {
+				serviceNotifications.error(e)
+			}
 		}
 		reader.readAsDataURL(file)
 	}

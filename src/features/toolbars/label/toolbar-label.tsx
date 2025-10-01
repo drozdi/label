@@ -12,6 +12,19 @@ export const ToolbarLabel = observer(({ disabled, ...props }: { disabled?: boole
 		<LabelTolbarSelect
 			disabled={disabled}
 			w={w * 1.5}
+			label='Applicator'
+			value={String(storeTemplate.applicator_ezpl ?? -1)}
+			options={[
+				{ value: '-1', label: 'Нет' },
+				{ value: '0', label: '0' },
+				{ value: '1', label: '1' },
+				{ value: '2', label: '2' },
+			]}
+			onChange={v => storeTemplate.changeApplicatorEzpl?.(v === '-1' ? null : v)}
+		/>
+		<LabelTolbarSelect
+			disabled={disabled}
+			w={w * 1.5}
 			label='dpi'
 			value={String(storeTemplate.dpi)}
 			options={[
