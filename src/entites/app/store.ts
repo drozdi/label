@@ -1,9 +1,16 @@
 import { makeAutoObservable } from 'mobx'
-import { HISTORY_COUNT, KEY_HISTORY_COUNT, KEY_TIME_AUTO_SAVE, TIME_AUTO_SAVE } from '../../shared/constants'
+import {
+	HISTORY_COUNT,
+	KEY_HISTORY_COUNT,
+	KEY_SCALE_DEFAULT,
+	KEY_TIME_AUTO_SAVE,
+	TIME_AUTO_SAVE,
+} from '../../shared/constants'
 
 class StoreApp implements IAppContext {
 	timeAutoSave = Number(localStorage.getItem(KEY_TIME_AUTO_SAVE) || TIME_AUTO_SAVE)
 	historyCount = Number(localStorage.getItem(KEY_HISTORY_COUNT) || HISTORY_COUNT)
+	scale = Number(localStorage.getItem(KEY_SCALE_DEFAULT) || 1)
 	showAppLoader = true
 	fontFamilyFlag = false
 	variableFlag = false

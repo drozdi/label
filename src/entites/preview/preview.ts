@@ -23,10 +23,6 @@ export class Preview {
 	cm = CM
 	mm_qr = MM_QR
 
-	////
-	currId: number | string = 0
-	currIndex = -1
-
 	selected: Array<number | string> = []
 
 	constructor(tmp) {

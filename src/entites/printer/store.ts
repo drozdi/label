@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { requestPrinterMemory } from './api'
 
 const name = 'printer'
 
@@ -20,6 +21,12 @@ class Printer {
 	loaded = false
 	isLoading = false
 	error = ''
+	loadedMemory = false
+	_memory = {}
+	get memory() {
+		this.loadMemory()
+		return this._memory
+	}
 	constructor() {
 		makeAutoObservable(this)
 		if (!this.loadConfig()) {
@@ -54,12 +61,35 @@ class Printer {
 		try {
 			localStorage.setItem(name, JSON.stringify(this.config))
 			this.loaded = true
+			this.loadMemory(true)
 		} catch (e) {
 			console.log(e)
 		}
 	}
 	setLoading(loading = false) {
 		this.isLoading = loading
+	}
+	async loadMemory(reload = false) {
+		if (reload) {
+			this.loadedMemory = false
+		}
+		if (this.loadedMemory) {
+			return
+		}
+		this.isLoading = true
+		try {
+			const res = await requestPrinterMemory({
+				host: this.host,
+				port: this.port,
+				type_printer: this.type_printer,
+			})
+			this._memory = res.data
+			this.loadedMemory = true
+		} catch (e) {
+			this.error = e.message
+		} finally {
+			this.isLoading = false
+		}
 	}
 	get host() {
 		return this.getConfig().host
@@ -74,7 +104,7 @@ class Printer {
 		return this.getConfig().type_printer
 	}
 	get printer_resolution() {
-		return parseInt(this.getConfig().printer_resolution, 10)
+		return Number(this.getConfig().printer_resolution)
 	}
 	get VERSION() {
 		return this.getConfig().VERSION

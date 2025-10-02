@@ -1,6 +1,7 @@
 import {
 	requestPrinterCode,
 	requestPrinterExample,
+	requestPrinterMemory,
 	requestPrinterPing,
 	requestPrinterSettings,
 	requestPrinterSettingsSave,
@@ -178,6 +179,14 @@ class ServicePrinter {
 		} finally {
 			storePrinter.setLoading(false)
 		}
+	}
+	async memory() {
+		const config = storePrinter.getConfig()
+		return await requestPrinterMemory({
+			host: config.host,
+			port: config.port,
+			type_printer: config.type_printer,
+		})
 	}
 }
 

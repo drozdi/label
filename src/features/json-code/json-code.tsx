@@ -28,17 +28,13 @@ export const JsonCode = observer(() => {
 		refText.current.value = JSON.stringify({
 			...DEF_TEMPLATE,
 			...storeTemplate,
-			objects: storeTemplate.objects.map(item => ({
-				...item.getProps(),
-			})),
+			objects: storeTemplate.objects.map(item => item.getProps()),
 			id: undefined,
 			scale: undefined,
 			dpi: undefined,
 			mm: undefined,
 			cm: undefined,
 			mm_qr: undefined,
-			currId: undefined,
-			currIndex: undefined,
 			selected: undefined,
 		})
 	}
@@ -46,7 +42,6 @@ export const JsonCode = observer(() => {
 		<Modal opened={storeApp.jsonCodeFlag} onClose={() => storeApp.setJsonCodeFlag(false)} size='xl'>
 			<Stack>
 				<JsonInput rows={20} ref={refText} />
-
 				<Group>
 					<Button variant='filled' onClick={handleImport}>
 						Импорт

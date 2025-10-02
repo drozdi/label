@@ -112,19 +112,15 @@ export const serviceTemplate = {
 		const template = {
 			...DEF_TEMPLATE,
 			...storeTemplate,
-			objects: storeTemplate.objects.map(item => ({
-				...item.getProps(),
-			})),
+			objects: storeTemplate.objects.map(item => item.getProps()),
 			scale: undefined,
 			dpi: undefined,
 			mm: undefined,
 			cm: undefined,
 			mm_qr: undefined,
-			currId: undefined,
-			currIndex: undefined,
 			selected: undefined,
 		}
-		console.log(template)
+
 		if (storeTemplate.id > 0) {
 			await this.handleUpdate(template)
 		} else {
@@ -143,6 +139,7 @@ export const serviceTemplate = {
 	async handleNew(template) {
 		try {
 			const res = await storeTemplates.newTemplate(template)
+			console.log(res)
 			storeTemplate.loadTemplate(res.data)
 			serviceNotifications.success('Шаблон успешно сохранён')
 			storeApp.setErrorName(false)

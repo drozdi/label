@@ -103,7 +103,7 @@ export class BarcodeElement extends BaseElement implements IObject {
 										: this.height * this.mm * scale
 						),
 					}}
-				></canvas>
+				/>
 				{this.human_readable === 1 ? (
 					<p
 						style={{
