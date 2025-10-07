@@ -29,9 +29,6 @@ class StoreTemplate {
 	mm_qr = MM_QR
 
 	////
-	currId: number | string = 0
-	currIndex = -1
-
 	selected: Array<number | string> = []
 
 	selectObject(id: number | string) {
@@ -40,13 +37,6 @@ class StoreTemplate {
 			this.selected = this.selected.filter(item => String(item) !== id)
 		} else {
 			this.selected = [...this.selected, id]
-		}
-		if (this.selected.length === 1) {
-			this.currId = this.selected[0]
-			this.currIndex = this.objects.findIndex(object => String(object.id) === String(this.currId))
-		} else {
-			this.currId = 0
-			this.currIndex = -1
 		}
 	}
 
@@ -83,7 +73,7 @@ class StoreTemplate {
 		}
 	}
 	get current() {
-		return this.objects[this.currIndex] || this.selectedObjects?.[0] || undefined
+		return this.selectedObjects?.[0] || undefined
 	}
 
 	get selectedIndex() {
@@ -120,15 +110,10 @@ class StoreTemplate {
 	}
 
 	setActiveObject(id: number | string) {
-		this.currId = String(id)
-		this.currIndex = this.objects.findIndex(object => String(object.id) === this.currId)
-		if (this.currIndex === -1) {
-			this.currId = 0
-		}
-		if (this.currId) {
-			this.selected = [this.currId]
-		} else {
+		if (this.objects.findIndex(object => String(object.id) === String(id)) === -1) {
 			this.selected = []
+		} else {
+			this.selected = [String(id)]
 		}
 	}
 	findById(id: number | string) {
@@ -151,7 +136,6 @@ class StoreTemplate {
 		if (this.selected.includes(id)) {
 			this.selected = this.selected.filter(item => item !== id)
 		}
-		this.setActiveObject(this.currId)
 	}
 	loadObjects(objects: any[] = []) {
 		while (this.objects.length) {

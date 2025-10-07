@@ -1,4 +1,4 @@
-import { Button, FileButton, Group, Modal, Stack, Textarea, Title } from '@mantine/core'
+import { Button, FileButton, Group, Modal, SegmentedControl, Stack, Textarea, Title } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useRef, useState } from 'react'
 import { storeApp } from '../../entites/app/store'
@@ -91,6 +91,7 @@ const regParse = (reg: RegExp, str: string, def = {}) => {
 }
 
 export const Import = observer(() => {
+	const [dpi, setDpi] = useState('12')
 	const _cost = (localStorage.getItem(KEY_API_HOST) || URL_API) === URL_API
 	const refText = useRef<HTMLTextAreaElement>(null)
 	const handleFile = (file: any) => {
@@ -261,7 +262,7 @@ export const Import = observer(() => {
 			} else {
 				obj.font_size = parseInt(res.x_multiplication, 10)
 			}
-			//obj.font_size = Math.floor((obj.font_size * 8) / 12)
+			obj.font_size = Math.floor((obj.font_size * dpi) / 12)
 
 			obj.data = res.data
 
@@ -896,6 +897,14 @@ export const Import = observer(() => {
 			size='xl'
 		>
 			<Stack gap='sm'>
+				<SegmentedControl
+					value={dpi}
+					onChange={setDpi}
+					data={[
+						{ value: '12', label: '300' },
+						{ value: '8', label: '200' },
+					]}
+				/>
 				<Title order={6}>
 					<div>Необработанные ключи: {unprocessedKey.join(' ')}</div>
 					<div>Необработанное тело: {unprocessedBody.join(' ')}</div>

@@ -3,10 +3,11 @@ import { observer } from 'mobx-react-lite'
 import { useCallback, useMemo } from 'react'
 import { TbAlignCenter, TbAlignLeft, TbAlignRight, TbBaselineDensitySmall, TbX } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
-import { labelsHumanReadable, labelsTextAlign } from '../../entites/element/constants'
+import { allProperties, labelsHumanReadable, labelsTextAlign } from '../../entites/element/constants'
 import { storeTemplate } from '../../entites/template/store'
 import { useHistory } from '../../services/history/hooks/use-history'
 import { STEP } from '../../shared/constants'
+import { round } from '../../shared/utils'
 import { ItemAction } from './item-action'
 import { ItemEditable } from './item-editable'
 import { ItemNumber } from './item-number'
@@ -23,25 +24,7 @@ export const ListProperties = observer(() => {
 		if (storeTemplate.isOne()) {
 			return current.properties
 		}
-		let props = new Set([
-			'name',
-			'text_align',
-			'human_readable',
-			'radius',
-			'line_thickness',
-			'enabled',
-			'type',
-			'pos_x',
-			'pos_y',
-			'width',
-			'height',
-			'rotation',
-			'code_type',
-			'font_size',
-			'font_id',
-			'image_id',
-			'data',
-		])
+		let props = new Set(allProperties)
 		storeTemplate.selectedObjects.forEach(o => {
 			props = props.intersection(new Set(o.multiProperties))
 		})
@@ -78,7 +61,7 @@ export const ListProperties = observer(() => {
 				<ItemNumber
 					edit={current.width !== 'fit-content'}
 					label='Ширина:'
-					value={current.width !== '' ? Math.round(current.width * 100) / 100 : ''}
+					value={current.width !== '' ? round(current.width * 100) / 100 : ''}
 					step={STEP}
 					unit='mm'
 					onChange={v => {
@@ -91,7 +74,7 @@ export const ListProperties = observer(() => {
 				<ItemNumber
 					edit={current.height !== 'fit-content'}
 					label='Высота:'
-					value={current.height !== '' ? Math.round(current.height * 100) / 100 : ''}
+					value={current.height !== '' ? round(current.height * 100) / 100 : ''}
 					step={STEP}
 					unit='mm'
 					onChange={v => {

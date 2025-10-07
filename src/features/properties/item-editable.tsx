@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Box, Button, Group, TextInput } from '@mantine/core'
 
@@ -25,7 +25,10 @@ export function ItemEditable({
 	...other
 }: ItemEditableProps) {
 	const [edit, setEdit] = useState<boolean>(false)
-	const [value, setValue] = useState<string>(defaultValue)
+	const [value, setValue] = useState<string | number | undefined>(defaultValue)
+	useEffect(() => {
+		setValue(defaultValue)
+	}, [defaultValue])
 	return (
 		<Group gap={0} grow>
 			{editable && edit ? (

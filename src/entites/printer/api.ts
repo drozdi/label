@@ -1,19 +1,11 @@
 import { api } from '../../shared/api'
 
-export async function requestPrinterPing(data: {
-	host: string
-	port: number
-	type_printer: string
-}) {
+export async function requestPrinterPing(data: { host: string; port: number; type_printer: string }) {
 	const res = await api.post('/trial_printing/ping', data)
 	return res.data
 }
 
-export async function requestPrinterSettings(params: {
-	host: string
-	port: string
-	type_printer: string
-}) {
+export async function requestPrinterSettings(params: { host: string; port: string; type_printer: string }) {
 	const res = await api.get('/setting', {
 		params,
 	})
@@ -72,5 +64,10 @@ export async function requestPrinterExample(data: {
 	}
 }) {
 	const res = await api.post('/printing', data)
+	return res.data
+}
+
+export async function requestPrinterMemory(params: { host: string; port: string; type_printer: string }) {
+	const res = await api.get('/printer_memory', { params })
 	return res.data
 }
