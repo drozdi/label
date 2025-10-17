@@ -10,6 +10,8 @@ import { Import } from '../features/import/import'
 import { JsonCode } from '../features/json-code/json-code'
 import { Preview } from '../features/preview/preview'
 import { Settings } from '../features/settings/settings'
+import { KEY_API_HOST } from '../shared/constants'
+import { DefaultSettings } from '../widgets/DefaultSettings'
 import { Editor } from '../widgets/Editor'
 import { ErrorServer } from '../widgets/ErrorServer'
 import { Header } from '../widgets/Header'
@@ -17,11 +19,18 @@ import { Templates } from '../widgets/Templates'
 
 export const App = observer(() => {
 	useEffect(() => {
+		storeApp.setDefaultSettings(!Boolean(localStorage.getItem(KEY_API_HOST)))
+	}, [])
+	useEffect(() => {
+		if (storeApp.defaultSettings) {
+			return
+		}
 		const check = async () => {
+			storeApp.setServerError(false)
 			try {
 				await requestVariablesList()
 			} catch (e) {
-				if (e.code === 'ERR_NETWORK') {
+				if (e.code === 'ERR_NETWORK' || e.code === 'ECONNABORTED') {
 					storeApp.setServerError(true)
 				}
 			}
@@ -31,25 +40,33 @@ export const App = observer(() => {
 		}
 		storeTemplate.clear()
 		check()
-	}, [])
+	}, [storeApp.defaultSettings])
+
+	console.log(storeApp.defaultSettings, storeApp.serverError)
 
 	return (
 		<>
-			<Stack h='100vh' w='100vw' gap='0' align='stretch' justify='flex-start'>
-				{storeApp.serverError ? (
-					<ErrorServer />
-				) : (
-					<>
-						<Header />
-						{storeApp.loadTemplateFlag ? <Templates /> : <Editor />}
-					</>
-				)}
-			</Stack>
-			<AutoSave />
-			<Settings />
-			<Import />
-			<Preview />
-			<JsonCode />
+			{storeApp.defaultSettings ? (
+				<DefaultSettings />
+			) : (
+				<>
+					<Stack h='100vh' w='100vw' gap='0' align='stretch' justify='flex-start'>
+						{storeApp.serverError ? (
+							<ErrorServer />
+						) : (
+							<>
+								<Header />
+								{storeApp.loadTemplateFlag ? <Templates /> : <Editor />}
+							</>
+						)}
+					</Stack>
+					<AutoSave />
+					<Settings />
+					<Import />
+					<Preview />
+					<JsonCode />
+				</>
+			)}
 		</>
 	)
 })

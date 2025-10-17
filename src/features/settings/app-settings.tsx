@@ -1,11 +1,10 @@
-import { Stack } from '@mantine/core'
+import { Button, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { URL_API, VERSION } from '../../shared/constants'
 import { ItemEditable } from './item-editable'
 export const AppSettings = observer(() => {
-	const setThemeFunc = async () => {}
 	const [apiHostFlag, setApiHostFlag] = useState(false)
 	const [apiPortFlag, setApiPortFlag] = useState(false)
 	const [timeAutoSave, setTimeAutoSave] = useState(storeApp.timeAutoSave)
@@ -49,7 +48,7 @@ export const AppSettings = observer(() => {
 			/>
 			<ItemEditable
 				editable
-				type='text'
+				type='number'
 				label='Порт БД:'
 				value={apiSplit[1]}
 				edit={apiPortFlag}
@@ -76,6 +75,7 @@ export const AppSettings = observer(() => {
 				onClick={() => storeApp.setHistoryCount(historyCount)}
 			/>
 			<ItemEditable type='text' label='Версия:' value={VERSION} />
+			<Button onClick={() => storeApp.setDefaultSettings(true)}>Сбросить настройки</Button>
 		</Stack>
 	)
 })
