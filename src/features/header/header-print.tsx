@@ -54,15 +54,27 @@ export const HeaderPrint = observer(() => {
 			>
 				Импорт кода
 			</Button>
-			<Button variant='outline' onClick={handlePrintCode}>
-				Код печати
-			</Button>
-			<Button variant='outline' onClick={handlePrintExample}>
-				Пример печати
-			</Button>
-			<Button variant='outline' onClick={handlePrintTrial}>
-				Пробная печать
-			</Button>
+			{storeApp.offlineMode ? (
+				<Button
+					variant='outline'
+					color={storeApp.genCodeFlag ? 'lime' : ''}
+					onClick={() => storeApp?.setGenCodeFlag(!storeApp.genCodeFlag)}
+				>
+					Эксопрт кода
+				</Button>
+			) : (
+				<>
+					<Button variant='outline' onClick={handlePrintCode}>
+						Код печати
+					</Button>
+					<Button variant='outline' onClick={handlePrintExample}>
+						Пример печати
+					</Button>
+					<Button variant='outline' onClick={handlePrintTrial}>
+						Пробная печать
+					</Button>
+				</>
+			)}
 		</Header>
 	)
 })

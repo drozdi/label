@@ -28,6 +28,7 @@ class StoreApp implements IAppContext {
 	errorName = false
 	offlineMode = false
 	defaultSettings = true
+	genCodeFlag = false
 
 	constructor() {
 		makeAutoObservable(this)
@@ -96,6 +97,9 @@ class StoreApp implements IAppContext {
 	}
 	setDefaultSettings(val: boolean) {
 		this.defaultSettings = val
+	}
+	setGenCodeFlag(val: boolean) {
+		this.genCodeFlag = val
 	}
 }
 

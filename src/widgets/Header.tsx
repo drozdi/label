@@ -23,9 +23,11 @@ export const Header = observer(({ leftSection, rightSection }) => {
 			{loadTemplateFlag ? <HeaderTemplates /> : <HeaderMain />}
 			{!loadTemplateFlag && <HeaderPrint />}
 			<Group>
-				<ActionIcon color={settingsFlag ? 'lime' : ''} onClick={() => storeApp.setSettingsFlag(!settingsFlag)}>
-					<TbSettings />
-				</ActionIcon>
+				{!storeApp.offlineMode && (
+					<ActionIcon color={settingsFlag ? 'lime' : ''} onClick={() => storeApp.setSettingsFlag(!settingsFlag)}>
+						<TbSettings />
+					</ActionIcon>
+				)}
 
 				<Popover position='bottom' offset={0} shadow='md' opened={openedInfo}>
 					<Popover.Target>

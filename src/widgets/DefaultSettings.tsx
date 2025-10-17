@@ -20,7 +20,7 @@ export const DefaultSettings = observer(() => {
 	const handleSave = () => {
 		const api = `http://${apiSplit[0]}:${apiSplit[1]}/api/v1/`
 		localStorage.setItem(KEY_API_HOST, api)
-		localStorage.setItem(KEY_API_TIMEOUT, apiTimeout)
+		localStorage.setItem(KEY_API_TIMEOUT, String(apiTimeout))
 		storeApp.setTimeAutoSave(timeAutoSave)
 		storeApp.setHistoryCount(historyCount)
 		window.location.reload()

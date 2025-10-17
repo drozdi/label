@@ -13,6 +13,7 @@ interface IAppContext {
 	errorName?: boolean
 	showAppLoader?: boolean
 	offlineMode?: boolean
+	genCodeFlag?: boolean
 
 	setFontFamilyFlag?: (flag: boolean) => void
 	setVariableFlag?: (flag: boolean) => void
@@ -27,8 +28,8 @@ interface IAppContext {
 	setErrorName?: (flag: boolean) => void
 	setShowAppLoader?: (flag: boolean) => void
 	setElementFlag?: (flag: boolean) => void
-	setOfflineMode?: (flag: boolean) => void
 	setDefaultSettings?: (flag: boolean) => void
+	setGenCodeFlag?: (flag: boolean) => void
 
 	imageBg?: string
 	setImageBg?: (bg: string) => void

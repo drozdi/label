@@ -6,6 +6,7 @@ import { storeHistory } from '../entites/history/store'
 import { storeTemplate } from '../entites/template/store'
 import { requestVariablesList } from '../entites/variables/api'
 import { AutoSave } from '../features/auto-save/auto-save'
+import { ModalGenCode } from '../features/gen-code/modal-gen-code'
 import { Import } from '../features/import/import'
 import { JsonCode } from '../features/json-code/json-code'
 import { Preview } from '../features/preview/preview'
@@ -20,6 +21,7 @@ import { Templates } from '../widgets/Templates'
 export const App = observer(() => {
 	useEffect(() => {
 		storeApp.setDefaultSettings(!Boolean(localStorage.getItem(KEY_API_HOST)))
+		storeApp.setOfflineMode(true)
 	}, [])
 	useEffect(() => {
 		if (storeApp.defaultSettings) {
@@ -65,6 +67,7 @@ export const App = observer(() => {
 					<Import />
 					<Preview />
 					<JsonCode />
+					<ModalGenCode />
 				</>
 			)}
 		</>
