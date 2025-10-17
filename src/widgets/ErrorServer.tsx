@@ -1,6 +1,7 @@
 import { Button, Center, Stack, TextInput, Title } from '@mantine/core'
 import { useState } from 'react'
 import { TbFaceIdError } from 'react-icons/tb'
+import { storeApp } from '../entites/app/store'
 import { URL_API } from '../shared/constants'
 
 export const ErrorServer = () => {
@@ -25,6 +26,9 @@ export const ErrorServer = () => {
 				/>
 				<Button variant='filled' onClick={() => setApi(apiHost)}>
 					Обновить
+				</Button>
+				<Button variant='filled' onClick={() => storeApp.setDefaultSettings(true)}>
+					Сбросить настройки
 				</Button>
 			</Stack>
 		</Center>
