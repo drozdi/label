@@ -1,10 +1,7 @@
-import { api } from '../../shared/api'
+import { api } from '../../services/api'
 
 // Получить все изображения
-export async function requestIimagesList({
-	size = 100,
-	number = 0,
-}: IRequestImage = {}): Promise<{
+export async function requestIimagesList({ size = 100, number = 0 }: IRequestImage = {}): Promise<{
 	success: boolean
 	data: IResponseImageList
 }> {
@@ -48,9 +45,7 @@ export async function requestImagesUpdate(
 	return res.data
 }
 
-export async function requestImagesDelete(
-	id_images: number | number[]
-): Promise<{
+export async function requestImagesDelete(id_images: number | number[]): Promise<{
 	success: true
 	data: string
 }> {

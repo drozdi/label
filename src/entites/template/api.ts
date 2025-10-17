@@ -1,4 +1,4 @@
-import { api } from '../../shared/api'
+import { api } from '../../services/api'
 
 // Получить все шаблоны
 export async function requestTemplateList() {

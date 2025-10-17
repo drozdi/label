@@ -12,6 +12,7 @@ interface IAppContext {
 	jsonCodeFlag?: boolean
 	errorName?: boolean
 	showAppLoader?: boolean
+	offlineMode?: boolean
 
 	setFontFamilyFlag?: (flag: boolean) => void
 	setVariableFlag?: (flag: boolean) => void
@@ -31,5 +32,6 @@ interface IAppContext {
 	setImageBg?: (bg: string) => void
 	serverError?: boolean
 	setServerError?: (flag: boolean) => void
+	setOfflineMode?: (flag: boolean) => void
 	silent: (fn: Function) => void
 }

@@ -1,9 +1,6 @@
-import { api } from '../../shared/api'
+import { api } from '../../services/api'
 
-export async function requestFontsList({
-	size = 100,
-	number = 0,
-}: IRequestFont = {}): Promise<{
+export async function requestFontsList({ size = 100, number = 0 }: IRequestFont = {}): Promise<{
 	success: boolean
 	data: IResponseFontList
 }> {
