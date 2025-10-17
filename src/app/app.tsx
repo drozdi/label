@@ -2,9 +2,9 @@ import { Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { storeApp } from '../entites/app/store'
-import { requestFontsList } from '../entites/fonts/api'
 import { storeHistory } from '../entites/history/store'
 import { storeTemplate } from '../entites/template/store'
+import { requestVariablesList } from '../entites/variables/api'
 import { AutoSave } from '../features/auto-save/auto-save'
 import { Import } from '../features/import/import'
 import { JsonCode } from '../features/json-code/json-code'
@@ -19,7 +19,7 @@ export const App = observer(() => {
 	useEffect(() => {
 		const check = async () => {
 			try {
-				await requestFontsList()
+				await requestVariablesList()
 			} catch (e) {
 				if (e.code === 'ERR_NETWORK') {
 					storeApp.setServerError(true)
