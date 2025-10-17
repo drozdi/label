@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo } from 'react'
+import { storeApp } from '../entites/app/store'
 import { storeDataMatrix } from '../entites/data-matrix/store'
 import { storeFonts } from '../entites/fonts/store'
 import { storeImages } from '../entites/images/store'
@@ -28,11 +29,14 @@ export const AppLoader = observer(({ children }: { children: React.ReactNode }) 
 	)
 
 	useEffect(() => {
+		if (storeApp.defaultSettings) {
+			return
+		}
 		storeFonts.load()
 		storeImages.load()
 		storeVariables.load()
 		storeDataMatrix.load()
-	}, [])
+	}, [storeApp.defaultSettings])
 
 	return (
 		<>

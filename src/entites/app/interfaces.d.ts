@@ -26,6 +26,8 @@ interface IAppContext {
 	setErrorName?: (flag: boolean) => void
 	setShowAppLoader?: (flag: boolean) => void
 	setElementFlag?: (flag: boolean) => void
+	setOfflineMode?: (flag: boolean) => void
+	setDefaultSettings?: (flag: boolean) => void
 
 	imageBg?: string
 	setImageBg?: (bg: string) => void

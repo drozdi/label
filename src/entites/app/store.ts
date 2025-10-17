@@ -26,6 +26,8 @@ class StoreApp implements IAppContext {
 	serverError = false
 	jsonCodeFlag = false
 	errorName = false
+	offlineMode = false
+	defaultSettings = true
 	constructor() {
 		makeAutoObservable(this)
 	}
@@ -87,6 +89,12 @@ class StoreApp implements IAppContext {
 	}
 	setErrorName(val: boolean) {
 		this.errorName = val
+	}
+	setOfflineMode(val: boolean) {
+		this.offlineMode = val
+	}
+	setDefaultSettings(val: boolean) {
+		this.defaultSettings = val
 	}
 }
 
