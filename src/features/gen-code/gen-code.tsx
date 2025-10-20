@@ -4,6 +4,38 @@ import { useEffect, useState } from 'react'
 import { storeTemplate } from '../../entites/template/store'
 
 const tsplGenCode = {
+	gen(template: Record<string, any>, dpi: number): string {
+		let res = ''
+
+		res += this.genSIZE(template.width_mm + ' mm ,' + template.height_mm + ' mm') + '\n'
+		res += this.genGAP(template.gap_mm + ' mm') + '\n'
+		res += this.genDIRECTION([template.direction_x, template.direction_y].join(',')) + '\n'
+		res += this.genREFERENCE([template.reference_x, template.reference_y].join(',')) + '\n'
+
+		template.objects.forEach(object => {
+			switch (object.type) {
+				case 'box':
+					res += this.genBOX(object, dpi) + '\n'
+					break
+				case 'bar':
+					res += this.genBAR(object, dpi) + '\n'
+					break
+				case 'block':
+					res += this.genBLOCK(object, dpi) + '\n'
+					break
+				case 'text':
+					res += this.genTEXT(object, dpi) + '\n'
+					break
+				case 'img':
+					res += this.genIMG(object, dpi) + '\n'
+					break
+				case 'barcode':
+					res += this.genBARCODE(object, dpi) + '\n'
+					break
+			}
+		})
+		return res
+	},
 	genTEXT(object: Record<string, any>, dpi: number): string {
 		let arr = []
 		arr.push(Math.round(Number(object.pos_x) * dpi))
@@ -159,22 +191,6 @@ const tsplGenCode = {
 	genREFERENCE(str: string): string {
 		return 'REFERENCE ' + str
 	},
-	// parseDIRECTION(str: string) {
-	// 		const arr = parseSplit(str).map(v => Number(v.trim()))
-	// 		setDirection(...arr)
-	// 	},
-	// 	parseSIZE(str: string) {
-	// 		const arr = parseSplit(str).map(v => parseInt(v, 10))
-	// 		setSize(...arr)
-	// 	},
-	// 	parseGAP(str: string) {
-	// 		const arr = parseSplit(str).map(v => parseInt(v, 10))
-	// 		setGap(...arr)
-	// 	},
-	// 	parseREFERENCE(str: string) {
-	// 		const arr = parseSplit(str).map(v => parseInt(v, 10))
-	// 		setReference(...arr)
-	// 	},
 }
 
 export const GenCode = observer(() => {
@@ -182,37 +198,7 @@ export const GenCode = observer(() => {
 	const [dpi, setDpi] = useState<'8' | '12'>('12')
 	const [res, setRes] = useState<string>('')
 	useEffect(() => {
-		let res = ''
-
-		if (type === 'tspl') {
-			res += tsplGenCode.genSIZE(storeTemplate.width_mm + ' mm ,' + storeTemplate.height_mm + ' mm') + '\n'
-			res += tsplGenCode.genGAP(storeTemplate.gap_mm + ' mm') + '\n'
-			res += tsplGenCode.genDIRECTION([storeTemplate.direction_x, storeTemplate.direction_y].join(',')) + '\n'
-			res += tsplGenCode.genREFERENCE([storeTemplate.reference_x, storeTemplate.reference_y].join(',')) + '\n'
-		}
-
-		storeTemplate.objects.forEach(object => {
-			switch (object.type) {
-				case 'box':
-					res += tsplGenCode.genBOX(object, Number(dpi)) + '\n'
-					break
-				case 'bar':
-					res += tsplGenCode.genBAR(object, Number(dpi)) + '\n'
-					break
-				case 'block':
-					res += tsplGenCode.genBLOCK(object, Number(dpi)) + '\n'
-					break
-				case 'text':
-					res += tsplGenCode.genTEXT(object, Number(dpi)) + '\n'
-					break
-				case 'img':
-					res += tsplGenCode.genIMG(object, Number(dpi)) + '\n'
-					break
-				case 'barcode':
-					res += tsplGenCode.genBARCODE(object, Number(dpi)) + '\n'
-					break
-			}
-		})
+		let res = tsplGenCode.gen(storeTemplate, Number(dpi))
 		setRes(res)
 	}, [type, dpi])
 	return (
