@@ -21,7 +21,7 @@ import { Templates } from '../widgets/Templates'
 export const App = observer(() => {
 	useEffect(() => {
 		storeApp.setDefaultSettings(!Boolean(localStorage.getItem(KEY_API_HOST)))
-		storeApp.setOfflineMode(true)
+		//storeApp.setOfflineMode(true)
 	}, [])
 	useEffect(() => {
 		if (storeApp.defaultSettings) {

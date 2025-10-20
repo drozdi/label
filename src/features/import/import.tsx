@@ -1,6 +1,6 @@
 import { Button, FileButton, Group, Modal, SegmentedControl, Stack, Textarea, Title } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { storeDataMatrix } from '../../entites/data-matrix/store'
 import { storeFonts } from '../../entites/fonts/store'
@@ -85,7 +85,8 @@ const setReference = (x: number, y: number) => {
 
 const regParse = (reg: RegExp, str: string, def = {}) => {
 	if (reg.test(str)) {
-		return { ...def, ...str.match(reg).groups }
+		console.log(str.match(reg))
+		return { ...def, ...str.match(reg)?.groups }
 	}
 	return { ...def }
 }
@@ -110,6 +111,7 @@ export const Import = observer(() => {
 		unprocessedKey: [],
 		unprocessedBody: [],
 	})
+	const setUnprocessedKey = useCallback(() => {}, [])
 
 	const tsplParser = {
 		test(str: string) {
@@ -870,19 +872,195 @@ export const Import = observer(() => {
 		},
 	}
 
+	const zplParser = {
+		buildRegPath(key: string, paths: string[], options?: Record<string, any> = {}): string {
+			return (
+				`\\\^${key}${paths.length > 1 ? '(?:' : ''}` +
+				paths
+					.map(path => {
+						return `(?<${path}>[${(options?.[path] ?? '') + (paths.length > 1 ? '\^,' : '') + '\^\\\^]*'})`
+					})
+					.join(')?(?:,') +
+				'' +
+				(paths.length > 1 ? ')?' : '')
+			)
+		},
+		buildRegStr(...args: any[]): string {
+			return args.join('') + '(?:\^FS)?'
+		},
+		test(str: string): boolean {
+			return /\^XA/.test(str) && /\^XZ/.test(str)
+		},
+		parse(str: string) {
+			str = str.replace(/^\^XA/, '').replace(/\^XZ$/, '').replace('^CI28', '').trim()
+			const lines = str
+				.split('^FS')
+				.map(item => item.trim())
+				.filter(item => item)
+			lines.forEach(line => {
+				if (/\^FB/.test(line)) {
+					this.parseBlock(line)
+				} else if (/\^A@/.test(line)) {
+					this.parseText(line)
+				}
+			})
+		},
+		parseText(str: string) {
+			const obj = genObj({
+				name: 'text',
+				type: 'text',
+				width: 'fit-content',
+				height: 'fit-content',
+				font_size: 12,
+				font_id: storeFonts.id,
+			})
+			const res = regParse(
+				new RegExp(
+					this.buildRegStr(
+						this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
+						this.buildRegPath('A@', ['a_orientation', 'a_height', 'a_width', 'a_path']),
+						this.buildRegPath('FD', ['fd_data'])
+					)
+				),
+				str,
+				{
+					fo_x: 0,
+					fo_y: 0,
+					fo_alignment: 0,
+					a_orientation: 'N',
+					a_height: 0,
+					a_width: 0,
+					a_path: '',
+					fd_data: '',
+				}
+			)
+
+			obj.pos_x = round(Number(res.fo_x) / dpi)
+			obj.pos_y = round(Number(res.fo_y) / dpi)
+
+			let font_name = res.a_path.split(':')?.[1]
+			let font
+			if ((font = storeFonts.findByTagFonts(font_name))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findByName(font_name))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findById(font_name))) {
+				obj.font_id = font.id
+			} else {
+				serviceNotifications.alert(
+					'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+				)
+			}
+
+			obj.data = res.fd_data
+
+			res.rotation =
+				res.a_orientation === 'R' ? 90 : res.a_orientation === 'I' ? 180 : res.a_orientation === 'L' ? 270 : 0
+
+			if (obj.rotation === 90 || obj.rotation === 270) {
+				obj.font_size = parseInt(res.a_height, 10)
+			} else {
+				obj.font_size = parseInt(res.a_width, 10)
+			}
+
+			obj.font_size = Math.floor(obj.font_size / dpi)
+
+			storeTemplate.addObject(obj)
+		},
+
+		parseBlock(str: string) {
+			const obj = genObj({
+				name: 'block',
+				type: 'block',
+				font_size: 12,
+				font_id: storeFonts.id,
+			})
+
+			const res = regParse(
+				new RegExp(
+					this.buildRegStr(
+						this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
+						this.buildRegPath('FB', [
+							'fb_maxWidth',
+							'fb_maxLines',
+							'fb_lineSpacing',
+							'fb_alignment',
+							'fb_hangingIndent',
+						]),
+						this.buildRegPath('A@', ['a_orientation', 'a_height', 'a_width', 'a_path']),
+						this.buildRegPath('FD', ['fd_data'])
+					)
+				),
+				str,
+				{
+					fo_x: 0,
+					fo_y: 0,
+					fo_alignment: 0,
+					fb_maxWidth: 0,
+					fb_maxLines: 1,
+					fb_lineSpacing: 0,
+					fb_alignment: 'L',
+					fb_hangingIndent: 0,
+					a_orientation: 'N',
+					a_height: 0,
+					a_width: 0,
+					a_path: '',
+					fd_data: '',
+				}
+			)
+
+			obj.pos_x = round(Number(res.fo_x) / dpi)
+			obj.pos_y = round(Number(res.fo_y) / dpi)
+
+			res.rotation =
+				res.a_orientation === 'R' ? 90 : res.a_orientation === 'I' ? 180 : res.a_orientation === 'L' ? 270 : 0
+
+			if (obj.rotation === 90 || obj.rotation === 270) {
+				obj.font_size = parseInt(res.a_height, 10)
+			} else {
+				obj.font_size = parseInt(res.a_width, 10)
+			}
+			obj.font_size = Math.floor(obj.font_size / dpi)
+
+			let font_name = res.a_path.split(':')?.[1]
+			let font
+			if ((font = storeFonts.findByTagFonts(font_name))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findByName(font_name))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findById(font_name))) {
+				obj.font_id = font.id
+			} else {
+				serviceNotifications.alert(
+					'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+				)
+			}
+
+			obj.width = round(Number(res.fb_maxWidth) / dpi)
+			obj.height = round(Number(res.fb_maxLines) * obj.font_size)
+
+			obj.text_align = res.fb_alignment === 'R' ? 3 : res.fb_alignment === 'C' ? 2 : 1
+
+			obj.data = res.fd_data.replace('\&', '\n')
+			storeTemplate.addObject(obj)
+		},
+	}
 	const handleParse = () => {
 		if (refText.current.value < 10) {
 			return
 		}
 		storeTemplate.clear()
 		try {
+			if (zplParser.test(refText.current.value)) {
+				zplParser.parse(refText.current.value)
+			}
 			if (ezplParser.test(refText.current.value)) {
 				ezplParser.parse(refText.current.value)
 			} else if (tsplParser.test(refText.current.value)) {
 				tsplParser.parse(refText.current.value)
 			}
 			storeTemplate.loadObjects([...storeTemplate.objects])
-			storeApp.setImportFlag(false)
+			//storeApp.setImportFlag(false)
 		} catch (e) {
 			console.error(e)
 			serviceNotifications.error(e.message)
