@@ -22,7 +22,7 @@ export const ListProperties = observer(() => {
 	}
 	const properties = useMemo<never[]>(() => {
 		if (storeTemplate.isOne()) {
-			return current.properties
+			return current?.properties || {}
 		}
 		let props = new Set(allProperties)
 		storeTemplate.selectedObjects.forEach(o => {

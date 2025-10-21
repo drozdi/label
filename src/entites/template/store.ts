@@ -143,7 +143,7 @@ class StoreTemplate {
 		}
 		this.objects = []
 		objects.forEach(object => {
-			this.objects.push(factoryElement(object) as never)
+			this.objects.push(factoryElement(object))
 		})
 	}
 	addObject(object: Record<string, any>) {

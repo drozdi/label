@@ -1,4 +1,4 @@
-import { Box, Button, Center, Group, ScrollArea, Stack, Text } from '@mantine/core'
+import { Box, Button, Center, Stack, Text } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
@@ -6,9 +6,10 @@ import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
-import { ListTemplate } from '../features/templates/list-template'
+import { ContainerTemplate } from '../features/templates/container-template'
 import { Preview } from '../features/templates/preview'
 import { useHistory } from '../services/history/hooks/use-history'
+import { Layout } from './Layout'
 
 export const Templates = observer(() => {
 	const { selected: templateSelected } = storeTemplates
@@ -57,72 +58,50 @@ export const Templates = observer(() => {
 	}
 
 	return (
-		<>
-			<Group
-				grow
-				justify='space-between'
-				h='100%'
-				style={{
-					borderTop: '1px solid var(--mantine-color-default-border)',
-				}}
-			>
-				<ScrollArea h='100%' flex='none' w='18rem' p='xs'>
-					<ListTemplate />
-				</ScrollArea>
-				<ScrollArea maw='50%' flex='auto' w='auto' h='100%'>
-					<Box h='100%'>
-						{storeTemplates.selected ? (
-							<Band template={templateSelected}>
-								<Preview objects={objects} template={templateSelected} />
-							</Band>
-						) : (
-							<Center h='100%' w='100%'>
-								<Text c='dimmed' size='xl'>
-									{storeTemplates.list.length > 0 ? (
-										<>
-											Выберите шаблон из списка слева, для предпросмотра. Ваш текуший шаблон не перезапишется, пока не
-											нажмёте кнопку "Выбрать шаблон"
-										</>
-									) : (
-										<>
-											В базе данных шаблоны отсутствуют. Создайте Ваш первый шаблон, сохраните и он отобразиться
-											всписке.
-										</>
-									)}
-								</Text>
-							</Center>
-						)}
-					</Box>
-				</ScrollArea>
-				<Box
-					flex='none'
-					w='18rem'
-					maw='100%'
-					h='100%'
-					p='xs'
-					style={{
-						overflowX: 'hidden',
-						overflowY: 'auto',
-					}}
-				>
-					{(templateSelected?.id || 0) > 0 && (
-						<Stack>
-							<Button variant='outline' onClick={handleSelect}>
-								Выбрать
-							</Button>
-							<Button variant='outline' onClick={handleCopy}>
-								Копировать
-							</Button>
-							<Button variant='outline' onClick={handleExport}>
-								Экспортировать
-							</Button>
-							<Button variant='outline' color='red' onClick={handleDelete}>
-								Удалить
-							</Button>
-						</Stack>
-					)}
-				</Box>
-			</Group>
-		</>
+		<Layout
+			style={{
+				borderTop: '1px solid var(--mantine-color-default-border)',
+			}}
+			leftSection={<ContainerTemplate />}
+			rightSection={
+				(templateSelected?.id || 0) > 0 && (
+					<Stack>
+						<Button variant='outline' onClick={handleSelect}>
+							Выбрать
+						</Button>
+						<Button variant='outline' onClick={handleCopy}>
+							Копировать
+						</Button>
+						<Button variant='outline' onClick={handleExport}>
+							Экспортировать
+						</Button>
+						<Button variant='outline' color='red' onClick={handleDelete}>
+							Удалить
+						</Button>
+					</Stack>
+				)
+			}
+		>
+			<Box h='100%'>
+				{storeTemplates.selected ? (
+					<Band template={templateSelected}>
+						<Preview objects={objects} template={templateSelected} />
+					</Band>
+				) : (
+					<Center h='100%' w='100%'>
+						<Text c='dimmed' size='xl'>
+							{storeTemplates.list.length > 0 ? (
+								<>
+									Выберите шаблон из списка слева, для предпросмотра. Ваш текуший шаблон не перезапишется, пока не
+									нажмёте кнопку "Выбрать шаблон"
+								</>
+							) : (
+								<>В базе данных шаблоны отсутствуют. Создайте Ваш первый шаблон, сохраните и он отобразиться всписке.</>
+							)}
+						</Text>
+					</Center>
+				)}
+			</Box>
+		</Layout>
 	)
 })
