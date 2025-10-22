@@ -65,7 +65,7 @@ export const Templates = observer(() => {
 			leftSection={<ContainerTemplate />}
 			rightSection={
 				(templateSelected?.id || 0) > 0 && (
-					<Stack>
+					<Stack p='xs'>
 						<Button variant='outline' onClick={handleSelect}>
 							Выбрать
 						</Button>

@@ -3,39 +3,45 @@ import { storeFonts } from '../../../entites/fonts/store'
 import { storeImages } from '../../../entites/images/store'
 import { storeTemplate } from '../../../entites/template/store'
 import { serviceNotifications } from '../../../services/notifications/service'
+import { useFakeVariables } from '../../../shared/hooks'
 import { round } from '../../../shared/utils'
 import { genObj, regParse } from './base'
 
 export const zplParser = {
-	buildRegPath(key: string, paths: string[], options?: Record<string, any> = {}): string {
+	fontSize: 12,
+	buildRegPath(key: string, paths: string[], options: Record<string, any> = {}): string {
+		const opts: Record<string, any> = {
+			required: true,
+			...options,
+		}
 		return (
-			`\\\^${key}${paths.length > 1 ? '(?:' : ''}` +
+			`(?<${key.toLowerCase().replace(/[^a-z]/g, '')}>${opts.required ? '' : '(:?'}\\\^${key}${opts.required ? '' : ')?'}${paths.length > 1 ? '(?:' : ''}` +
 			paths
 				.map(path => {
-					return `(?<${path}>[${(options?.[path] ?? '') + (paths.length > 1 ? '\^,' : '') + '\^\\\^]*'})`
+					return `(?<${path}>[${(opts?.[path] ?? (paths.length > 1 ? '\^,' : '') + '\^\\\^') + ']*'})`
 				})
 				.join(')?(?:,') +
 			'' +
-			(paths.length > 1 ? ')?' : '')
+			(paths.length > 1 ? ')?)' : ')')
 		)
 	},
 	buildRegStr(...args: any[]): string {
-		return args.join('') + '(?:\^FS)?'
+		return args.join('') + '(?:\\\^FS)?'
 	},
 	test(str: string): boolean {
 		return /\^XA/.test(str) && /\^XZ/.test(str)
 	},
 	parse(str: string, dpi: number) {
+		this.fontSize = 12
 		str = str.replace(/^\^XA/, '').replace(/\^XZ$/, '').replace('^CI28', '').trim()
 		const lines = str
-			.split('^FS')
+			.split('\n')
 			.map(item => item.trim())
 			.filter(item => item)
 		lines.forEach(line => {
-			if (/\^FB/.test(line)) {
-				this.parseAFB(line, dpi)
-			} else if (/\^A@/.test(line)) {
-				this.parseA(line, dpi)
+			console.log(line)
+			if (/\^A/.test(line)) {
+				this.changeA(line, dpi)
 			} else if (/\^GB/.test(line)) {
 				this.parseGB(line, dpi)
 			} else if (/\^XG/.test(line)) {
@@ -48,85 +54,46 @@ export const zplParser = {
 				this.parseBE(line, dpi)
 			} else if (/\^BC/.test(line)) {
 				this.parseBC(line, dpi)
+			} else if (/\^FD/.test(line)) {
+				this.parseText(line, dpi)
 			}
 		})
 	},
-	parseA(str: string, dpi: number) {
+	changeA(str: string, dpi: number) {
+		const res = regParse(new RegExp(this.buildRegPath('A', ['a_f', 'a_h', 'a_w', 'a_ff'])), str, {})
+		this.fontSize = Number(res.a_h)
+		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) / 2)
+	},
+	changeСF(str: string, dpi: number) {
+		const res = regParse(new RegExp(this.buildRegPath('CF', ['cf_f', 'cf_h', 'cf_w'])), str, {})
+		this.fontSize = Number(res.cf_h)
+		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) / 2)
+	},
+
+	parseText(str: string, dpi: number) {
 		const obj = genObj({
 			name: 'text',
 			type: 'text',
 			width: 'fit-content',
 			height: 'fit-content',
-			font_size: 12,
+			font_size: this.fontSize,
 			font_id: storeFonts.id,
 		})
 		const res = regParse(
 			new RegExp(
 				this.buildRegStr(
 					this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
-					this.buildRegPath('A@', ['a_orientation', 'a_height', 'a_width', 'a_path']),
-					this.buildRegPath('FD', ['fd_data'])
-				)
-			),
-			str,
-			{
-				fo_x: 0,
-				fo_y: 0,
-				fo_alignment: 0,
-				a_orientation: 'N',
-				a_height: 0,
-				a_width: 0,
-				a_path: '',
-				fd_data: '',
-			}
-		)
-
-		obj.pos_x = round(Number(res.fo_x) / dpi)
-		obj.pos_y = round(Number(res.fo_y) / dpi)
-
-		let font_name = res.a_path.split(':')?.[1]
-		let font
-		if ((font = storeFonts.findByTagFonts(font_name))) {
-			obj.font_id = font.id
-		} else if ((font = storeFonts.findByName(font_name))) {
-			obj.font_id = font.id
-		} else if ((font = storeFonts.findById(font_name))) {
-			obj.font_id = font.id
-		} else {
-			serviceNotifications.alert(
-				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
-			)
-		}
-
-		obj.data = res.fd_data
-
-		obj.rotation =
-			res.a_orientation === 'R' ? 90 : res.a_orientation === 'I' ? 180 : res.a_orientation === 'L' ? 270 : 0
-
-		if (obj.rotation === 90 || obj.rotation === 270) {
-			obj.font_size = parseInt(res.a_height, 10)
-		} else {
-			obj.font_size = parseInt(res.a_width, 10)
-		}
-
-		obj.font_size = Math.floor(((obj.font_size / dpi) * 82) / 25.4)
-
-		storeTemplate.addObject(obj)
-	},
-	parseAFB(str: string, dpi: number) {
-		const obj = genObj({
-			name: 'block',
-			type: 'block',
-			font_size: 12,
-			font_id: storeFonts.id,
-		})
-
-		const res = regParse(
-			new RegExp(
-				this.buildRegStr(
-					this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
-					this.buildRegPath('FB', ['fb_maxWidth', 'fb_maxLines', 'fb_lineSpacing', 'fb_alignment', 'fb_hangingIndent']),
-					this.buildRegPath('A@', ['a_orientation', 'a_height', 'a_width', 'a_path']),
+					this.buildRegPath(
+						'FB',
+						['fb_maxWidth', 'fb_maxLines', 'fb_lineSpacing', 'fb_alignment', 'fb_hangingIndent'],
+						{
+							required: false,
+						}
+					),
+					this.buildRegPath('A@', ['a_orientation', 'a_height', 'a_width', 'a_path'], {
+						required: false,
+						a_orientation: 'NIRL',
+					}),
 					this.buildRegPath('FD', ['fd_data'])
 				)
 			),
@@ -151,38 +118,49 @@ export const zplParser = {
 		obj.pos_x = round(Number(res.fo_x) / dpi)
 		obj.pos_y = round(Number(res.fo_y) / dpi)
 
-		obj.rotation =
-			res.a_orientation === 'R' ? 90 : res.a_orientation === 'I' ? 180 : res.a_orientation === 'L' ? 270 : 0
-
-		if (obj.rotation === 90 || obj.rotation === 270) {
-			obj.font_size = parseInt(res.a_height, 10)
-		} else {
-			obj.font_size = parseInt(res.a_width, 10)
-		}
-		obj.font_size = Math.floor(((obj.font_size / dpi) * 82) / 25.4)
-
-		let font_name = res.a_path.split(':')?.[1]
-		let font
-		if ((font = storeFonts.findByTagFonts(font_name))) {
-			obj.font_id = font.id
-		} else if ((font = storeFonts.findByName(font_name))) {
-			obj.font_id = font.id
-		} else if ((font = storeFonts.findById(font_name))) {
-			obj.font_id = font.id
-		} else {
-			serviceNotifications.alert(
-				'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
-			)
-		}
-
-		obj.width = round(Number(res.fb_maxWidth) / dpi)
-		obj.height = round(((Number(res.fb_maxLines) * obj.font_size) / 72) * 25.4)
-
-		obj.text_align = res.fb_alignment === 'R' ? 3 : res.fb_alignment === 'C' ? 2 : 1
-
 		obj.data = res.fd_data.replace('\\&', '\n')
+
+		if (res.a) {
+			obj.rotation =
+				res.a_orientation === 'R' ? 90 : res.a_orientation === 'I' ? 180 : res.a_orientation === 'L' ? 270 : 0
+
+			let font_name = res.a_path.split(':')?.[1]
+			let font
+			if ((font = storeFonts.findByTagFonts(font_name))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findByName(font_name))) {
+				obj.font_id = font.id
+			} else if ((font = storeFonts.findById(font_name))) {
+				obj.font_id = font.id
+			} else {
+				serviceNotifications.alert(
+					'В шаблоне будет использоваться шрифт принетра по умолчанию. Если хотите изменить шрифт в текстовом элементе, выберите нужный шрифт вручную, в свойствах элемента.'
+				)
+			}
+
+			if (obj.rotation === 90 || obj.rotation === 270) {
+				obj.font_size = Number(res.a_height)
+			} else {
+				obj.font_size = Number(res.a_width)
+			}
+
+			obj.font_size = Math.floor((obj.font_size * 82) / (dpi * 25.4) - 1)
+		}
+
+		if (res.fb) {
+			obj.name = 'text'
+			obj.type = 'block'
+
+			obj.width = round(Number(res.fb_maxWidth) / dpi)
+			obj.height = round(((Number(res.fb_maxLines) * obj.font_size) / 72) * 25.4)
+
+			obj.text_align = res.fb_alignment === 'R' ? 3 : res.fb_alignment === 'C' ? 2 : 1
+		}
+		console.log(res)
+
 		storeTemplate.addObject(obj)
 	},
+
 	parseGB(str: string, dpi: number) {
 		const obj = genObj({
 			name: 'Бокс',
@@ -287,7 +265,9 @@ export const zplParser = {
 			new RegExp(
 				this.buildRegStr(
 					this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
-					this.buildRegPath('BQ', ['bg_orientation', 'bg_model', 'bg_magnification', 'bg_errorCorrection', 'bg_mask']),
+					this.buildRegPath('BQ', ['bg_orientation', 'bg_model', 'bg_magnification', 'bg_errorCorrection', 'bg_mask'], {
+						bg_orientation: 'NIRL',
+					}),
 					this.buildRegPath('FD', ['fd_data'])
 				)
 			),
@@ -332,16 +312,22 @@ export const zplParser = {
 			new RegExp(
 				this.buildRegStr(
 					this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
-					this.buildRegPath('BX', [
-						'bx_orientation',
-						'bx_height',
-						'bx_quality',
-						'bx_columns',
-						'bx_rows',
-						'bx_format',
-						'bx_escape',
-						'bx_ratio',
-					]),
+					this.buildRegPath(
+						'BX',
+						[
+							'bx_orientation',
+							'bx_height',
+							'bx_quality',
+							'bx_columns',
+							'bx_rows',
+							'bx_format',
+							'bx_escape',
+							'bx_ratio',
+						],
+						{
+							bx_orientation: 'NIRL',
+						}
+					),
 					this.buildRegPath('FD', ['fd_data'])
 				)
 			),
@@ -373,8 +359,16 @@ export const zplParser = {
 
 		obj.data = res.fd_data
 
-		const dm = storeDataMatrix._selectedDM(storeDataMatrix.findByDM(obj.name))
-		obj.radius = dm.size / dpi
+		if (!useFakeVariables().checkVarible(res.fd_data)) {
+			obj.name = res.fd_data
+		}
+		let dm = storeDataMatrix?.findByDM(obj.name)
+		if (dm) {
+			dm = storeDataMatrix?._selectedDM(dm)
+			if (dm) {
+				obj.radius = dm.size / dpi
+			}
+		}
 
 		storeTemplate.addObject(obj)
 
@@ -394,7 +388,9 @@ export const zplParser = {
 			new RegExp(
 				this.buildRegStr(
 					this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
-					this.buildRegPath('BE', ['be_orientation', 'be_height', 'be_line', 'be_lineAbove']),
+					this.buildRegPath('BE', ['be_orientation', 'be_height', 'be_line', 'be_lineAbove'], {
+						be_orientation: 'NIRL',
+					}),
 					this.buildRegPath('FD', ['fd_data'])
 				)
 			),
@@ -437,14 +433,13 @@ export const zplParser = {
 			new RegExp(
 				this.buildRegStr(
 					this.buildRegPath('FO', ['fo_x', 'fo_y', 'fo_alignment']),
-					this.buildRegPath('BC', [
-						'bc_orientation',
-						'bc_height',
-						'bc_line',
-						'bc_lineAbove',
-						'bc_checkDigit',
-						'bc_mode',
-					]),
+					this.buildRegPath(
+						'BC',
+						['bc_orientation', 'bc_height', 'bc_line', 'bc_lineAbove', 'bc_checkDigit', 'bc_mode'],
+						{
+							bc_orientation: 'NIRL',
+						}
+					),
 					this.buildRegPath('FD', ['fd_data'])
 				)
 			),

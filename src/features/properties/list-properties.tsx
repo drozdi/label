@@ -151,7 +151,7 @@ export const ListProperties = observer(() => {
 					edit
 					label='Размер:'
 					value={current.font_size}
-					unit='pt'
+					unit='px'
 					onChange={v => {
 						storeTemplate.setFontSize(v)
 						history.appendDebounce(storeTemplate.objects, `Размер текста "${current?.name}": ${v}`)

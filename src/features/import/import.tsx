@@ -38,7 +38,7 @@ export const Import = observer(() => {
 				tsplParser.parse(refText.current.value, Number(dpi))
 			}
 			storeTemplate.loadObjects([...storeTemplate.objects])
-			storeApp.setImportFlag(false)
+			//storeApp.setImportFlag(false)
 		} catch (e) {
 			console.error(e)
 			serviceNotifications.error(e.message)

@@ -38,7 +38,7 @@ export class TextElement extends BaseElement implements IObject {
 	style(scale = 1) {
 		return {
 			...super.style(scale),
-			width: getTextWidth((this.data || '') + ' ', `${this.font_size * scale}pt ${this.fontFamily}`),
+			width: getTextWidth((this.data || '') + ' ', `${this.font_size * scale}px ${this.fontFamily}`),
 		}
 	}
 }

@@ -161,7 +161,7 @@ export class BaseElement implements IObject {
 			top: round(top),
 			width: width === 'auto' ? 'auto' : round(width),
 			height: height === 'auto' ? 'auto' : round(height),
-			fontSize: this.font_size * scale + 'pt',
+			fontSize: this.font_size * scale,
 			justifyContent: this.text_align === 2 ? 'center' : this.text_align === 3 ? 'flex-end' : 'flex-start',
 			rotate: this.rotation + 'deg',
 			opacity: this.enabled ? '' : 0.2,

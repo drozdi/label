@@ -1,5 +1,6 @@
 import bwipjs from 'bwip-js'
 import { useEffect, useRef } from 'react'
+import { useFakeVariables } from '../../shared/hooks'
 import { minMax, round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
@@ -39,10 +40,7 @@ export class BarcodeElement extends BaseElement implements IObject {
 			margin: 0,
 			lineHeight: 1,
 		}
-
-		// console.log(this.width)
-		// console.log(this.width * this.mm)
-		// console.log({ ...this })
+		const { getFake } = useFakeVariables()
 
 		useEffect(() => {
 			try {
@@ -62,7 +60,7 @@ export class BarcodeElement extends BaseElement implements IObject {
 					// ref.current.innerHTML = svg
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: this.code_type,
-						text: this.data,
+						text: getFake(this.data),
 						scaleX: this.width,
 						scaleY: 2,
 						height: round(this.height + 1) * 2,
@@ -80,7 +78,7 @@ export class BarcodeElement extends BaseElement implements IObject {
 						bcid: this.code_type,
 						width: round(this.width),
 						height: round(this.height),
-						text: this.data,
+						text: getFake(this.data),
 					})
 				}
 			} catch (e) {
