@@ -148,6 +148,7 @@ export class BarcodeElement extends BaseElement implements IObject {
 		} else if (this.code_type === 'ean13' || this.code_type === 'code128') {
 			style.width = 'auto'
 			style.height = 'auto'
+			style.transform = `scaleX(${25.4 / 25})`
 		}
 		style.outline = 0
 		style.borderRadius = 0

@@ -3,6 +3,7 @@ import { storeFonts } from '../../../entites/fonts/store'
 import { storeImages } from '../../../entites/images/store'
 import { storeTemplate } from '../../../entites/template/store'
 import { serviceNotifications } from '../../../services/notifications/service'
+import { round } from '../../../shared/utils'
 import { genObj, parseSplit, regParse } from './base'
 
 export const ezplParser = {
@@ -21,12 +22,12 @@ export const ezplParser = {
 		while (i < count) {
 			if (/^Q/.test(arr[i])) {
 				let s = parseSplit(arr[i].replace(/^Q/, ''))
-				s[0] && storeTemplate.changeHeight(parseInt(s[0], 10))
-				s[1] && storeTemplate.changeGap(parseInt(s[1], 10))
+				s[0] && storeTemplate.changeHeight(parseInt(s[0]))
+				s[1] && storeTemplate.changeGap(parseInt(s[1]))
 			} else if (/^W/.test(arr[i])) {
-				storeTemplate.changeWidth(parseInt(arr[i].replace(/^W/, ''), 10))
+				storeTemplate.changeWidth(parseInt(arr[i].replace(/^W/, '')))
 			} else if (/^R/.test(arr[i])) {
-				storeTemplate.changeRefX(parseInt(arr[i].replace(/^R/, ''), 10))
+				storeTemplate.changeRefX(parseInt(arr[i].replace(/^R/, '')))
 			} else if (/^L/.test(arr[i])) {
 				this.parseContent(arr[i].replace(/^L/, ''), dpi)
 			} else {
@@ -105,8 +106,8 @@ export const ezplParser = {
 			}
 		)
 
-		obj.pos_x = res.x / storeTemplate.dpi
-		obj.pos_y = res.y / storeTemplate.dpi
+		obj.pos_x = round(Number(res.x) / dpi)
+		obj.pos_y = round(Number(res.y) / dpi)
 		obj.rotation = res.r === '3' ? 270 : res.r === '2' ? 180 : res.r === '1' ? 90 : 0
 		obj.data = res.data
 
@@ -156,8 +157,9 @@ export const ezplParser = {
 											? 30
 											: 12
 
-		obj.pos_x = res.x / storeTemplate.dpi
-		obj.pos_y = res.y / storeTemplate.dpi
+		obj.pos_x = round(Number(res.x) / dpi)
+		obj.pos_y = round(Number(res.y) / dpi)
+
 		obj.rotation =
 			res.r === '3' || res.r === '7'
 				? 270
@@ -166,6 +168,7 @@ export const ezplParser = {
 					: res.r === '1' || res.r === '5'
 						? 90
 						: 0
+
 		obj.data = res.data
 
 		serviceNotifications.alert(
@@ -194,10 +197,10 @@ export const ezplParser = {
 			}
 		)
 
-		obj.pos_x = res.x / storeTemplate.dpi
-		obj.pos_y = res.y / storeTemplate.dpi
-		obj.width = res.w / storeTemplate.dpi
-		obj.height = res.h / storeTemplate.dpi
+		obj.pos_x = round(Number(res.x) / dpi)
+		obj.pos_y = round(Number(res.y) / dpi)
+		obj.width = round(Number(res.w) / dpi)
+		obj.height = round(Number(res.h) / dpi)
 
 		obj.rotation = res.r === '3' ? 270 : res.r === '2' ? 180 : res.r === '1' ? 90 : 0
 
@@ -225,15 +228,15 @@ export const ezplParser = {
 			}
 		)
 
-		obj.pos_x = parseInt(res.x, 10) / storeTemplate.dpi
-		obj.pos_y = parseInt(res.y, 10) / storeTemplate.dpi
-		obj.width = parseInt(res.enlarge.replace(/[^\d]/, ''), 10)
+		obj.pos_x = round(Number(res.x) / dpi)
+		obj.pos_y = round(Number(res.y) / dpi)
+		obj.width = Number(res.enlarge.replace(/[^\d]/, ''))
 		obj.height = obj.width
 		obj.rotation = res.rotation === '3' ? 270 : res.rotation === '2' ? 180 : res.rotation === '1' ? 90 : 0
 
 		const dm = storeDataMatrix._selectedDM(storeDataMatrix.findByDM(obj.name))
 
-		obj.radius = dm.size / storeTemplate.dpi
+		obj.radius = dm.size / dpi
 
 		obj.data = body || res.data
 
@@ -250,8 +253,8 @@ export const ezplParser = {
 
 		const res = regParse(/(?:Y)?(?<x>[0-9]*),(?<y>[0-9]*),(?<data>.*)/, str, {})
 
-		obj.pos_x = parseInt(res.x, 10) / storeTemplate.dpi
-		obj.pos_y = parseInt(res.y, 10) / storeTemplate.dpi
+		obj.pos_x = round(Number(res.x) / dpi)
+		obj.pos_y = round(Number(res.y) / dpi)
 
 		let image
 		if ((image = storeImages.findByTagImages(res.data))) {
@@ -283,8 +286,8 @@ export const ezplParser = {
 			}
 		)
 
-		const p1 = [parseInt(res.x, 10) / storeTemplate.dpi, parseInt(res.y, 10) / storeTemplate.dpi]
-		const p2 = [parseInt(res.x1, 10) / storeTemplate.dpi, parseInt(res.y1, 10) / storeTemplate.dpi]
+		const p1 = [round(Number(res.x) / dpi), round(Number(res.y) / dpi)]
+		const p2 = [round(Number(res.x1) / dpi), round(Number(res.y1) / dpi)]
 
 		obj.pos_x = Math.min(p1[0], p2[0])
 		obj.pos_y = Math.min(p1[1], p2[1])
@@ -295,9 +298,9 @@ export const ezplParser = {
 		const dx = Math.abs(x - obj.pos_x)
 		const dy = Math.abs(y - obj.pos_y)
 
-		obj.width = obj.pos_x + (y === 0 || dy === 0 ? dx : parseInt(res.n, 10) / storeTemplate.dpi)
+		obj.width = obj.pos_x + (y === 0 || dy === 0 ? dx : round(Number(res.n) / dpi))
 		obj.height = obj.pos_y
-		obj.line_thickness = x === 0 || dx === 0 ? dy : parseInt(res.n, 10) / storeTemplate.dpi
+		obj.line_thickness = x === 0 || dx === 0 ? dy : round(Number(res.n) / dpi)
 	},
 	barcodeElement(obj: Record<string, any>, str: string, type: string, dpi: number) {
 		const res = regParse(
@@ -317,13 +320,13 @@ export const ezplParser = {
 			}
 		)
 
-		obj.pos_x = parseInt(res.x, 10) / storeTemplate.dpi
-		obj.pos_y = parseInt(res.y, 10) / storeTemplate.dpi
+		obj.pos_x = round(Number(res.x) / dpi)
+		obj.pos_y = round(Number(res.y) / dpi)
 
-		obj.width = parseInt(res.wide, 10)
-		obj.height = parseInt(res.height, 10) / storeTemplate.dpi
+		obj.width = Number(res.wide)
+		obj.height = round(Number(res.height) / dpi)
 
-		obj.human_readable = parseInt(res.readable, 10)
+		obj.human_readable = Number(res.readable)
 		obj.human_readable =
 			res.readable === '1' || res.readable === '2'
 				? 1
@@ -374,10 +377,10 @@ export const ezplParser = {
 			}
 		)
 
-		obj.pos_x = parseInt(res.x, 10) / storeTemplate.dpi
-		obj.pos_y = parseInt(res.y, 10) / storeTemplate.dpi
+		obj.pos_x = round(Number(res.x) / dpi)
+		obj.pos_y = round(Number(res.y) / dpi)
 		obj.rotation = res.roatae === '3' ? 270 : res.roatae === '2' ? 180 : res.roatae === '1' ? 90 : 0
-		obj.width = parseInt(res.mul, 10) + 4
+		obj.width = Number(res.mul) + 4
 		obj.height = obj.width
 		obj.data = body
 	},

@@ -6,7 +6,7 @@ import { storeTemplate } from '../../../entites/template/store'
 import { serviceNotifications } from '../../../services/notifications/service'
 import { KEY_API_HOST, URL_API } from '../../../shared/constants'
 import { round } from '../../../shared/utils'
-import { genObj, parseSplit, regParse, setDirection, setGap, setReference, setSize } from './base'
+import { genObj, parseSplit, regParse } from './base'
 
 const _cost = (localStorage.getItem(KEY_API_HOST) || URL_API) === URL_API
 
@@ -43,20 +43,47 @@ export const tsplParser = {
 		})
 	},
 	parseDIRECTION(str: string, dpi: number) {
-		const arr = parseSplit(str).map(v => Number(v.trim()))
-		setDirection(...arr)
+		const [x, y] = parseSplit(str).map(v => parseInt(v.trim()))
+		if (x < 0 || x > 1) {
+			throw new Error(
+				`Неверное значение значение derection по x-координате. Допускается 0 или 1. Вы аытаетесь записать значение ${x} в шаблон`
+			)
+		}
+		if (y < 0 || y > 1) {
+			throw new Error(
+				`Неверное значение значение derection по y-координате. Допускается 0 или 1. Вы аытаетесь записать значение ${y} в шаблон`
+			)
+		}
+		storeTemplate.changeDirection1(x)
+		//storeTemplate.changeDirection2(y);
 	},
 	parseSIZE(str: string, dpi: number) {
-		const arr = parseSplit(str).map(v => parseInt(v, 10))
-		setSize(...arr)
+		const [w, h] = parseSplit(str).map(v => parseInt(v))
+		if (w < 15 || w > 150) {
+			throw new Error(
+				`Неверное значение ширины. Нижний порог ширины 15мм, верхний 150мм. Вы пытаетесь записать значение ${w}`
+			)
+		}
+		if (h < 15 || h > 400) {
+			throw new Error(
+				`Неверное значение высоты. Нижний порог высоты 15мм, верхний 150мм. Вы пытаетесь записать значение ${h}`
+			)
+		}
+		storeTemplate.changeWidth(w)
+		storeTemplate.changeHeight(h)
 	},
 	parseGAP(str: string, dpi: number) {
-		const arr = parseSplit(str).map(v => parseInt(v, 10))
-		setGap(...arr)
+		const [gap] = parseSplit(str).map(v => parseInt(v))
+
+		if (gap < 0 || gap > 30) {
+			throw new Error(`Неверное значение gap.`)
+		}
+		storeTemplate.changeGap(gap)
 	},
 	parseREFERENCE(str: string, dpi: number) {
-		const arr = parseSplit(str).map(v => parseInt(v, 10))
-		setReference(...arr)
+		const [x, y] = parseSplit(str).map(v => parseInt(v))
+		storeTemplate.changeRefX(x)
+		storeTemplate.changeRefY(y)
 	},
 	parseDMATRIX(str: string, dpi: number) {
 		storeApp?.setDataMatrixFlag(true)
@@ -87,28 +114,31 @@ export const tsplParser = {
 			}
 		)
 
-		obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
-		obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
-		obj.width = parseInt(res.width, 10) / storeTemplate.dpi
-		obj.height = parseInt(res.height, 10) / storeTemplate.dpi
+		obj.pos_x = round(Number(res.pos_x) / dpi)
+		obj.pos_y = round(Number(res.pos_y) / dpi)
+		obj.width = round(Number(res.width) / dpi)
+		obj.height = round(Number(res.height) / dpi)
 
 		if (res.x) {
-			obj.width = parseInt(res.x, 10)
+			obj.width = Number(res.x)
 		} else {
 			obj.width = 6
 		}
 		if (res.r) {
-			obj.rotation = parseInt(res.r, 10) || 0
+			obj.rotation = Number(res.r) || 0
 		}
-		if (res.row) {
-			obj.width = parseInt(res.row, 10)
+		// if (res.row) {
+		// 	obj.width = Number(res.row)
+		// }
+		if (res.col) {
+			obj.height = Number(res.col)
 		}
 
 		obj.data = res.data
 
 		const dm = storeDataMatrix._selectedDM(storeDataMatrix.findByDM(obj.name))
 
-		obj.radius = dm.size / storeTemplate.dpi
+		obj.radius = dm.size / dpi
 		obj.height = obj.width
 
 		storeTemplate.addObject(obj)
@@ -138,8 +168,8 @@ export const tsplParser = {
 			}
 		)
 
-		obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
-		obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
+		obj.pos_x = round(Number(res.pos_x) / dpi)
+		obj.pos_y = round(Number(res.pos_y) / dpi)
 
 		let font
 		if ((font = storeFonts.findByTagFonts(res.font))) {
@@ -154,12 +184,12 @@ export const tsplParser = {
 			)
 		}
 
-		obj.rotation = parseInt(res.rotation, 10)
+		obj.rotation = Number(res.rotation)
 
 		if (obj.rotation === 90 || obj.rotation === 270) {
-			obj.font_size = parseInt(res.y_multiplication, 10)
+			obj.font_size = Number(res.y_multiplication)
 		} else {
-			obj.font_size = parseInt(res.x_multiplication, 10)
+			obj.font_size = Number(res.x_multiplication)
 		}
 		obj.font_size = Math.floor((obj.font_size * dpi) / 12)
 
@@ -193,16 +223,11 @@ export const tsplParser = {
 			}
 		)
 
-		obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
-		obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
+		obj.pos_x = round(Number(res.pos_x) / dpi)
+		obj.pos_y = round(Number(res.pos_y) / dpi)
 
-		if (_cost) {
-			obj.width = round(parseInt(res.width - res.pos_x, 10) / storeTemplate.dpi)
-			obj.height = round(parseInt(res.height - res.pos_y, 10) / storeTemplate.dpi)
-		} else {
-			obj.width = round(parseInt(res.width, 10) / storeTemplate.dpi)
-			obj.height = round(parseInt(res.height, 10) / storeTemplate.dpi)
-		}
+		obj.width = round(Number(res.width) / dpi)
+		obj.height = round(Number(res.height) / dpi)
 
 		let font
 		if ((font = storeFonts.findByTagFonts(res.font))) {
@@ -217,15 +242,17 @@ export const tsplParser = {
 			)
 		}
 
-		obj.rotation = parseInt(res.rotation ?? 0, 10)
+		obj.rotation = Number(res.rotation ?? 0)
 
 		if (obj.rotation === 90 || obj.rotation === 270) {
-			obj.font_size = parseInt(res.y_multiplication, 10)
+			obj.font_size = Number(res.y_multiplication)
 		} else {
-			obj.font_size = parseInt(res.x_multiplication, 10)
+			obj.font_size = Number(res.x_multiplication)
 		}
 
-		obj.text_align = parseInt(res.alignment ?? 0, 10)
+		obj.font_size = Math.floor((obj.font_size * dpi) / 12)
+
+		obj.text_align = Number(res.alignment ?? 0)
 		obj.data = res.data
 
 		storeTemplate.addObject(obj)
@@ -262,12 +289,12 @@ export const tsplParser = {
 			throw new Error('Найдена ошибка в типе barcode')
 		}
 
-		obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi //0
-		obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi //1
-		obj.height = parseInt(res.height, 10) / storeTemplate.dpi //3
-		obj.human_readable = parseInt(res.human_readable, 10)
-		obj.rotation = parseInt(res.rotation, 10) //5
-		obj.width = parseInt(res.wide, 10) //7
+		obj.pos_x = Number(res.pos_x) / dpi //0
+		obj.pos_y = Number(res.pos_y) / dpi //1
+		obj.height = Number(res.height) / dpi //3
+		obj.human_readable = Number(res.human_readable)
+		obj.rotation = Number(res.rotation) //5
+		obj.width = Number(res.wide) //7
 
 		obj.data = res.data
 
@@ -298,12 +325,12 @@ export const tsplParser = {
 			}
 		)
 
-		obj.pos_x = parseInt(res.pos_x, 10) / storeTemplate.dpi
-		obj.pos_y = parseInt(res.pos_y, 10) / storeTemplate.dpi
-		obj.width = parseInt(res.cell, 10) + 4
+		obj.pos_x = round(Number(res.pos_x) / dpi)
+		obj.pos_y = round(Number(res.pos_y) / dpi)
+		obj.width = round(Number(res.cell) + 4)
 		obj.height = obj.width
 
-		obj.rotation = parseInt(res.rotation, 10)
+		obj.rotation = Number(res.rotation)
 
 		obj.data = res.data
 
@@ -329,8 +356,8 @@ export const tsplParser = {
 			}
 		)
 
-		obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
-		obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
+		obj.pos_x = round(Number(res.pos_x) / dpi)
+		obj.pos_y = round(Number(res.pos_y) / dpi)
 
 		let image
 		if ((image = storeImages.findByTagImages(res.data))) {
@@ -357,12 +384,12 @@ export const tsplParser = {
 			{ pos_x: 0, pos_y: 0, x_end: 0, y_end: 0, line_thickness: 1, radius: 0 }
 		)
 
-		obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
-		obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
-		obj.width = round(Math.abs(parseInt(res.pos_x, 10) - parseInt(res.x_end, 10)) / storeTemplate.dpi)
-		obj.height = round(Math.abs(parseInt(res.pos_y, 10) - parseInt(res.y_end, 10)) / storeTemplate.dpi)
-		obj.line_thickness = round(parseInt(res.line_thickness, 10) / storeTemplate.dpi)
-		obj.radius = parseInt(res.radius ?? 0, 10)
+		obj.pos_x = round(Number(res.pos_x) / dpi)
+		obj.pos_y = round(Number(res.pos_y) / dpi)
+		obj.width = round(Math.abs(Number(res.pos_x) - Number(res.x_end)) / dpi)
+		obj.height = round(Math.abs(Number(res.pos_y) - Number(res.y_end)) / dpi)
+		obj.line_thickness = round(Number(res.line_thickness) / dpi)
+		obj.radius = Number(res.radius ?? 0, 10)
 
 		storeTemplate.addObject(obj)
 	},
@@ -378,11 +405,11 @@ export const tsplParser = {
 			{ pos_x: 0, pos_y: 0, width: 0, height: 0 }
 		)
 
-		obj.pos_x = round(parseInt(res.pos_x, 10) / storeTemplate.dpi)
-		obj.pos_y = round(parseInt(res.pos_y, 10) / storeTemplate.dpi)
-		obj.width = obj.pos_x + round(parseInt(res.width, 10) / storeTemplate.dpi)
+		obj.pos_x = round(Number(res.pos_x) / dpi)
+		obj.pos_y = round(Number(res.pos_y) / dpi)
+		obj.width = obj.pos_x + round(Number(res.width) / dpi)
 		obj.height = obj.pos_y
-		obj.line_thickness = round(parseInt(res.height, 10) / storeTemplate.dpi)
+		obj.line_thickness = round(Number(res.height) / dpi)
 
 		storeTemplate.addObject(obj)
 	},
