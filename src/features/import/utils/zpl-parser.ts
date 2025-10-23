@@ -9,6 +9,11 @@ import { genObj, regParse } from './base'
 
 export const zplParser = {
 	fontSize: 12,
+	_back: undefined,
+	back(fn?: Function) {
+		this._back?.()
+		this._back = fn
+	},
 	buildRegPath(key: string, paths: string[], options: Record<string, any> = {}): string {
 		const opts: Record<string, any> = {
 			required: true,
@@ -39,10 +44,7 @@ export const zplParser = {
 			.map(item => item.trim())
 			.filter(item => item)
 		lines.forEach(line => {
-			console.log(line)
-			if (/\^A/.test(line)) {
-				this.changeA(line, dpi)
-			} else if (/\^GB/.test(line)) {
+			if (/\^GB/.test(line)) {
 				this.parseGB(line, dpi)
 			} else if (/\^XG/.test(line)) {
 				this.parseXG(line, dpi)
@@ -56,20 +58,27 @@ export const zplParser = {
 				this.parseBC(line, dpi)
 			} else if (/\^FD/.test(line)) {
 				this.parseText(line, dpi)
+			} else if (/\^A/.test(line)) {
+				this.changeA(line, dpi)
+			} else if (/\^CF/.test(line)) {
+				this.changeСF(line, dpi)
 			}
 		})
 	},
 	changeA(str: string, dpi: number) {
 		const res = regParse(new RegExp(this.buildRegPath('A', ['a_f', 'a_h', 'a_w', 'a_ff'])), str, {})
+		const oldFontSize = this.fontSize
+		this.back(() => {
+			this.fontSize = oldFontSize
+		})
 		this.fontSize = Number(res.a_h)
-		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) / 2)
+		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) - 1)
 	},
 	changeСF(str: string, dpi: number) {
 		const res = regParse(new RegExp(this.buildRegPath('CF', ['cf_f', 'cf_h', 'cf_w'])), str, {})
 		this.fontSize = Number(res.cf_h)
-		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) / 2)
+		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) - 1)
 	},
-
 	parseText(str: string, dpi: number) {
 		const obj = genObj({
 			name: 'text',
@@ -146,7 +155,6 @@ export const zplParser = {
 
 			obj.font_size = Math.floor((obj.font_size * 82) / (dpi * 25.4) - 1)
 		}
-
 		if (res.fb) {
 			obj.name = 'text'
 			obj.type = 'block'
@@ -156,11 +164,9 @@ export const zplParser = {
 
 			obj.text_align = res.fb_alignment === 'R' ? 3 : res.fb_alignment === 'C' ? 2 : 1
 		}
-		console.log(res)
-
 		storeTemplate.addObject(obj)
+		this.back()
 	},
-
 	parseGB(str: string, dpi: number) {
 		const obj = genObj({
 			name: 'Бокс',

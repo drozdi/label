@@ -5,6 +5,7 @@ import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { serviceNotifications } from '../../services/notifications/service'
 import { ezplParser } from './utils/ezpl-parser'
+import { jsonParaser } from './utils/json-parser'
 import { tsplParser } from './utils/tspl-parser'
 import { zplParser } from './utils/zpl-parser'
 
@@ -30,7 +31,9 @@ export const Import = observer(() => {
 		}
 		storeTemplate.clear()
 		try {
-			if (zplParser.test(refText.current.value)) {
+			if (jsonParaser.test(refText.current.value)) {
+				jsonParaser.parse(refText.current.value, Number(dpi))
+			} else if (zplParser.test(refText.current.value)) {
 				zplParser.parse(refText.current.value, Number(dpi))
 			} else if (ezplParser.test(refText.current.value)) {
 				ezplParser.parse(refText.current.value, Number(dpi))
@@ -38,7 +41,7 @@ export const Import = observer(() => {
 				tsplParser.parse(refText.current.value, Number(dpi))
 			}
 			storeTemplate.loadObjects([...storeTemplate.objects])
-			//storeApp.setImportFlag(false)
+			storeApp.setImportFlag(false)
 		} catch (e) {
 			console.error(e)
 			serviceNotifications.error(e.message)

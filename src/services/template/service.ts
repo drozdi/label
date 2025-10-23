@@ -1,7 +1,7 @@
 import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { storeTemplates } from '../../entites/templates/store'
-import { DEF_TEMPLATE } from '../../shared/constants'
+import { DEF_TEMPLATE, NEW_TEMPLATE_NAME } from '../../shared/constants'
 import { genId, round } from '../../shared/utils'
 import { useHistory } from '../history/hooks/use-history'
 import { serviceNotifications } from '../notifications/service'
@@ -22,6 +22,19 @@ export const serviceTemplate = {
 		this.copyStack = []
 		this.indexPaste = 1
 		this.copyOffset = 5
+	},
+
+	async newName() {
+		storeTemplates.clear()
+		await storeTemplates.load(true)
+		let prefix = -1
+		storeTemplates.list.map(template => {
+			const res = new RegExp(NEW_TEMPLATE_NAME + ' *(?<n>[0-9]*)').exec(template.name)
+			if (res) {
+				prefix = Math.max(prefix, Number(res.groups.n) || 0)
+			}
+		})
+		return NEW_TEMPLATE_NAME + (prefix > -1 ? ` ${prefix + 1}` : '')
 	},
 
 	setName(v) {

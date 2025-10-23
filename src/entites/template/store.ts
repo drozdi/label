@@ -141,6 +141,7 @@ class StoreTemplate {
 		while (this.objects.length) {
 			this.objects.pop()
 		}
+		this.selected = []
 		this.objects = []
 		objects.forEach(object => {
 			this.objects.push(factoryElement(object))
@@ -159,6 +160,7 @@ class StoreTemplate {
 		this.reference_x = template.reference_x
 		this.reference_y = template.reference_y
 		this.applicator_ezpl = template.applicator_ezpl
+		this.dpi = template.dpi ?? this.dpi
 		this.loadObjects(template.objects || [])
 	}
 	clear(all: boolean = true) {
