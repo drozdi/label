@@ -42,8 +42,11 @@ export const Templates = observer(() => {
 			labels: { confirm: 'Удалить шаблон', cancel: 'Нет' },
 			//onCancel: () => console.log('Cancel'),
 			onConfirm: async () => {
-				await storeTemplates.deleteTemplate(templateSelected.id)
-				if (storeTemplate.id === templateSelected.id) {
+				const id = templateSelected.id
+				if (!(await storeTemplates.deleteTemplate(id))) {
+					return
+				}
+				if (storeTemplate.id === id) {
 					storeTemplate.id = 0
 				}
 			},
@@ -57,6 +60,8 @@ export const Templates = observer(() => {
 		})
 	}
 
+	console.log(templateSelected)
+
 	return (
 		<Layout
 			style={{
@@ -64,7 +69,7 @@ export const Templates = observer(() => {
 			}}
 			leftSection={<ContainerTemplate />}
 			rightSection={
-				(templateSelected?.id || 0) > 0 && (
+				(templateSelected?.id ?? 0) > 0 && (
 					<Stack p='xs'>
 						<Button variant='outline' onClick={handleSelect}>
 							Выбрать

@@ -1,4 +1,4 @@
-import { api } from '../../services/api'
+import { api } from '../../shared/api'
 
 export async function requestPrinterPing(data: { host: string; port: number; type_printer: string }) {
 	const res = await api.post('/trial_printing/ping', data)

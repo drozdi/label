@@ -1,4 +1,4 @@
-import { api } from '../../services/api'
+import { api } from '../../shared/api'
 
 export async function requestDataMatrixList() {
 	const res = await api.get('/template_list/dm')

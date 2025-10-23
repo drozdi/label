@@ -57,6 +57,7 @@ class StoreTemplates implements IStoreTemplates {
 		this.error = ''
 		try {
 			const res = await requestTemplateId(id)
+			console.log(res)
 			this.selected = new Preview(res)
 		} catch (e) {
 			console.error(e)
@@ -72,6 +73,7 @@ class StoreTemplates implements IStoreTemplates {
 		try {
 			await requestTemplateDelete(id)
 			this.load(true)
+			return true
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'
@@ -79,6 +81,7 @@ class StoreTemplates implements IStoreTemplates {
 		} finally {
 			this.isLoading = false
 		}
+		return false
 	}
 	async newTemplate(template) {
 		this.isLoading = true

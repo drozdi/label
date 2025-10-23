@@ -1,4 +1,4 @@
-import { api } from '../../services/api'
+import { api } from '../../shared/api'
 
 // Получить все изображения
 export async function requestIimagesList({ size = 100, number = 0 }: IRequestImage = {}): Promise<{
