@@ -152,7 +152,6 @@ export const serviceTemplate = {
 	async handleNew(template) {
 		try {
 			const res = await storeTemplates.newTemplate(template)
-			console.log(res)
 			storeTemplate.loadTemplate(res.data)
 			serviceNotifications.success('Шаблон успешно сохранён')
 			storeApp.setErrorName(false)

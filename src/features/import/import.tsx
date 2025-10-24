@@ -34,7 +34,7 @@ export const Import = observer(() => {
 			if (jsonParaser.test(refText.current.value)) {
 				jsonParaser.parse(refText.current.value, Number(dpi))
 			} else if (zplParser.test(refText.current.value)) {
-				zplParser.parse(refText.current.value, Number(dpi))
+				zplParser.parse(refText.current.value, (Number(dpi) * 25) / 25.4)
 			} else if (ezplParser.test(refText.current.value)) {
 				ezplParser.parse(refText.current.value, Number(dpi))
 			} else if (tsplParser.test(refText.current.value)) {

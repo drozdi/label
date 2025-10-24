@@ -5,7 +5,7 @@ import { storeTemplate } from '../../../entites/template/store'
 import { serviceNotifications } from '../../../services/notifications/service'
 import { useFakeVariables } from '../../../shared/hooks'
 import { round } from '../../../shared/utils'
-import { genObj, regParse } from './base'
+import { buildRegPath, genObj, regParse } from './base'
 
 export const zplParser = {
 	fontSize: 12,
@@ -15,20 +15,16 @@ export const zplParser = {
 		this._back = fn
 	},
 	buildRegPath(key: string, paths: string[], options: Record<string, any> = {}): string {
-		const opts: Record<string, any> = {
+		return buildRegPath(`\\\^${key}`, paths, {
 			required: true,
-			...options,
-		}
-		return (
-			`(?<${key.toLowerCase().replace(/[^a-z]/g, '')}>${opts.required ? '' : '(:?'}\\\^${key}${opts.required ? '' : ')?'}${paths.length > 1 ? '(?:' : ''}` +
-			paths
-				.map(path => {
-					return `(?<${path}>[${(opts?.[path] ?? (paths.length > 1 ? '\^,' : '') + '\^\\\^') + ']*'})`
+			allowEmpty: true,
+			separator: ',',
+			...Object.fromEntries(
+				Object.entries(options).map(([key, val]) => {
+					return [key, ['required', 'allowEmpty', 'separator'].includes(key) ? val : `[${val}]`]
 				})
-				.join(')?(?:,') +
-			'' +
-			(paths.length > 1 ? ')?)' : ')')
-		)
+			),
+		})
 	},
 	buildRegStr(...args: any[]): string {
 		return args.join('') + '(?:\\\^FS)?'
@@ -72,12 +68,12 @@ export const zplParser = {
 			this.fontSize = oldFontSize
 		})
 		this.fontSize = Number(res.a_h)
-		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) - 1)
+		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25.4) - 1)
 	},
 	changeСF(str: string, dpi: number) {
 		const res = regParse(new RegExp(this.buildRegPath('CF', ['cf_f', 'cf_h', 'cf_w'])), str, {})
 		this.fontSize = Number(res.cf_h)
-		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25) - 1)
+		this.fontSize = Math.round((this.fontSize * 82) / (dpi * 25.4) - 1)
 	},
 	parseText(str: string, dpi: number) {
 		const obj = genObj({
@@ -88,6 +84,7 @@ export const zplParser = {
 			font_size: this.fontSize,
 			font_id: storeFonts.id,
 		})
+
 		const res = regParse(
 			new RegExp(
 				this.buildRegStr(

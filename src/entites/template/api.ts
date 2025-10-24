@@ -37,4 +37,5 @@ export async function requestTemplateDelete(id: number | number[]) {
 		data: { id_label: [].concat(id as never | never[]) },
 	}
 	const res = await api(deleteTemplate)
+	return res.data
 }

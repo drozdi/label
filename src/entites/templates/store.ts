@@ -57,7 +57,6 @@ class StoreTemplates implements IStoreTemplates {
 		this.error = ''
 		try {
 			const res = await requestTemplateId(id)
-			console.log(res)
 			this.selected = new Preview(res)
 		} catch (e) {
 			console.error(e)
@@ -103,9 +102,12 @@ class StoreTemplates implements IStoreTemplates {
 		this.isLoading = true
 		this.error = ''
 		try {
-			const deleteObjects = this.selected?.objects?.map(item => item.id) ?? []
+			const orig = await this.findById(template.id)
+
+			const deleteObjects = orig?.objects?.map(item => item.id) ?? []
 			const newObjects = []
 			const updateObjects = []
+
 			template.objects.forEach(item => {
 				let index = -1
 				if ((index = deleteObjects.findIndex(id => String(id) === String(item.id))) > -1) {
@@ -178,6 +180,9 @@ class StoreTemplates implements IStoreTemplates {
 		} finally {
 			this.isLoading = false
 		}
+	}
+	async findById(id: number | string) {
+		return await requestTemplateId(id)
 	}
 }
 
