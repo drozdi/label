@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu } = require('electron')
+const { app, netLog, BrowserWindow, Tray, Menu } = require('electron')
 const { spawn } = require('child_process')
 const path = require('path')
 
@@ -113,7 +113,9 @@ if (!gotTheLock) {
 		})
 	}
 
-	app.whenReady().then(() => {
+	//app.commandLine.appendSwitch('log-net-log', path.join(__dirname, 'net-logs.json'))
+
+	app.whenReady().then(async () => {
 		startServer()
 		createWindow()
 		createTray()
@@ -123,6 +125,11 @@ if (!gotTheLock) {
 				createWindow()
 			}
 		})
+
+		await netLog.startLogging(path.join(__dirname, 'net-logs.json'), {
+			captureMode: 'default',
+		})
+		console.log('Логирование сетевых запросов начато')``
 	})
 
 	app.on('window-all-closed', () => {
@@ -137,7 +144,10 @@ if (!gotTheLock) {
 			}
 		}
 	})
-
+	app.on('before-quit', async () => {
+		const path = await netLog.stopLogging()
+		console.log('Сетевые логи сохранены в:', path)
+	})
 	app.on('will-quit', () => {
 		if (serverProcess) {
 			serverProcess.kill()
