@@ -15,7 +15,6 @@ serverApp.use(cors())
 serverApp.use(express.static(path.join(__dirname, 'dist')))
 
 router.post('/log', async (req, res) => {
-	console.log(path.join(__dirname, 'log.txt'), req.body.message)
 	try {
 		fs.appendFile(path.join(__dirname, 'log.txt'), req.body.message + '\n', () => {
 			try {
@@ -27,7 +26,6 @@ router.post('/log', async (req, res) => {
 			}
 		})
 	} catch (error) {
-		console.log(error)
 		res.status(500).send({
 			message: 'На сервере произошла ошибка. Попробуйте позже',
 		})
