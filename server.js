@@ -16,7 +16,7 @@ serverApp.use(express.static(path.join(__dirname, 'dist')))
 
 router.post('/log', async (req, res) => {
 	try {
-		fs.appendFile(path.join(__dirname, 'log.txt'), req.body.message + '\n', () => {
+		fs.appendFile(path.join(__dirname, 'api.log'), req.body.message + '\n', () => {
 			try {
 				res.status(200).send({
 					message: 'Сообщение успешно отправлено',

@@ -1,3 +1,0 @@
-2025-10-27 11:23:13 api error: get /fonts/ {"size":100,"number":0} | undefined: timeout of 5000ms exceeded
-2025-10-27 11:23:07 start
-2025-10-27 11:23:22 start
