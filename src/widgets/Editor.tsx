@@ -1,4 +1,4 @@
-import { Divider, Group, Tabs, Text } from '@mantine/core'
+import { Divider, Group, Stack, Tabs, Text } from '@mantine/core'
 
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
@@ -43,16 +43,18 @@ export const Editor = observer(() => {
 
 	return (
 		<>
-			<Group p='xs' justify='space-between'>
-				<Group>
-					<ToolbarRotate />
-					<Divider orientation='vertical' />
-					<ToolbarTemplate />
+			<Stack p='xs' pt='0'>
+				<Group justify='space-between'>
+					<Group>
+						<ToolbarRotate />
+						<Divider orientation='vertical' />
+						<ToolbarTemplate />
+					</Group>
+					<ToolbarLabel />
+					<ToolbarGuideLine />
+					<ToolbarHistory />
 				</Group>
-				<ToolbarLabel />
-				<ToolbarGuideLine />
-				<ToolbarHistory />
-			</Group>
+			</Stack>
 			<Layout
 				leftSection={<ContainerElement />}
 				rightSection={
