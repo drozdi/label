@@ -6,7 +6,7 @@ import { AppLoader } from './app/app-loader'
 import { AppProvider } from './app/app-provider'
 import { _log } from './shared/api/log'
 
-_log(123)
+_log('start')
 createRoot(document.querySelector('body')!).render(
 	<AppProvider>
 		<AppLoader>

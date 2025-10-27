@@ -1,0 +1,18 @@
+2025-10-27 11:07:59 123
+2025-10-27 11:08:04 api error: get /template_list/print_variables/ undefined | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /fonts/ {"size":100,"number":0} | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /images/ {"size":100,"number":0} | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /template_list/print_variables/ undefined | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /template_list/dm undefined | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /printer_memory {"host":"10.76.9.170","port":9100,"type_printer":"zpl"} | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /template_list/print_variables/ undefined | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /fonts/ {"size":100,"number":0} | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /images/ {"size":100,"number":0} | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /template_list/print_variables/ undefined | undefined: timeout of 5000ms exceeded
+2025-10-27 11:08:04 api error: get /template_list/dm undefined | undefined: timeout of 5000ms exceeded
+2025-10-27 11:16:53 123
+2025-10-27 11:16:59 api error: get /fonts/ {"size":100,"number":0} | undefined: timeout of 5000ms exceeded
+2025-10-27 11:16:59 api error: get /fonts/ {"size":100,"number":0} | undefined: timeout of 5000ms exceeded
+2025-10-27 11:17:03 123
+2025-10-27 11:17:29 123
+2025-10-27 11:18:13 start

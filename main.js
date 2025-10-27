@@ -126,10 +126,10 @@ if (!gotTheLock) {
 			}
 		})
 
-		await netLog.startLogging(path.join(__dirname, 'net-logs.json'), {
-			captureMode: 'default',
-		})
-		console.log('Логирование сетевых запросов начато')``
+		// await netLog.startLogging(path.join(__dirname, 'net-logs.json'), {
+		// 	captureMode: 'default',
+		// })
+		// console.log('Логирование сетевых запросов начато')``
 	})
 
 	app.on('window-all-closed', () => {
@@ -144,10 +144,10 @@ if (!gotTheLock) {
 			}
 		}
 	})
-	app.on('before-quit', async () => {
-		const path = await netLog.stopLogging()
-		console.log('Сетевые логи сохранены в:', path)
-	})
+	// app.on('before-quit', async () => {
+	// 	const path = await netLog.stopLogging()
+	// 	console.log('Сетевые логи сохранены в:', path)
+	// })
 	app.on('will-quit', () => {
 		if (serverProcess) {
 			serverProcess.kill()
