@@ -1,7 +1,8 @@
-import { Divider, Group, Stack, Tabs, Text } from '@mantine/core'
+import { ActionIcon, Divider, Group, Popover, Stack, Tabs, Text } from '@mantine/core'
 
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
+import { TbWallpaper } from 'react-icons/tb'
 import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
@@ -20,9 +21,12 @@ import { ToolbarRotate } from '../features/toolbars/rotate/toolbar-rotate'
 import { ToolbarTemplate } from '../features/toolbars/template/toolbar-template'
 import { DrawerVariable } from '../features/variables/drawer-variable'
 
+import { useDisclosure } from '@mantine/hooks'
+import { useBreakpoint } from '../shared/hooks'
 import { Layout } from './Layout'
 
 export const Editor = observer(() => {
+	const isMobile = useBreakpoint('xs')
 	useEffect(() => {
 		const mouseDown = (event: MouseEvent) => {
 			if (event.altKey && event.ctrlKey && event.button === 2) {
@@ -40,18 +44,38 @@ export const Editor = observer(() => {
 			}
 		}
 	}, [])
+	const [opened, { toggle }] = useDisclosure(false)
+
+	const popever = (
+		<>
+			<ToolbarLabel />
+			<ToolbarGuideLine as={isMobile ? Stack : Group} />
+		</>
+	)
 
 	return (
 		<>
 			<Stack p='xs' pt='0'>
 				<Group justify='space-between'>
-					<Group>
+					<Group gap='0.125rem'>
 						<ToolbarRotate />
 						<Divider orientation='vertical' />
 						<ToolbarTemplate />
 					</Group>
-					<ToolbarLabel />
-					<ToolbarGuideLine />
+					{isMobile ? (
+						<Popover opened={opened} onChange={toggle}>
+							<Popover.Target>
+								<ActionIcon color={opened ? 'lime' : ''} onClick={toggle}>
+									<TbWallpaper />
+								</ActionIcon>
+							</Popover.Target>
+							<Popover.Dropdown w='100%'>
+								<Group justify='space-between'>{popever}</Group>
+							</Popover.Dropdown>
+						</Popover>
+					) : (
+						popever
+					)}
 					<ToolbarHistory />
 				</Group>
 			</Stack>

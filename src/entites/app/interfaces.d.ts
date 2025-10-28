@@ -14,6 +14,9 @@ interface IAppContext {
 	showAppLoader?: boolean
 	offlineMode?: boolean
 	genCodeFlag?: boolean
+	headerMobileFlag?: boolean
+	leftMenuFlag?: boolean
+	rightMenuFlag?: boolean
 
 	setFontFamilyFlag?: (flag: boolean) => void
 	setVariableFlag?: (flag: boolean) => void
@@ -30,6 +33,9 @@ interface IAppContext {
 	setElementFlag?: (flag: boolean) => void
 	setDefaultSettings?: (flag: boolean) => void
 	setGenCodeFlag?: (flag: boolean) => void
+	setHeaderMobileFlag?: (flag: boolean) => void
+	setLeftMenuFlag?: (flag: boolean) => void
+	setRightMenuFlag?: (flag: boolean) => void
 
 	imageBg?: string
 	setImageBg?: (bg: string) => void

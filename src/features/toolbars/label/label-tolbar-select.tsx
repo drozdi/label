@@ -11,15 +11,9 @@ interface LabelTolbarSelectProps {
 	onChange?: (value: null | string, option: any) => void
 }
 
-export function LabelTolbarSelect({
-	disabled,
-	w = 75,
-	label,
-	options = [],
-	...props
-}: LabelTolbarSelectProps) {
+export function LabelTolbarSelect({ disabled, w = 75, label, options = [], ...props }: LabelTolbarSelectProps) {
 	return (
-		<Group component='label'>
+		<Group component='label' justify='space-between'>
 			{label}
 			<Select size='xs' disabled={disabled} {...props} data={options} w={w} />
 		</Group>

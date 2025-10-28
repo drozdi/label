@@ -1,10 +1,10 @@
 import { Box, Tooltip } from '@mantine/core'
-import { useViewportSize } from '@mantine/hooks'
 import { observer } from 'mobx-react-lite'
+import { storeApp } from '../../entites/app/store'
 import { factoryElement } from '../../entites/element'
 import { storeTemplate } from '../../entites/template/store'
 import { useHistory } from '../../services/history/hooks/use-history'
-import { WIDTH_MOBILE } from '../../shared/constants'
+import { useBreakpoint } from '../../shared/hooks'
 import { Item } from '../../shared/ui'
 import { genId } from '../../shared/utils'
 
@@ -23,7 +23,7 @@ export const ItemElement = observer(
 		component: React.ReactNode
 	}) => {
 		const history = useHistory()
-		const isMobile = useViewportSize().width < WIDTH_MOBILE
+		const isMobile = useBreakpoint('md')
 		const handleSelect = () => {
 			const id = genId()
 			const object = factoryElement({
@@ -36,6 +36,8 @@ export const ItemElement = observer(
 			history.append(storeTemplate.objects, `Добавление "${object.name}"`, {
 				title: `Тип: ${object.type} ${object.code_type}`,
 			})
+			storeApp.setLeftMenuFlag(false)
+			storeApp.setElementFlag(false)
 			callback?.()
 		}
 		return (

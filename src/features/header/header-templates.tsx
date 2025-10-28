@@ -19,7 +19,15 @@ export const HeaderTemplates = observer(() => {
 
 	return (
 		<Header>
-			<ActionIcon radius='0' variant='filled' onClick={() => storeApp?.setLoadTemplateFlag(false)} title='Закрыть'>
+			<ActionIcon
+				radius='0'
+				variant='filled'
+				onClick={() => {
+					storeApp.setLoadTemplateFlag(false)
+					storeApp.setHeaderMobileFlag(false)
+				}}
+				title='Закрыть'
+			>
 				<TbX />
 			</ActionIcon>
 			<FileButton onChange={handleImport} accept='.tdmc'>

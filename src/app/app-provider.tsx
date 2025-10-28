@@ -5,6 +5,7 @@ import {
 	Group,
 	Input,
 	MantineProvider,
+	Modal,
 	NumberInput,
 	Stack,
 	Tabs,
@@ -24,6 +25,14 @@ const theme = createTheme({
 				position: 'right',
 				closeOnClickOutside: false,
 				withCloseButton: false,
+				overlayProps: {
+					opacity: 0.1,
+				},
+			},
+		}),
+		Modal: Modal.extend({
+			defaultProps: {
+				zIndex: 300,
 				overlayProps: {
 					opacity: 0.1,
 				},

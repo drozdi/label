@@ -29,6 +29,9 @@ class StoreApp implements IAppContext {
 	offlineMode = false
 	defaultSettings = true
 	genCodeFlag = false
+	headerMobileFlag = false
+	leftMenuFlag = false
+	rightMenuFlag = false
 
 	constructor() {
 		makeAutoObservable(this)
@@ -100,6 +103,15 @@ class StoreApp implements IAppContext {
 	}
 	setGenCodeFlag(val: boolean) {
 		this.genCodeFlag = val
+	}
+	setHeaderMobileFlag(val: boolean) {
+		this.headerMobileFlag = val
+	}
+	setLeftMenuFlag(val: boolean) {
+		this.leftMenuFlag = val
+	}
+	setRightMenuFlag(val: boolean) {
+		this.rightMenuFlag = val
 	}
 }
 

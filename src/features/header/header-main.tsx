@@ -1,11 +1,11 @@
-import { ActionIcon, Box, Button, Group, Stack, TextInput, useMantineTheme } from '@mantine/core'
-import { useMediaQuery } from '@mantine/hooks'
+import { ActionIcon, Box, Button, Group, Stack, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { TbNewSection } from 'react-icons/tb'
 import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
 import { useHistory } from '../../services/history/hooks/use-history'
 import { serviceTemplate } from '../../services/template/service'
+import { useBreakpoint } from '../../shared/hooks'
 import { Header } from '../../shared/ui'
 
 export const HeaderMain = observer(() => {
@@ -17,8 +17,7 @@ export const HeaderMain = observer(() => {
 		storeTemplate.setTemplateName(await serviceTemplate.newName())
 		storeApp.setErrorName(false)
 	}
-	const theme = useMantineTheme()
-	const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
+	const isMobile = useBreakpoint('xs')
 
 	return (
 		<Header>
@@ -48,17 +47,27 @@ export const HeaderMain = observer(() => {
 					onClick={() => {
 						storeTemplate.clear(false)
 						history.append(storeTemplate.objects, 'Очистка')
+						storeApp.setHeaderMobileFlag(false)
 					}}
 				>
 					Очистить
 				</Button>
-				<Button variant='outline' onClick={() => storeApp?.setLoadTemplateFlag(true)}>
+				<Button
+					variant='outline'
+					onClick={() => {
+						storeApp.setLoadTemplateFlag(true)
+						storeApp.setHeaderMobileFlag(false)
+					}}
+				>
 					Шаблоны
 				</Button>
 				<Button
 					variant='outline'
 					color={storeApp.previewFlag ? 'lime' : ''}
-					onClick={() => storeApp?.setPreviewFlag?.(!storeApp.previewFlag)}
+					onClick={() => {
+						storeApp.setPreviewFlag(!storeApp.previewFlag)
+						storeApp.setHeaderMobileFlag(false)
+					}}
 				>
 					Предпросмотр
 				</Button>

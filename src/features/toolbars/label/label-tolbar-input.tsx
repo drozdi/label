@@ -9,25 +9,11 @@ interface LabelTolbarInputProps {
 	onChange?: (value: number | string) => void
 }
 
-export function LabelTolbarInput({
-	disabled,
-	w = 50,
-	label,
-	name,
-	value,
-	onChange,
-}: LabelTolbarInputProps) {
+export function LabelTolbarInput({ disabled, w = 50, label, name, value, onChange }: LabelTolbarInputProps) {
 	return (
-		<Group component='label'>
+		<Group component='label' justify='space-between'>
 			{label}
-			<NumberInput
-				min={0}
-				disabled={disabled}
-				value={value}
-				name={name}
-				onChange={onChange}
-				w={w}
-			/>
+			<NumberInput min={0} disabled={disabled} value={value} name={name} onChange={onChange} w={w} />
 		</Group>
 	)
 }

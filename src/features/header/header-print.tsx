@@ -1,4 +1,4 @@
-import { Button, Textarea } from '@mantine/core'
+import { Button, Group, Stack, Textarea } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
 import { storeApp } from '../../entites/app/store'
@@ -6,10 +6,12 @@ import { storePrinter } from '../../entites/printer/store'
 import { storeTemplates } from '../../entites/templates/store'
 import { serviceNotifications } from '../../services/notifications/service'
 import { servicePrinter } from '../../services/printer/service'
+import { useBreakpoint } from '../../shared/hooks'
 import { Header } from '../../shared/ui'
 
 export const HeaderPrint = observer(() => {
 	const handlePrintCode = async () => {
+		storeApp.setHeaderMobileFlag(false)
 		if (!storeTemplates.selected) {
 			serviceNotifications.alert('Сохраните шаблон или выберите из БД')
 			return
@@ -23,6 +25,7 @@ export const HeaderPrint = observer(() => {
 		})
 	}
 	const handlePrintTrial = async () => {
+		storeApp.setHeaderMobileFlag(false)
 		if (!storeTemplates.selected) {
 			serviceNotifications.alert('Сохраните шаблон или выберите из БД')
 			return
@@ -36,6 +39,7 @@ export const HeaderPrint = observer(() => {
 		})
 	}
 	const handlePrintExample = async () => {
+		storeApp.setHeaderMobileFlag(false)
 		if (!storeTemplates.selected) {
 			serviceNotifications.alert('Сохраните шаблон или выберите из БД')
 			return
@@ -45,12 +49,17 @@ export const HeaderPrint = observer(() => {
 		serviceNotifications.success(`Код для принтера на "${storePrinter.getConfig().type_printer}"`, res.trim())
 	}
 
+	const isMobile = useBreakpoint('xs')
+
 	return (
-		<Header>
+		<Header component={isMobile ? Stack : Group}>
 			<Button
 				variant='outline'
 				color={storeApp.importFlag ? 'lime' : ''}
-				onClick={() => storeApp?.setImportFlag(!storeApp.importFlag)}
+				onClick={() => {
+					storeApp.setImportFlag(!storeApp.importFlag)
+					storeApp.setHeaderMobileFlag(false)
+				}}
 			>
 				Импорт кода
 			</Button>
