@@ -14,20 +14,22 @@ export function Container({
 }) {
 	return (
 		<Tag h='100%' {...props}>
-			<Group
-				justify='space-between'
-				pos='sticky'
-				bg='var(--mantine-color-body)'
-				top={0}
-				ta='center'
-				pb='xs'
-				style={{
-					zIndex: 10,
-				}}
-			>
-				{label}
-				{onClose && <CloseButton onClick={onClose} />}
-			</Group>
+			{(label || onClose) && (
+				<Group
+					justify='space-between'
+					pos='sticky'
+					bg='var(--mantine-color-body)'
+					top={0}
+					ta='center'
+					pb='xs'
+					style={{
+						zIndex: 10,
+					}}
+				>
+					{label}
+					{onClose && <CloseButton onClick={onClose} />}
+				</Group>
+			)}
 			{children}
 		</Tag>
 	)

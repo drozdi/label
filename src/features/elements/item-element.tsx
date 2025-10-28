@@ -23,7 +23,8 @@ export const ItemElement = observer(
 		component: React.ReactNode
 	}) => {
 		const history = useHistory()
-		const isMobile = useBreakpoint('md')
+		const isMobileMd = useBreakpoint('md')
+		const isMobile = useBreakpoint('xs')
 		const handleSelect = () => {
 			const id = genId()
 			const object = factoryElement({
@@ -45,7 +46,7 @@ export const ItemElement = observer(
 				<Tooltip label={label}>
 					<Box component={component} align='stretch' justify='center' ta='center' lh='1'>
 						<Box fz='3rem'>{icon}</Box>
-						{!isMobile && label}
+						{(!isMobileMd || isMobile) && label}
 					</Box>
 				</Tooltip>
 			</Item>

@@ -2,7 +2,7 @@ import { ActionIcon, Divider, Group, Popover, Stack, Tabs, Text } from '@mantine
 
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
-import { TbWallpaper } from 'react-icons/tb'
+import { TbCirclePlus, TbWallpaper } from 'react-icons/tb'
 import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
@@ -52,11 +52,20 @@ export const Editor = observer(() => {
 			<ToolbarGuideLine as={isMobile ? Stack : Group} />
 		</>
 	)
+	useEffect(() => {
+		storeApp.setLeftMenuFlag(false)
+		storeApp.setRightMenuFlag(false)
+	}, [isMobile])
 
 	return (
 		<>
 			<Stack p='xs' pt='0'>
 				<Group justify='space-between'>
+					{isMobile && (
+						<ActionIcon m='xs' onClick={() => storeApp.setLeftMenuFlag(true)} title='Добавить элемент'>
+							<TbCirclePlus />
+						</ActionIcon>
+					)}
 					<Group gap='0.125rem'>
 						<ToolbarRotate />
 						<Divider orientation='vertical' />
@@ -69,7 +78,7 @@ export const Editor = observer(() => {
 									<TbWallpaper />
 								</ActionIcon>
 							</Popover.Target>
-							<Popover.Dropdown w='100%'>
+							<Popover.Dropdown w='95%'>
 								<Group justify='space-between'>{popever}</Group>
 							</Popover.Dropdown>
 						</Popover>

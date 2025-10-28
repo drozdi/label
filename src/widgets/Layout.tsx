@@ -1,6 +1,5 @@
-import { ActionIcon, Box, Button, Drawer, ScrollArea, Stack } from '@mantine/core'
+import { Box, Button, Drawer, ScrollArea, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { TbCirclePlus } from 'react-icons/tb'
 import { storeApp } from '../entites/app/store'
 import { ProvideGuideLine } from '../services/guide-line/context'
 import { useBreakpoint } from '../shared/hooks'
@@ -68,11 +67,7 @@ export const Layout = observer(
 								</Button>
 							)}
 						</Stack>
-						{isMobile && (
-							<ActionIcon m='xs' onClick={() => storeApp.setLeftMenuFlag(true)}>
-								<TbCirclePlus />
-							</ActionIcon>
-						)}
+						{isMobile && <div></div>}
 					</>
 				) : (
 					<div></div>

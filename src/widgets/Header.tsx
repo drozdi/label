@@ -24,7 +24,7 @@ import { Info } from '../features/info/info'
 import { useBreakpoint } from '../shared/hooks'
 
 export const Header = observer(({ leftSection, rightSection }) => {
-	const { loadTemplateFlag, settingsFlag, headerMobileFlag } = storeApp
+	const { loadTemplateFlag, settingsFlag, headerMobileFlag, rightMenuFlag } = storeApp
 	const [openedInfo, info] = useDisclosure(false)
 	const { setColorScheme } = useMantineColorScheme()
 	const computedColorScheme = useComputedColorScheme('light', {
@@ -99,7 +99,7 @@ export const Header = observer(({ leftSection, rightSection }) => {
 					<Burger size='xs' opened={headerMobileFlag} onClick={() => storeApp.setHeaderMobileFlag(!headerMobileFlag)} />
 
 					{!loadTemplateFlag && (
-						<Burger size='xs' opened={headerMobileFlag} onClick={() => storeApp.setRightMenuFlag(!headerMobileFlag)} />
+						<Burger size='xs' opened={rightMenuFlag} onClick={() => storeApp.setRightMenuFlag(!rightMenuFlag)} />
 					)}
 				</Group>
 			)}
