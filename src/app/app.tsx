@@ -44,8 +44,6 @@ export const App = observer(() => {
 		check()
 	}, [storeApp.defaultSettings])
 
-	// console.log(storeApp.defaultSettings, storeApp.serverError)
-
 	return (
 		<>
 			{storeApp.defaultSettings ? (

@@ -1,9 +1,10 @@
-import { Group, Modal, NumberInput, Slider } from '@mantine/core'
+import { Group, NumberInput, Slider } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { storeApp } from '../../entites/app/store'
 import { Preview as PreviewClass } from '../../entites/preview/preview'
 import { storeTemplate } from '../../entites/template/store'
+import { Modal } from '../../shared/ui'
 import { Element } from '../element/element'
 
 const w = 50
@@ -18,6 +19,7 @@ export const Preview = observer(() => {
 		<Modal
 			title='Предпросмотр'
 			size='auto'
+			withOverlay={true}
 			opened={storeApp?.previewFlag}
 			onClose={() => storeApp?.setPreviewFlag?.(false)}
 		>
@@ -63,8 +65,7 @@ export const Preview = observer(() => {
 			<div
 				style={{
 					rotate: template.direction_x === 0 ? '0deg' : '180deg',
-					transform:
-						template.direction_y === 0 ? 'scale(1, 1)' : 'scale(-1, 1)',
+					transform: template.direction_y === 0 ? 'scale(1, 1)' : 'scale(-1, 1)',
 				}}
 			>
 				<div
@@ -96,13 +97,7 @@ export const Preview = observer(() => {
 							}}
 						>
 							{template.objects.map((object, index) => (
-								<Element
-									preview
-									scale={template.scale}
-									key={object.id}
-									index={index}
-									object={object}
-								/>
+								<Element preview scale={template.scale} key={object.id} index={index} object={object} />
 							))}
 						</div>
 					</div>
