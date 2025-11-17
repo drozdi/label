@@ -47,7 +47,7 @@ if (!gotTheLock) {
 		})
 	}
 
-	function createTray() {
+	async function createTray() {
 		// Указываем путь к иконке
 		const iconPath = path.join(__dirname, 'public/icon.png')
 		// Создаем трей
@@ -96,7 +96,7 @@ if (!gotTheLock) {
 		})
 	}
 
-	function startServer() {
+	async function startServer() {
 		// Указываем путь к server.js
 		serverProcess = spawn('node', [path.join(__dirname, 'server.js')])
 
@@ -116,9 +116,9 @@ if (!gotTheLock) {
 	//app.commandLine.appendSwitch('log-net-log', path.join(__dirname, 'net-logs.json'))
 
 	app.whenReady().then(async () => {
-		startServer()
+		await startServer()
 		createWindow()
-		createTray()
+		await createTray()
 
 		app.on('activate', () => {
 			if (BrowserWindow.getAllWindows().length === 0) {
