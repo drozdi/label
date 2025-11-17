@@ -3,7 +3,7 @@
 	$schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
 	appId: 'AppDMCLabelEditor',
 	asar: true,
-	productName: 'DMC Label Editor',
+	productName: 'dmc_label_edit_desktop',
 	directories: {
 		output: 'release/${version}',
 	},
