@@ -1,15 +1,16 @@
 {
-	"name": "dmc_label_edit_desktop",
+	"name": "DMCLabelEditor",
 	"private": true,
 	"version": "0.0.0",
-	"type": "module",
+	"type": "CommonJS",
 	"scripts": {
 		"dev": "vite",
 		"dev:server": "vite && node server.js",
 		"build": "tsc && vite build && electron-builder",
 		"build:ignore": "vite build && electron-builder",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"server": "node server.js"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.3.1",

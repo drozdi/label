@@ -5,7 +5,7 @@
 	asar: true,
 	productName: 'dmc_label_edit_desktop',
 	directories: {
-		output: 'release/${version}',
+		output: 'out/${version}',
 	},
 	files: ['dist', 'dist-electron'],
 	mac: {

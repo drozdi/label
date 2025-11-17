@@ -1,3 +1,4 @@
+import { spawn } from 'child_process'
 import { app, BrowserWindow, Menu, Tray } from 'electron'
 import { createRequire } from 'node:module'
 import path from 'node:path'
@@ -35,9 +36,9 @@ if (!gotTheLock) {
 	// Если это второй экземпляр, завершаем его
 	app.quit()
 } else {
-	function createWindow() {
+	async function createWindow() {
 		win = new BrowserWindow({
-			icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+			icon: path.join(process.env.VITE_PUBLIC, 'icon.svg'),
 			webPreferences: {
 				preload: path.join(__dirname, 'preload.mjs'),
 			},
@@ -57,10 +58,10 @@ if (!gotTheLock) {
 		}
 	}
 
-	function createTray() {
+	async function createTray() {
 		// Указываем путь к иконке
-		const iconPath = path.join(__dirname, 'icon.png')
-		console.log(123456789, iconPath)
+		const iconPath = path.join(process.env.VITE_PUBLIC, 'icon.png')
+
 		// Создаем трей
 		tray = new Tray(iconPath)
 
@@ -108,9 +109,9 @@ if (!gotTheLock) {
 			}
 		})
 	}
-	function startServer() {
+	async function startServer() {
 		// Указываем путь к server.js
-		serverProcess = spawn('node', [path.join(__dirname, 'server.js')])
+		serverProcess = spawn('node', [path.join(process.env.APP_ROOT, 'server.js')])
 
 		serverProcess.stdout.on('data', data => {
 			console.log(`Сервер: ${data}`)
@@ -124,7 +125,6 @@ if (!gotTheLock) {
 			console.log(`Сервер завершил работу с кодом ${code}`)
 		})
 	}
-
 	// Quit when all windows are closed, except on macOS. There, it's common
 	// for applications and their menu bar to stay active until the user quits
 	// explicitly with Cmd + Q.
@@ -156,9 +156,9 @@ if (!gotTheLock) {
 		}
 	})
 
-	app.whenReady().then(() => {
-		createWindow()
-		createTray()
-		startServer()
+	app.whenReady().then(async () => {
+		await startServer()
+		await createTray()
+		await createWindow()
 	})
 }
