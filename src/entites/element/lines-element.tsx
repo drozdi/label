@@ -1,30 +1,44 @@
+import { round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
-export class LinesElement extends BaseElement {
+export class LinesElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
+		const parseObject = {
+			width: object.width - object.pos_x,
+			pos_y: object.height,
+			height: object.line_thickness,
+		}
+
 		super({
-			width: 15,
-			height: 1,
 			...object,
+			...parseObject,
 			type: 'lines',
 		})
 	}
 	get properties() {
-		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'rotation']
+		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height']
+	}
+	get multiProperties() {
+		return ['enabled']
 	}
 	get resize() {
-		return ['e']
+		return ['se']
 	}
-	style(scale = 1, element) {
+	getCorrectProps() {
 		return {
-			...super.style(scale, element),
+			...super.getCorrectProps(),
+			width: round(this.pos_x + this.width),
+			height: round(this.pos_y),
+			line_thickness: round(this.height),
+		}
+	}
+	style(scale = 1) {
+		return {
+			...super.style(scale),
 			outline: 0,
 			borderRadius: 0,
 			background: 'black',
+			rotate: 0,
 		}
-	}
-	setHeight(height: string | number) {
-		super.setHeight(height)
-		this.setLineThickness(height)
 	}
 }

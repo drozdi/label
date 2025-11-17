@@ -1,12 +1,12 @@
-import { Button, FileButton, Group } from '@mantine/core'
+import { ActionIcon, Button, FileButton } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { serviceNotifications } from '../../entites/notifications/service'
+import { TbX } from 'react-icons/tb'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplates } from '../../entites/templates/store'
-import { useAppContext } from '../context'
+import { serviceNotifications } from '../../services/notifications/service'
+import { Header } from '../../shared/ui'
 
 export const HeaderTemplates = observer(() => {
-	const ctx = useAppContext()
-
 	const handleImport = file => {
 		if (!file.name.match(/\.tdmc$/gm)) {
 			serviceNotifications.error(
@@ -18,10 +18,18 @@ export const HeaderTemplates = observer(() => {
 	}
 
 	return (
-		<Group gap='xs'>
-			<Button variant='outline' onClick={() => ctx?.setLoadTemplateFlag(false)}>
-				Закрыть
-			</Button>
+		<Header>
+			<ActionIcon
+				radius='0'
+				variant='filled'
+				onClick={() => {
+					storeApp.setLoadTemplateFlag(false)
+					storeApp.setHeaderMobileFlag(false)
+				}}
+				title='Закрыть'
+			>
+				<TbX />
+			</ActionIcon>
 			<FileButton onChange={handleImport} accept='.tdmc'>
 				{props => (
 					<Button {...props} variant='outline'>
@@ -29,6 +37,6 @@ export const HeaderTemplates = observer(() => {
 					</Button>
 				)}
 			</FileButton>
-		</Group>
+		</Header>
 	)
 })

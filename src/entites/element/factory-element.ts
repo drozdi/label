@@ -6,21 +6,23 @@ import { ImgElement } from './img-element'
 import { LinesElement } from './lines-element'
 import { TextElement } from './text-element'
 
-export function factoryElement(object: Record<string, any>): BaseElement {
-	switch (object.type) {
+export function factoryElement(object: Record<string, any>): IObject {
+	const corecctProps = object.getCorrectProps?.() || object
+
+	switch (corecctProps.type) {
 		case 'text':
-			return new TextElement({ ...object })
+			return new TextElement({ ...corecctProps })
 		case 'block':
-			return new BlockElement({ ...object })
+			return new BlockElement({ ...corecctProps })
 		case 'img':
-			return new ImgElement({ ...object })
+			return new ImgElement({ ...corecctProps })
 		case 'barcode':
-			return new BarcodeElement({ ...object })
+			return new BarcodeElement({ ...corecctProps })
 		case 'lines':
-			return new LinesElement({ ...object })
+			return new LinesElement({ ...corecctProps })
 		case 'box':
-			return new BoxElement({ ...object })
+			return new BoxElement({ ...corecctProps })
 		default:
-			return new BaseElement({ ...object })
+			return new BaseElement({ ...corecctProps })
 	}
 }

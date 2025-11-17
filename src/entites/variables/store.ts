@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { requestVariablesList } from './api'
-class StoreVariables {
+class StoreVariables implements IStoreVariables {
 	isLoading = false
 	isLoaded = false
 	error = ''
@@ -26,8 +26,9 @@ class StoreVariables {
 			const res = await requestVariablesList()
 			this._list = res
 			this.isLoaded = true
-		} catch (e) {
-			console.error(e)
+		} catch (error) {
+			console.error(error)
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

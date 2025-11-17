@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Box, Button, Group, Input } from '@mantine/core'
 
@@ -10,7 +10,10 @@ interface ItemEditableProps {
 	placeholder?: string
 	onChange?: (value: any) => void
 	onClick?: () => void
+	onEdit?: (edit: boolean) => void
 	editable?: boolean
+	edit?: boolean
+	[other: string]: any
 }
 
 export function ItemEditable({
@@ -20,11 +23,19 @@ export function ItemEditable({
 	placeholder,
 	onChange,
 	onClick,
+	onEdit,
 	editable,
 	unit,
+	edit: propEdit = false,
 	...other
 }: ItemEditableProps) {
-	const [edit, setEdit] = useState<boolean>(false)
+	const [edit, setEdit] = useState<boolean>(propEdit)
+	useEffect(() => {
+		setEdit(propEdit)
+	}, [propEdit])
+	useEffect(() => {
+		onEdit?.(edit)
+	}, [edit])
 	return (
 		<Group gap={0} grow>
 			{editable && edit ? (
@@ -35,7 +46,7 @@ export function ItemEditable({
 							placeholder={placeholder}
 							rightSection={unit}
 							value={value}
-							onChange={e => onChange?.(e.target.value)}
+							onChange={({ target }) => onChange?.(target.value)}
 						/>
 					</Box>
 					<Box flex='none' maw='100%'>

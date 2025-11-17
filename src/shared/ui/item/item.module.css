@@ -1,0 +1,21 @@
+.root {
+	border: 1px solid var(--mantine-color-default-border);
+	color: var(--mantine-color-default-color);
+	padding: var(--mantine-spacing-xs);
+	font-size: 0.85rem;
+	line-height: 1.15;
+	cursor: pointer;
+	position: relative;
+}
+.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.root:not(.disabled):hover {
+	background-color: var(--mantine-primary-color-light-hover);
+}
+
+.active {
+	border-color: var(--mantine-color-anchor);
+	color: var(--mantine-color-anchor);
+}

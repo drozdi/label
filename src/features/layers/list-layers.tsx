@@ -15,12 +15,7 @@ export const ListLayers = observer(() => {
 	return (
 		<Stack>
 			{objects.map((object, index) => (
-				<Group
-					grow
-					justify='flex-end'
-					key={object.id}
-					c={storeTemplate.isSelected(object.id) ? 'green' : ''}
-				>
+				<Group grow justify='flex-end' key={object.id} c={storeTemplate.isSelected(object.id) ? 'green' : ''}>
 					<Text
 						truncate='end'
 						maw='75%'
@@ -30,7 +25,11 @@ export const ListLayers = observer(() => {
 							cursor: 'pointer',
 						}}
 					>
-						{object.name}
+						{['text', 'block'].includes(object.type)
+							? object.data
+							: object.type === 'img'
+							? 'Картинка: ' + object.imageName
+							: object.name}
 					</Text>
 					<Box>
 						<Switch

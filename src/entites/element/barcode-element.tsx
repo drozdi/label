@@ -1,8 +1,10 @@
 import bwipjs from 'bwip-js'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useFakeVariables } from '../../shared/hooks'
+import { minMax, round } from '../../shared/utils'
 import { BaseElement } from './base-element'
 
-export class BarcodeElement extends BaseElement {
+export class BarcodeElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
 		super({
 			radius: 1.833,
@@ -12,22 +14,23 @@ export class BarcodeElement extends BaseElement {
 		})
 	}
 	get properties() {
-		const props = [
-			'enabled',
-			'name',
-			'pos_x',
-			'pos_y',
-			'width',
-			'height',
-			'rotation',
-			'data',
-		]
+		const props = ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'data']
 		if (this.code_type === 'ean13' || this.code_type === 'code128') {
-			props.push('human_readable')
+			props.push('human_readable', 'rotation')
+		} else if (this.code_type === 'qrcode') {
+			props.push('rotation')
 		}
+
 		return props
 	}
+	get multiProperties() {
+		if (this.code_type === 'ean13' || this.code_type === 'code128' || this.code_type === 'qrcode') {
+			return ['enabled', 'rotation']
+		}
+		return ['enabled']
+	}
 	render(scale = 1, preview = false): React.ReactNode {
+		const ref = useRef<HTMLDivElement>(null)
 		const prefix = preview ? '_preview' : ''
 		const style = {
 			fontSize: this.font_size,
@@ -37,54 +40,68 @@ export class BarcodeElement extends BaseElement {
 			margin: 0,
 			lineHeight: 1,
 		}
-		const [body, setBody] = useState(
-			this.data.length >= 13 ? this.data : '0000000000000'
-		)
+		const { getFake } = useFakeVariables()
+
 		useEffect(() => {
 			try {
 				if (this.code_type === 'ean13' || this.code_type === 'code128') {
+					// let svg = bwipjs.toSVG({
+					// 	bcid: this.code_type,
+					// 	text: this.data,
+					// 	scaleX: this.width,
+					// 	scaleY: 2,
+					// 	height: round(this.height + 1) * 2,
+					// })
+					// let [, width, height] = /viewBox="0 0 (\d+) (\d+)"/.exec(svg)
+
+					// ref.current.style.display = 'inline-block'
+					// //ref.current.style.width = width + 'px'
+					// ref.current.style.height = this.height * this.mm * scale + 'px'
+					// ref.current.innerHTML = svg
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
+						bcid: this.code_type,
+						text: getFake(this.data),
 						scaleX: this.width,
 						scaleY: 2,
-						bcid: this.code_type,
-						text: body,
-						height: this.height * 2,
+						height: round(this.height + 1) * 2,
 					})
 				} else if (this.code_type === 'datamatrix') {
 					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
-						bcid: 'datamatrix',
+						bcid: this.code_type,
+						width: round(this.width * this.min_size),
+						height: round(this.height * this.min_size),
 						text: '^FNC1' + this.name,
-						height: this.height * this.min_size,
-						width: this.width * this.min_size,
 						parsefnc: true,
 					})
 				} else {
-					bwipjs.toCanvas('mycanvas' + this.idprefix, {
+					bwipjs.toCanvas('mycanvas' + this.id + prefix, {
 						bcid: this.code_type,
-						text: this.data,
-						height: this.height,
-						width: this.width,
+						width: round(this.width),
+						height: round(this.height),
+						text: getFake(this.data),
 					})
 				}
 			} catch (e) {
 				console.error('Error generating barcode:', e)
 			}
-		}, [this, prefix, body])
+		}, [this, this.data, prefix])
+
 		return (
 			<>
 				<canvas
 					id={'mycanvas' + this.id + prefix}
 					style={{
-						height:
+						height: round(
 							this.code_type === 'qrcode'
-								? this.height * this.mm_qr * scale + 'px'
+								? this.height * this.mm_qr * scale
 								: this.code_type === 'datamatrix' && this.min_size === 0
-								? this.height * 1.833 * this.mm * scale + 'px'
-								: this.code_type === 'datamatrix' && this.min_size !== 0
-								? this.height * this.min_size * this.mm * scale + 'px'
-								: this.height * this.mm * scale + 'px',
+									? this.height * 1.833 * this.mm * scale
+									: this.code_type === 'datamatrix' && this.min_size !== 0
+										? this.height * this.min_size * this.mm * scale
+										: this.height * this.mm * scale
+						),
 					}}
-				></canvas>
+				/>
 				{this.human_readable === 1 ? (
 					<p
 						style={{
@@ -118,14 +135,11 @@ export class BarcodeElement extends BaseElement {
 			</>
 		)
 	}
-	get size() {
-		return Math.max(this.width, this.height)
-	}
 	get min_size() {
 		return this.radius
 	}
-	style(scale = 1, element) {
-		const style = super.style(scale, element)
+	style(scale = 1) {
+		const style = super.style(scale)
 		if (this.code_type === 'datamatrix') {
 			/*style.width = style.width * this.min_size
 			style.height = style.height * this.min_size //*/
@@ -134,6 +148,7 @@ export class BarcodeElement extends BaseElement {
 		} else if (this.code_type === 'ean13' || this.code_type === 'code128') {
 			style.width = 'auto'
 			style.height = 'auto'
+			style.transform = `scaleX(${25.4 / 25})`
 		}
 		style.outline = 0
 		style.borderRadius = 0
@@ -143,16 +158,18 @@ export class BarcodeElement extends BaseElement {
 		if (typeof width === 'string') {
 			width = parseInt(width, 10)
 		}
-		this.width = width
 		if (this.code_type !== 'ean13' && this.code_type !== 'code128') {
+			width = minMax(width, 3)
 			this.height = width
 		}
+		this.width = width
 	}
 	setHeight(height: string | number) {
 		if (typeof height === 'string') {
 			height = parseInt(height, 10)
 		}
 		if (this.code_type !== 'ean13' && this.code_type !== 'code128') {
+			height = minMax(height, 3)
 			this.width = height
 		}
 		this.height = height

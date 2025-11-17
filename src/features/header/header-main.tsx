@@ -1,112 +1,77 @@
-import { Button, Group, TextInput } from '@mantine/core'
+import { ActionIcon, Box, Button, Group, Stack, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { storeHistory } from '../../entites/history/store'
-import { serviceNotifications } from '../../entites/notifications/service'
+import { TbNewSection } from 'react-icons/tb'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
-import { storeTemplates } from '../../entites/templates/store'
-import { DEF_TEMPLATE } from '../../shared/constants'
-import { useAppContext } from '../context'
+import { useHistory } from '../../services/history/hooks/use-history'
+import { serviceTemplate } from '../../services/template/service'
+import { useBreakpoint } from '../../shared/hooks'
+import { Header } from '../../shared/ui'
 
 export const HeaderMain = observer(() => {
-	const ctx = useAppContext()
-	const { importFlag, previewFlag } = ctx
-	const handleSave = async () => {
-		if (storeTemplate.name?.length < 3) {
-			serviceNotifications.error(
-				'Название шаблона должно быть не менее 3 символов'
-			)
-			return
-		}
-		if (storeTemplate.objects.length === 0) {
-			serviceNotifications.error('Шаблон не может быть пустым')
-			return
-		}
-		const template = {
-			...DEF_TEMPLATE,
-			...storeTemplate,
-			objects: storeTemplate.objects.map(item => ({
-				...item.getProps(),
-				mm: undefined,
-				cm: undefined,
-				mm_qr: undefined,
-				font_rel: undefined,
-				image_rel: undefined,
-			})),
-			scale: undefined,
-			dpi: undefined,
-			mm: undefined,
-			cm: undefined,
-			mm_qr: undefined,
-			currId: undefined,
-			currIndex: undefined,
-			selected: undefined,
-		}
-		if (storeTemplate.id > 0) {
-			await handleUpdate(template)
-		} else {
-			await handleNew(template)
-		}
+	const history = useHistory()
+	const newTemplate = async () => {
+		storeTemplate.clear()
+		history.clear()
+		await serviceTemplate.newName()
+		storeTemplate.setTemplateName(await serviceTemplate.newName())
+		storeApp.setErrorName(false)
 	}
-	const handleUpdate = async template => {
-		try {
-			await storeTemplates.updateTemplate(template)
-		} catch (e) {
-			serviceNotifications.error(e.message)
-		}
-	}
-	const handleNew = async template => {
-		try {
-			const res = await storeTemplates.newTemplate(template)
-			storeTemplate.loadTemplate(res.data)
-		} catch (e) {
-			serviceNotifications.error(e.message)
-		}
-	}
+	const isMobile = useBreakpoint('xs')
+
 	return (
-		<Group gap='xs'>
+		<Header>
 			<TextInput
 				placeholder='Название'
 				value={storeTemplate.name}
-				onChange={({ target }) => storeTemplate.setTemplateName(target.value)}
+				error={storeApp.errorName}
+				onChange={({ target }) => {
+					storeApp.setErrorName(false)
+					storeTemplate.setTemplateName(target.value)
+				}}
+				leftSection={
+					<ActionIcon radius='0' onClick={newTemplate} title='Создать'>
+						<TbNewSection>Создать</TbNewSection>
+					</ActionIcon>
+				}
+				rightSection={
+					<ActionIcon radius='0' color='green' onClick={() => serviceTemplate.handleSave()} title='Сохранить'>
+						Ok
+					</ActionIcon>
+				}
+				w={isMobile ? '100%' : ''}
 			/>
-			<Button
-				variant='outline'
-				onClick={() => {
-					storeTemplate.clear()
-					storeHistory.clear()
-				}}
-			>
-				Создать
-			</Button>
-			<Button variant='outline' onClick={handleSave}>
-				Сохранить
-			</Button>
-			<Button
-				variant='outline'
-				onClick={() => {
-					storeTemplate.clear(false)
-					storeHistory.append(storeTemplate.objects, 'Очистка')
-				}}
-			>
-				Очистить
-			</Button>
-			<Button variant='outline' onClick={() => ctx?.setLoadTemplateFlag(true)}>
-				Шаблоны
-			</Button>
-			<Button
-				variant='outline'
-				color={importFlag ? 'lime' : ''}
-				onClick={() => ctx?.setImportFlag(!importFlag)}
-			>
-				Импорт кода
-			</Button>
-			<Button
-				variant='outline'
-				color={previewFlag ? 'lime' : ''}
-				onClick={() => ctx?.setPreviewFlag?.(!importFlag)}
-			>
-				Предпросмотр
-			</Button>
-		</Group>
+			<Box component={isMobile ? Stack : Group} align='stretch' w={isMobile ? '100%' : ''}>
+				<Button
+					variant='outline'
+					onClick={() => {
+						storeTemplate.clear(false)
+						history.append(storeTemplate.objects, 'Очистка')
+						storeApp.setHeaderMobileFlag(false)
+					}}
+				>
+					Очистить
+				</Button>
+				<Button
+					variant='outline'
+					onClick={() => {
+						storeApp.setLoadTemplateFlag(true)
+						storeApp.setHeaderMobileFlag(false)
+					}}
+				>
+					Шаблоны
+				</Button>
+				<Button
+					variant='outline'
+					color={storeApp.previewFlag ? 'lime' : ''}
+					onClick={() => {
+						storeApp.setPreviewFlag(!storeApp.previewFlag)
+						storeApp.setHeaderMobileFlag(false)
+					}}
+				>
+					Предпросмотр
+				</Button>
+			</Box>
+		</Header>
 	)
 })

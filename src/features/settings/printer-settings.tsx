@@ -1,21 +1,19 @@
 import { Button, Group, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
-import { serviceNotifications } from '../../entites/notifications/service'
-import { servicePrinter } from '../../entites/printer/service'
 import { storePrinter } from '../../entites/printer/store'
+import { serviceNotifications } from '../../services/notifications/service'
+import { servicePrinter } from '../../services/printer/service'
 import { ItemEditable } from './item-editable'
 import { ItemOptions } from './item-options'
 
-export const PrinterSettings = observer(({ setPrinterSetting }) => {
+export const PrinterSettings = observer(() => {
 	const config = storePrinter.getConfig()
 	const [port, setPort] = useState(config.port)
 	const [host, setHost] = useState(config.host)
 	const [count, setCount] = useState(config.number_labels)
 	const [typePrinter, setTypePrinter] = useState(config.type_printer)
-	const [printerResolution, setPrinterResolution] = useState(
-		String(config.printer_resolution)
-	)
+	const [printerResolution, setPrinterResolution] = useState(String(config.printer_resolution))
 	const [shiftX, setShiftX] = useState(config.SHIFT_X)
 	const [shiftY, setShiftY] = useState(config.SHIFT_Y)
 
@@ -29,7 +27,7 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 		setShiftY(config.SHIFT_Y)
 	}, [config])
 
-	const setValue = (value, func) => {
+	const setValue = (value: string, func: Function) => {
 		func(value)
 	}
 
@@ -90,10 +88,7 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 		) {
 			serviceNotifications.success('Настройки принтера успешно сохранены.')
 		}
-		if (
-			Number(shift_X) !== Number(shiftX) ||
-			Number(shift_Y) !== Number(shiftY)
-		) {
+		if (Number(shift_X) !== Number(shiftX) || Number(shift_Y) !== Number(shiftY)) {
 			const settingsPrinter = {
 				...storePrinter.getConfig(),
 				shift: {
@@ -120,36 +115,18 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 	return (
 		<Group w='100%' justify='space-between' gap='2rem'>
 			<Stack w='65%'>
-				<ItemEditable
-					editable
-					type='text'
-					label='ip-адрес:'
-					value={host}
-					onChange={e => setValue(e, setHost)}
-				/>
-				<ItemEditable
-					editable
-					type='number'
-					label='Порт:'
-					value={port}
-					onChange={e => setValue(e, setPort)}
-				/>
-				<ItemEditable
-					editable
-					type='number'
-					label='Кол-во:'
-					value={count}
-					onChange={e => setValue(e, setCount)}
-				/>
+				<ItemEditable editable type='text' label='ip-адрес:' value={host} onChange={e => setValue(e, setHost)} />
+				<ItemEditable editable type='number' label='Порт:' value={port} onChange={e => setValue(e, setPort)} />
+				<ItemEditable editable type='number' label='Кол-во:' value={count} onChange={e => setValue(e, setCount)} />
 				<ItemOptions
 					label='Тип принтера:'
 					value={typePrinter}
-					options={['tspl', 'ezpl']}
+					options={['tspl', 'ezpl', 'zpl']}
 					onChange={setTypePrinter}
 				/>
 				<ItemOptions
 					label='dpi:'
-					value={printerResolution}
+					value={String(printerResolution)}
 					options={['200', '300']}
 					onChange={setPrinterResolution}
 				/>
@@ -170,10 +147,7 @@ export const PrinterSettings = observer(({ setPrinterSetting }) => {
 				/>
 				<ItemEditable label='Плотность печати:' value={storePrinter.DENSITY} />
 				<ItemEditable label='Скорость печати:' value={storePrinter.SPEED} />
-				<ItemEditable
-					label='Страница кодировки:'
-					value={storePrinter.CODEPAGE}
-				/>
+				<ItemEditable label='Страница кодировки:' value={storePrinter.CODEPAGE} />
 			</Stack>
 			<Stack align='stretch' justify='space-between' w='10rem' h='100%'>
 				<Stack align='stretch' justify='flex-start' gap='1rem'>

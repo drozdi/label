@@ -1,27 +1,22 @@
-import {
-	Box,
-	Button,
-	Center,
-	Group,
-	ScrollArea,
-	Stack,
-	Text,
-} from '@mantine/core'
+import { ActionIcon, Box, Button, Center, Group, Stack, Text } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
+import { TbList } from 'react-icons/tb'
+import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { storeTemplates } from '../entites/templates/store'
 import { Band } from '../features/band/band'
-import { useAppContext } from '../features/context'
-import { ListTemplate } from '../features/templates/list-template'
+import { ContainerTemplate } from '../features/templates/container-template'
 import { Preview } from '../features/templates/preview'
-import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
+import { useHistory } from '../services/history/hooks/use-history'
+import { useBreakpoint } from '../shared/hooks'
+import { Layout } from './Layout'
 
 export const Templates = observer(() => {
-	const ctx = useAppContext()
 	const { selected: templateSelected } = storeTemplates
 	const { objects = [] } = templateSelected || {}
+	const history = useHistory()
 
 	useEffect(() => {
 		if (templateSelected?.id) {
@@ -30,14 +25,13 @@ export const Templates = observer(() => {
 	}, [templateSelected?.id])
 
 	const handleSelect = () => {
+		history.clear()
 		storeTemplate.loadTemplate(storeTemplates.selected)
-		storeTemplates.clear()
-		ctx?.setLoadTemplateFlag(false)
+		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleCopy = () => {
 		storeTemplate.loadTemplate(storeTemplates.selected, true)
-		storeTemplates.clear()
-		ctx?.setLoadTemplateFlag(false)
+		storeApp?.setLoadTemplateFlag(false)
 	}
 	const handleExport = async () => {
 		storeTemplates.exportTemplate()
@@ -48,7 +42,13 @@ export const Templates = observer(() => {
 			labels: { confirm: 'Удалить шаблон', cancel: 'Нет' },
 			//onCancel: () => console.log('Cancel'),
 			onConfirm: async () => {
-				await storeTemplates.deleteTemplate(templateSelected.id)
+				const id = templateSelected.id
+				if (!(await storeTemplates.deleteTemplate(id))) {
+					return
+				}
+				if (storeTemplate.id === id) {
+					storeTemplate.id = 0
+				}
 			},
 			confirmProps: {
 				variant: 'filled',
@@ -60,71 +60,67 @@ export const Templates = observer(() => {
 		})
 	}
 
+	useEffect(() => {
+		storeApp.setLeftMenuFlag(true)
+	}, [])
+
+	const action = (
+		<>
+			<Button variant='outline' onClick={handleSelect}>
+				Выбрать
+			</Button>
+			<Button variant='outline' onClick={handleCopy}>
+				Копировать
+			</Button>
+			<Button variant='outline' onClick={handleExport}>
+				Экспортировать
+			</Button>
+			<Button variant='outline' color='red' onClick={handleDelete}>
+				Удалить
+			</Button>
+		</>
+	)
+	const isMobile = useBreakpoint('xs')
 	return (
 		<>
-			<Box>
-				<LabelTolbar template={templateSelected} />
-			</Box>
-			<Group grow justify='space-between' h='100%'>
-				<ScrollArea h='100%' flex='none' w='18rem' px='sm'>
-					<ListTemplate />
-				</ScrollArea>
-
-				<Box maw='50%' flex='auto' w='auto' h='100%'>
-					<Box h='100%'>
-						{storeTemplates.selected ? (
-							<Band template={templateSelected}>
-								<Preview objects={objects} template={templateSelected} />
-							</Band>
-						) : (
-							<Center h='100%' w='100%'>
-								<Text c='dimmed' size='xl'>
-									{storeTemplates.list.length > 0 ? (
-										<>
-											Выберите шаблон из списка слева, для предпросмотра. Ваш
-											текуший шаблон не перезапишется, пока не нажмёте кнопку
-											"Выбрать шаблон"
-										</>
-									) : (
-										<>
-											В базе данных шаблоны отсутствуют. Создайте Ваш первый
-											шаблон, сохраните и он отобразиться всписке.
-										</>
-									)}
-								</Text>
-							</Center>
-						)}
-					</Box>
-				</Box>
-				<Box
-					flex='none'
-					w='18rem'
-					maw='100%'
-					h='100%'
-					px='xs'
-					style={{
-						overflowX: 'hidden',
-						overflowY: 'auto',
-					}}
-				>
-					{(templateSelected?.id || 0) > 0 && (
-						<Stack>
-							<Button variant='outline' onClick={handleSelect}>
-								Выбрать
-							</Button>
-							<Button variant='outline' onClick={handleCopy}>
-								Копировать
-							</Button>
-							<Button variant='outline' onClick={handleExport}>
-								Экспортировать
-							</Button>
-							<Button variant='outline' color='red' onClick={handleDelete}>
-								Удалить
-							</Button>
-						</Stack>
+			{isMobile && (
+				<Group p='xs' pt='0' justify='space-between'>
+					<ActionIcon color={storeApp.leftMenuFlag ? 'lime' : ''} onClick={() => storeApp.setLeftMenuFlag(true)}>
+						<TbList />
+					</ActionIcon>
+					{action}
+				</Group>
+			)}
+			<Layout
+				style={{
+					borderTop: '1px solid var(--mantine-color-default-border)',
+				}}
+				leftSection={<ContainerTemplate />}
+				rightSection={(templateSelected?.id ?? 0) > 0 && <Stack p='xs'>{action}</Stack>}
+			>
+				<Box h='100%'>
+					{storeTemplates.selected ? (
+						<Band template={templateSelected}>
+							<Preview objects={objects} template={templateSelected} />
+						</Band>
+					) : (
+						<Center h='100%' w='100%'>
+							<Text c='dimmed' size='xl'>
+								{storeTemplates.list.length > 0 ? (
+									<>
+										Выберите шаблон из списка слева, для предпросмотра. Ваш текуший шаблон не перезапишется, пока не
+										нажмёте кнопку "Выбрать шаблон"
+									</>
+								) : (
+									<>
+										В базе данных шаблоны отсутствуют. Создайте Ваш первый шаблон, сохраните и он отобразиться всписке.
+									</>
+								)}
+							</Text>
+						</Center>
 					)}
 				</Box>
-			</Group>
+			</Layout>
 		</>
 	)
 })

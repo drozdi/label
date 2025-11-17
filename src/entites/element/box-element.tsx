@@ -1,6 +1,6 @@
 import { BaseElement } from './base-element'
 
-export class BoxElement extends BaseElement {
+export class BoxElement extends BaseElement implements IObject {
 	constructor(object: Record<string, any>) {
 		super({
 			width: 15,
@@ -10,24 +10,17 @@ export class BoxElement extends BaseElement {
 		})
 	}
 	get properties() {
-		return [
-			'enabled',
-			'name',
-			'pos_x',
-			'pos_y',
-			'width',
-			'height',
-			'rotation',
-			'radius',
-			'line_thickness',
-		]
+		return ['enabled', 'name', 'pos_x', 'pos_y', 'width', 'height', 'radius', 'line_thickness']
+	}
+	get multiProperties() {
+		return ['enabled']
 	}
 	get resize() {
 		return ['e', 's', 'se']
 	}
-	style(scale = 1, element) {
+	style(scale = 1) {
 		return {
-			...super.style(scale, element),
+			...super.style(scale),
 			outline: 0,
 			borderRadius: 0,
 		}
@@ -38,7 +31,7 @@ export class BoxElement extends BaseElement {
 				style={{
 					width: '100%',
 					height: '100%',
-					border: this.line_thickness * this.mm + 'px solid',
+					border: this.line_thickness * scale * this.mm + 'px solid',
 					borderRadius: this.radius + 'px',
 				}}
 			></div>

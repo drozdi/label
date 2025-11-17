@@ -1,19 +1,19 @@
 import { observer } from 'mobx-react-lite'
+import { storeApp } from '../../entites/app/store'
 import { storeTemplate } from '../../entites/template/store'
-import { useAppContext } from '../context'
-import classes from './Item.module.css'
+import { Item } from '../../shared/ui'
 
-export const ItemVariable = observer(({ variable }) => {
-	const { current } = storeTemplate
-	const ctx = useAppContext()
-	const handleSelect = () => {
-		storeTemplate.setData((current.data + ' ' + variable.data).trim())
-		ctx.setVariableFlag(false)
+export const ItemVariable = observer(
+	({ variable }: { variable: { name: string; data: string } }) => {
+		const handleSelect = () => {
+			storeTemplate.setData(variable.data)
+			storeApp?.setVariableFlag(false)
+		}
+		return (
+			<Item onClick={handleSelect}>
+				{variable.name}
+				<br /> {variable.data}
+			</Item>
+		)
 	}
-	return (
-		<div className={classes.root} onClick={handleSelect}>
-			{variable.name}
-			<br /> {variable.data}
-		</div>
-	)
-})
+)

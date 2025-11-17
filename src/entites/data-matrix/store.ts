@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import { requestDataMatrixList } from './api'
 
-class StoreDataMatrix {
-	list = [
+class StoreDataMatrix implements IStoreDataMatrix {
+	list: IDataMatrix[] = [
 		{
 			id: 1,
 			name: 'Молочная продукция',
@@ -181,16 +181,17 @@ class StoreDataMatrix {
 	constructor() {
 		makeAutoObservable(this)
 	}
-	_sizes = []
-	isLoaded = false
-	isLoading = false
-	error = ''
+	_sizes: IDataMatrix[] = []
+	isLoaded: boolean = false
+	isLoading: boolean = false
+	error: string = ''
+	fakeBodyDM: string = '0104603721020607215>(egukLfdK5r93zoJf'
 
 	get sizes() {
 		this.load()
 		return this._sizes
 	}
-	async load(reloading: boolean = false) {
+	async load(reloading: boolean = false): Promise<void> {
 		if (reloading) {
 			this.isLoaded = false
 			this._sizes = []
@@ -204,13 +205,14 @@ class StoreDataMatrix {
 			const res = await requestDataMatrixList()
 			this._sizes = res
 			this.isLoaded = true
-		} catch (e) {
-			this.error = e.message || e.toString() || 'Unknown error'
+		} catch (error) {
+			console.error(error)
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
 	}
-	async selectedDM(dm) {
+	async selectedDM(dm: IDataMatrix): Promise<IDataMatrix> {
 		await this.load()
 		const dm_element = {
 			dm: dm.dm,
@@ -223,6 +225,29 @@ class StoreDataMatrix {
 			}
 		}
 		return dm_element
+	}
+	_selectedDM(dm: IDataMatrix): IDataMatrix {
+		this.load()
+		const dm_element = {
+			dm: dm.dm,
+			length: dm.length,
+		}
+		for (let i = 0; i < this._sizes.length; i++) {
+			if (this._sizes[i].max_data_alpha_num >= dm_element.length) {
+				dm_element.size = this._sizes[i].row_sym_size
+				break
+			}
+		}
+		return dm_element
+	}
+	findById(dm: number): IDataMatrix | undefined {
+		return this.list.find(item => item.id === dm)
+	}
+	findByDM(dm: string): IDataMatrix | undefined {
+		return this.list.find(item => item.dm === dm)
+	}
+	findByName(dm: string): IDataMatrix | undefined {
+		return this.list.find(item => item.name === dm)
 	}
 }
 

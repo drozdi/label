@@ -2,12 +2,15 @@ import { CM, MM, MM_QR } from '../../shared/constants'
 import { round } from '../../shared/utils'
 import { storeFonts } from '../fonts/store'
 import { storeImages } from '../images/store'
+import { allProperties } from './constants'
 import { factoryElement } from './factory-element'
-export class BaseElement {
+
+export class BaseElement implements IObject {
 	/////
 	mm = MM
 	cm = CM
 	mm_qr = MM_QR
+	temp = false
 	/////
 	name: null | string = null
 	text_align = 1
@@ -32,11 +35,16 @@ export class BaseElement {
 	image_rel = null
 
 	constructor(object: Record<string, any>) {
-		for (const prop in object) {
+		for (const prop of allProperties) {
 			if (object[prop] !== undefined) {
 				this[prop] = object[prop]
 			}
-		} //*/
+		}
+		// for (const prop in object) {
+		// 	if (object[prop] !== undefined) {
+		// 		this[prop] = object[prop]
+		// 	}
+		// }
 		/*this.name = object.name
 		this.text_align = object.text_align
 		this.human_readable = object.human_readable
@@ -77,9 +85,10 @@ export class BaseElement {
 			'font_id',
 			'image_id',
 			'data',
-			'font_rel',
-			'image_rel',
 		]
+	}
+	get multiProperties() {
+		return ['enabled']
 	}
 	get fontFamily() {
 		return (storeFonts.findById(this.font_id) || this.font_rel)?.name
@@ -93,9 +102,12 @@ export class BaseElement {
 	get resize(): number[] {
 		return []
 	}
+	getCorrectProps() {
+		return this
+	}
 	getProps() {
 		return {
-			...this,
+			...this.getCorrectProps(),
 			id: parseInt(this.id) > 0 ? this.id : undefined,
 			font_id: parseInt(this.font_id) > 0 ? this.font_id : undefined,
 			image_id: parseInt(this.image_id) > 0 ? this.image_id : undefined,
@@ -104,13 +116,29 @@ export class BaseElement {
 			mm_qr: undefined,
 			font_rel: undefined,
 			image_rel: undefined,
+			temp: undefined,
 		}
 	}
 	copy() {
 		return factoryElement(this)
 	}
-
-	style(scale = 1, element) {
+	size(scale = 1) {
+		const element = document.getElementById(this.id)
+		const rectElement = element?.getBoundingClientRect()
+		const rectParent = element?.parentElement?.getBoundingClientRect()
+		return {
+			top: round((rectElement?.top - rectParent?.top) / this.mm / scale),
+			left: round((rectElement?.left - rectParent?.left) / this.mm / scale),
+			width: round(rectElement?.width / this.mm / scale),
+			height: round(rectElement?.height / this.mm / scale),
+			right: round((rectParent?.width - (rectElement?.left - rectParent?.left) - rectElement?.width) / this.mm / scale),
+			bottom: round(
+				(rectParent?.height - (rectElement?.top - rectParent?.top) - rectElement?.height) / this.mm / scale
+			),
+		}
+	}
+	style(scale = 1) {
+		const element = document.getElementById(this.id)
 		let width, height, _width, _height
 		let left = this.pos_x * this.mm * scale
 		let top = this.pos_y * this.mm * scale
@@ -128,41 +156,23 @@ export class BaseElement {
 			height = this.height * this.mm * scale
 		}
 
-		_width ??= width
-		_height ??= height
-		if (_width !== 'auto' && _height !== 'auto') {
-			if (this.rotation === 90) {
-				;[_width, _height] = [_height, _width]
-				left -= (_width - _height) / 2
-				top += (_width - _height) / 2
-			} else if (this.rotation === 270) {
-				;[_width, _height] = [_height, _width]
-				left -= (_width - _height) / 2
-				top += (_width - _height) / 2
-			}
-		}
-
 		return {
-			left,
-			top,
-			width,
-			height,
-			fontSize: this.font_size * scale + 'pt',
-			justifyContent:
-				this.text_align === 2
-					? 'center'
-					: this.text_align === 3
-					? 'flex-end'
-					: 'flex-start',
+			left: round(left),
+			top: round(top),
+			width: width === 'auto' ? 'auto' : round(width),
+			height: height === 'auto' ? 'auto' : round(height),
+			fontSize: this.font_size * scale,
+			justifyContent: this.text_align === 2 ? 'center' : this.text_align === 3 ? 'flex-end' : 'flex-start',
 			rotate: this.rotation + 'deg',
 			opacity: this.enabled ? '' : 0.2,
 			borderRadius: this.radius,
 			fontFamily: this.fontFamily,
+			transformOrigin: 'top left',
 		}
 	}
 
 	render(scale = 1, preview = false): React.ReactNode {
-		return this.data
+		return typeof this.data === 'string' ? this.data.replace(/  /g, ' \u00A0') : this.data
 	}
 
 	setName(name: string) {
@@ -225,6 +235,10 @@ export class BaseElement {
 	setEnabled(value: boolean) {
 		this.enabled = value
 	}
+	setTemp(temp: boolean) {
+		this.temp = temp
+	}
+
 	setFontId(value: string | number) {
 		if (typeof value === 'string') {
 			value = parseInt(value, 10)

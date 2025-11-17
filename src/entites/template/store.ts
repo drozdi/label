@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
-import { CM, DEF_TEMPLATE, MM, MM_QR } from '../../shared/constants'
-import { round } from '../../shared/utils'
+import { CM, DEF_TEMPLATE, KEY_SCALE_DEFAULT, MM, MM_QR } from '../../shared/constants'
+import { round, roundInt } from '../../shared/utils'
 import { factoryElement } from '../element/factory-element'
 
 class StoreTemplate {
@@ -8,16 +8,20 @@ class StoreTemplate {
 	// размеры этикетки
 	width_mm = 58
 	height_mm = 58
+	indent_mm = 3
 	radius_label = 5
 	gap_mm = 2
 	direction_x = 1
 	direction_y = 0
 	reference_x = 0
 	reference_y = 0
-	objects = []
-	scale = 1
+	applicator_ezpl: null | 0 | 1 | 2 = null
+	objects: IObject[] = []
+	scale = Number(localStorage.getItem(KEY_SCALE_DEFAULT) || 1)
 	id = 0
 	name = ''
+
+	num = 5
 
 	/////
 	mm = MM
@@ -25,26 +29,14 @@ class StoreTemplate {
 	mm_qr = MM_QR
 
 	////
-	currId: number | string = 0
-	currIndex = -1
-
 	selected: Array<number | string> = []
 
 	selectObject(id: number | string) {
 		id = String(id)
 		if (this.selected.includes(id)) {
-			this.selected = this.selected.filter(item => item !== id)
+			this.selected = this.selected.filter(item => String(item) !== id)
 		} else {
-			this.selected.push(id)
-		}
-		if (this.selected.length === 1) {
-			this.currId = this.selected[0]
-			this.currIndex = this.objects.findIndex(
-				object => String(object.id) === String(this.currId)
-			)
-		} else {
-			this.currId = 0
-			this.currIndex = -1
+			this.selected = [...this.selected, id]
 		}
 	}
 
@@ -53,22 +45,25 @@ class StoreTemplate {
 	}
 
 	get width() {
-		return this.width_mm * this.mm * this.scale
+		return roundInt(this.width_mm * this.mm * this.scale)
 	}
 	get height() {
-		return this.height_mm * this.mm * this.scale
+		return roundInt(this.height_mm * this.mm * this.scale)
+	}
+	get indent() {
+		return roundInt(this.indent_mm * this.mm * this.scale)
 	}
 	get borderRadius() {
 		return this.radius_label
 	}
 	get referenceX() {
-		return this.reference_x * this.mm * this.scale
+		return roundInt(this.reference_x * this.mm * this.scale)
 	}
 	get referenceY() {
-		return this.reference_y * this.mm * this.scale
+		return roundInt(this.reference_y * this.mm * this.scale)
 	}
 	get space() {
-		return this.gap_mm * this.mm * this.scale
+		return roundInt(this.gap_mm * this.mm * this.scale)
 	}
 	get style() {
 		return {
@@ -78,34 +73,60 @@ class StoreTemplate {
 		}
 	}
 	get current() {
-		return this.objects[this.currIndex] || undefined
+		return this.selectedObjects?.[0] || undefined
 	}
 
 	get selectedIndex() {
-		return this.selected.map(id =>
-			this.objects.findIndex(object => String(object.id) === String(id))
-		)
+		return this.selected.map(id => this.objects.findIndex(object => String(object.id) === String(id)))
 	}
-	getCurrent() {
-		return this.objects[this.currIndex] || undefined
+	get selectedObjects() {
+		return this.selected.map(id => this.findById(id))
 	}
+	get inverseIds() {
+		return [...new Set(this.objects.map(o => String(o.id))).difference(new Set(this.selected))]
+	}
+	get inverseIndex() {
+		return this.inverseIds.map(id => this.objects.findIndex(object => String(object.id) === String(id)))
+	}
+	get inverseObjects() {
+		return this.inverseIds.map(id => this.findById(id))
+	}
+
+	get divisionsX() {
+		const step = (this.width - this.indent * 2) / (this.num + 1)
+		return new Array(this.num + 2).fill(0).map((item, index) => {
+			return this.indent + step * index
+		})
+	}
+	get divisionsY() {
+		const step = (this.height - this.indent * 2) / (this.num + 1)
+		return new Array(this.num + 2).fill(0).map((item, index) => {
+			return this.indent + step * index
+		})
+	}
+
+	setNum(num: number) {
+		this.num = num
+	}
+
 	setActiveObject(id: number | string) {
-		this.currId = String(id)
-		this.currIndex = this.objects.findIndex(
-			object => String(object.id) === String(this.currId)
-		)
-		if (this.currIndex === -1) {
-			this.currId = 0
-		}
-		if (this.currId) {
-			this.selected = [this.currId]
-		} else {
+		if (this.objects.findIndex(object => String(object.id) === String(id)) === -1) {
 			this.selected = []
+		} else {
+			this.selected = [String(id)]
 		}
 	}
 	findById(id: number | string) {
 		return this.objects.find(object => {
 			return String(object.id) === String(id)
+		})
+	}
+	setById(id: number | string, object: Record<string, any>) {
+		this.objects = this.objects.map(o => {
+			if (String(o.id) === String(id)) {
+				return factoryElement(object)
+			}
+			return o
 		})
 	}
 	deleteObject(id: number | string) {
@@ -115,19 +136,19 @@ class StoreTemplate {
 		if (this.selected.includes(id)) {
 			this.selected = this.selected.filter(item => item !== id)
 		}
-		this.setActiveObject(this.currId)
-	}
-	deleteCurrentObject() {
-		this.deleteObject(this.currId)
 	}
 	loadObjects(objects: any[] = []) {
+		while (this.objects.length) {
+			this.objects.pop()
+		}
+		this.selected = []
 		this.objects = []
 		objects.forEach(object => {
-			this.objects.push(factoryElement(object) as never)
+			this.objects.push(factoryElement(object))
 		})
 	}
 	addObject(object: Record<string, any>) {
-		this.objects.push(factoryElement(object) as never)
+		this.objects.push(factoryElement(object))
 	}
 	private _loadTemplate(template) {
 		this.width_mm = template.width_mm
@@ -138,6 +159,8 @@ class StoreTemplate {
 		this.direction_y = template.direction_y
 		this.reference_x = template.reference_x
 		this.reference_y = template.reference_y
+		this.applicator_ezpl = template.applicator_ezpl
+		this.dpi = template.dpi ?? this.dpi
 		this.loadObjects(template.objects || [])
 	}
 	clear(all: boolean = true) {
@@ -167,7 +190,8 @@ class StoreTemplate {
 			value = parseInt(value, 10)
 		}
 		this.scale = value
-		this.objects = this.objects.map(object => object.copy())
+		localStorage.setItem(KEY_SCALE_DEFAULT, String(value))
+		this.loadObjects(this.objects.map(object => object.copy()))
 	}
 	changeDpi(dpi: null | string) {
 		let newDpi: null | string | number = dpi || '12'
@@ -187,6 +211,12 @@ class StoreTemplate {
 			height = parseInt(height, 10)
 		}
 		this.height_mm = height
+	}
+	changeIndent(indent: number | string) {
+		if (typeof indent === 'string') {
+			indent = parseInt(indent, 10)
+		}
+		this.indent_mm = indent
 	}
 	changeRadius(radius: number | string) {
 		if (typeof radius === 'string') {
@@ -224,83 +254,144 @@ class StoreTemplate {
 		}
 		this.direction_y = value
 	}
-	toggleEnabled(id: number) {
-		const index = this.objects.findIndex(object => object.id === id)
-		if (index > -1) {
-			this.objects[index].enabled = !this.objects[index].enabled
-			this.objects[index] = this.objects[index].copy()
-		}
+	changeApplicatorEzpl(vaule: null | 0 | 1 | 2) {
+		this.applicator_ezpl = vaule ? Number(vaule) : null
 	}
 
-	setCurrent(object) {
-		if (!object || !this.objects[this.currIndex]) {
-			return
-		}
-		this.objects[this.currIndex] = object.copy()
-	}
 	setName(name: string) {
-		this.current?.setName(name)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setName(name)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setWidth(width: string | number) {
-		this.current?.setWidth(width)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setWidth(width)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setHeight(height: string | number) {
-		this.current?.setHeight(height)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setHeight(height)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setPosX(pos_x: string | number) {
-		this.current?.setPosX(pos_x)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setPosX(pos_x)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setPosY(pos_y: string | number) {
-		this.current?.setPosY(pos_y)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setPosY(pos_y)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setRotation(rotation: string | number) {
-		this.current?.setRotation(rotation)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setRotation(rotation)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setTextAlign(value: string | number) {
-		this.current?.setTextAlign(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setTextAlign(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setFontSize(value: string | number) {
-		this.current?.setFontSize(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setFontSize(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setLineThickness(value: string | number) {
-		this.current?.setLineThickness(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setLineThickness(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setRadius(value: string | number) {
-		this.current?.setRadius(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setRadius(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setEnabled(value: boolean) {
-		this.current?.setEnabled(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setEnabled(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
+	}
+	setTemp(value: boolean) {
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setTemp(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setData(value: string) {
-		this.current?.setData(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setData(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setHumanReadable(value: string | number) {
-		this.current?.setHumanReadable(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setHumanReadable(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setFontId(value: string | number) {
-		this.current?.setFontId(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setFontId(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 	setImageId(value: string | number) {
-		this.current?.setImageId(value)
-		this.setCurrent(this.current)
+		this.selectedIndex.forEach(index => {
+			if (index > -1) {
+				this.objects[index].setImageId(value)
+				this.objects[index] = this.objects[index].copy()
+			}
+		})
 	}
 
 	isOne() {
 		return this.selected.length === 1
+	}
+	isChoosed() {
+		return this.selected.length > 0
 	}
 	isEmpty() {
 		return this.selected.length === 0
@@ -313,6 +404,27 @@ class StoreTemplate {
 			this.deleteObject(id)
 		})
 	}
+	toggleEnabled(id: number) {
+		const index = this.objects.findIndex(object => object.id === id)
+		if (index > -1) {
+			this.objects[index].enabled = !this.objects[index].enabled
+			this.objects[index] = this.objects[index].copy()
+		}
+	}
+	selectedById(id: number, enabled: boolean) {
+		if (enabled) {
+			if (!this.isSelected(id)) {
+				this.selected.push(String(id))
+				this.selected = [...this.selected]
+			}
+		} else {
+			if (this.isSelected(id)) {
+				this.selected.splice(this.selected.indexOf(String(id)), 1)
+				this.selected = [...this.selected]
+			}
+		}
+	}
+
 	moveX(value: number) {
 		if (value === 0) {
 			return

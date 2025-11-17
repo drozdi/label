@@ -1,0 +1,46 @@
+interface IAppContext {
+	fontFamilyFlag?: boolean
+	variableFlag?: boolean
+	imageFlag?: boolean
+	loadTemplateFlag?: boolean
+	settingsFlag?: boolean
+	dataMatrixFlag?: boolean
+	elementFlag?: boolean
+	importFlag?: boolean
+	gridFlag?: boolean
+	previewFlag?: boolean
+	jsonCodeFlag?: boolean
+	errorName?: boolean
+	showAppLoader?: boolean
+	offlineMode?: boolean
+	genCodeFlag?: boolean
+	headerMobileFlag?: boolean
+	leftMenuFlag?: boolean
+	rightMenuFlag?: boolean
+
+	setFontFamilyFlag?: (flag: boolean) => void
+	setVariableFlag?: (flag: boolean) => void
+	setImageFlag?: (flag: boolean) => void
+	setLoadTemplateFlag?: (flag: boolean) => void
+	setSettingsFlag?: (flag: boolean) => void
+	setDataMatrixFlag?: (flag: boolean) => void
+	setImportFlag?: (flag: boolean) => void
+	setGridFlag?: (flag: boolean) => void
+	setPreviewFlag?: (flag: boolean) => void
+	setJsonCodeFlag?: (flag: boolean) => void
+	setErrorName?: (flag: boolean) => void
+	setShowAppLoader?: (flag: boolean) => void
+	setElementFlag?: (flag: boolean) => void
+	setDefaultSettings?: (flag: boolean) => void
+	setGenCodeFlag?: (flag: boolean) => void
+	setHeaderMobileFlag?: (flag: boolean) => void
+	setLeftMenuFlag?: (flag: boolean) => void
+	setRightMenuFlag?: (flag: boolean) => void
+
+	imageBg?: string
+	setImageBg?: (bg: string) => void
+	serverError?: boolean
+	setServerError?: (flag: boolean) => void
+	setOfflineMode?: (flag: boolean) => void
+	silent: (fn: Function) => void
+}

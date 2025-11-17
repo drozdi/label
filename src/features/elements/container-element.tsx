@@ -1,14 +1,14 @@
-import { ScrollArea, Stack, Title } from '@mantine/core'
+import { ScrollArea } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
+import { useBreakpoint } from '../../shared/hooks'
+import { Container } from '../../shared/ui'
 import { ListElement } from './list-element'
 
-export const ContainerElement = observer(() => {
+export const ContainerElement = observer(props => {
+	const isMobile = useBreakpoint('xs')
 	return (
-		<Stack h='100%'>
-			<Title order={5}>Добавить элемент</Title>
-			<ScrollArea h='100%'>
-				<ListElement />
-			</ScrollArea>
-		</Stack>
+		<Container as={ScrollArea} p='xs' h='100%' label={isMobile ? '' : 'Добавить элемент'} {...props}>
+			<ListElement />
+		</Container>
 	)
 })

@@ -4,7 +4,7 @@ import { BaseElement } from './base-element'
 export class BlockElement extends BaseElement {
 	constructor(object: Record<string, any>) {
 		super({
-			font_id: storeFonts.defaultFont?.id,
+			font_id: storeFonts.default?.id,
 			width: 50,
 			height: 20,
 			font_size: 12,
@@ -26,6 +26,9 @@ export class BlockElement extends BaseElement {
 			'text_align',
 			'data',
 		]
+	}
+	get multiProperties() {
+		return ['enabled', 'rotation', 'font_id', 'font_size', 'text_align']
 	}
 	get resize() {
 		return ['e', 's', 'se']

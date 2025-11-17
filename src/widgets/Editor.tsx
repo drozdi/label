@@ -1,103 +1,138 @@
-import { Box, Group, Tabs, Text } from '@mantine/core'
+import { ActionIcon, Divider, Group, Popover, Stack, Tabs, Text } from '@mantine/core'
+
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
+import { TbCirclePlus, TbWallpaper } from 'react-icons/tb'
+import { storeApp } from '../entites/app/store'
 import { storeTemplate } from '../entites/template/store'
 import { Band } from '../features/band/band'
-import { useAppContext } from '../features/context'
-import { ContainerDataMatrix } from '../features/data-matrix/container-data-matrix'
+import { DrawerDataMatrix } from '../features/data-matrix/drawer-data-matrix'
 import { ContainerElement } from '../features/elements/container-element'
-import { ContainerFontFamily } from '../features/fonts/container-font-family'
+import { DrawerFontFamily } from '../features/fonts/drawer-font-family'
 import { ListHistory } from '../features/history/list-history'
-import { ContainerImage } from '../features/images/container-image'
+import { DrawerImage } from '../features/images/drawer-image'
 import { ListLayers } from '../features/layers/list-layers'
 import { ListProperties } from '../features/properties/list-properties'
 import { Template } from '../features/template/template'
-import { LabelTolbar } from '../features/toolbars/template/label-tolbar'
-import { ToolbarTools } from '../features/toolbars/tools/toolbar-tools'
-import { ContainerVariable } from '../features/variables/container-variable'
+import { ToolbarGuideLine } from '../features/toolbars/grid-line/toolbar-grid-line'
+import { ToolbarHistory } from '../features/toolbars/history/toolbar-history'
+import { ToolbarLabel } from '../features/toolbars/label/toolbar-label'
+import { ToolbarRotate } from '../features/toolbars/rotate/toolbar-rotate'
+import { ToolbarTemplate } from '../features/toolbars/template/toolbar-template'
+import { DrawerVariable } from '../features/variables/drawer-variable'
+
+import { useDisclosure } from '@mantine/hooks'
+import { useBreakpoint } from '../shared/hooks'
+import { Layout } from './Layout'
 
 export const Editor = observer(() => {
-	const { fontFamilyFlag, variableFlag, imageFlag, dataMatrixFlag } =
-		useAppContext()
+	const isMobile = useBreakpoint('xs')
+	useEffect(() => {
+		const mouseDown = (event: MouseEvent) => {
+			if (event.altKey && event.ctrlKey && event.button === 2) {
+				storeApp.setJsonCodeFlag(true)
+				event.preventDefault()
+				event.stopPropagation()
+			}
+		}
+		document.addEventListener('mousedown', mouseDown)
+		return () => {
+			try {
+				document.removeEventListener('mousedown', mouseDown)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+	}, [])
+	const [opened, { toggle }] = useDisclosure(false)
+
+	const popever = (
+		<>
+			<ToolbarLabel />
+			<ToolbarGuideLine as={isMobile ? Stack : Group} />
+		</>
+	)
+	useEffect(() => {
+		storeApp.setLeftMenuFlag(false)
+		storeApp.setRightMenuFlag(false)
+	}, [isMobile])
+
 	return (
 		<>
-			<Box>
-				<LabelTolbar />
-			</Box>
-			<Group grow h='100%' gap={0}>
-				<Box flex='none' w='18rem' maw='100%' h='100%' px='xs'>
-					<Group h='100%' gap={0}>
-						<Box flex='auto' h='100%'>
-							{dataMatrixFlag ? <ContainerDataMatrix /> : <ContainerElement />}
-						</Box>
-						<Box flex='none' w='3rem' maw='100%'>
-							<ToolbarTools />
-						</Box>
-					</Group>
-				</Box>
-				<Box flex='auto' w='auto' maw='100%' h='100%'>
-					<Box h='100%'>
-						<Band>
-							<Template />
-						</Band>
-					</Box>
-				</Box>
-				<Box
-					flex='none'
-					w='18rem'
-					maw='100%'
-					h='100%'
-					px='xs'
-					style={{
-						overflowX: 'hidden',
-						overflowY: 'auto',
-					}}
-				>
-					{fontFamilyFlag ? (
-						<ContainerFontFamily />
-					) : variableFlag ? (
-						<ContainerVariable />
-					) : imageFlag ? (
-						<ContainerImage />
-					) : (
-						<Tabs defaultValue='properties' h='100%'>
-							<Tabs.List>
-								<Tabs.Tab value='properties'>Свойства</Tabs.Tab>
-								<Tabs.Tab value='layers'>Слои</Tabs.Tab>
-								<Tabs.Tab value='histories'>История</Tabs.Tab>
-							</Tabs.List>
-							<Tabs.Panel keepMounted value='properties' p='0.5rem'>
-								{storeTemplate.objects.length === 0 ? (
-									<Text c='dimmed' size='xl'>
-										Нет ни одного объекта
-									</Text>
-								) : storeTemplate.isOne() ? (
-									<ListProperties />
-								) : storeTemplate.selected.length > 1 ? (
-									<Text c='dimmed' size='xl'>
-										Выбрано несколько объектов
-									</Text>
-								) : (
-									<Text c='dimmed' size='xl'>
-										Не один объект не выбран
-									</Text>
-								)}
-							</Tabs.Panel>
-							<Tabs.Panel keepMounted value='layers' p='0.5rem'>
-								{storeTemplate.objects.length === 0 ? (
-									<Text c='dimmed' size='xl'>
-										Нет ни одного объекта
-									</Text>
-								) : (
-									<ListLayers />
-								)}
-							</Tabs.Panel>
-							<Tabs.Panel keepMounted value='histories' p='0.5rem'>
-								<ListHistory />
-							</Tabs.Panel>
-						</Tabs>
+			<Stack p='xs' pt='0'>
+				<Group justify='space-between'>
+					{isMobile && (
+						<ActionIcon m='xs' onClick={() => storeApp.setLeftMenuFlag(true)} title='Добавить элемент'>
+							<TbCirclePlus />
+						</ActionIcon>
 					)}
-				</Box>
-			</Group>
+					<Group gap='0.125rem'>
+						<ToolbarRotate />
+						<Divider orientation='vertical' />
+						<ToolbarTemplate />
+					</Group>
+					{isMobile ? (
+						<Popover opened={opened} onChange={toggle}>
+							<Popover.Target>
+								<ActionIcon color={opened ? 'lime' : ''} onClick={toggle}>
+									<TbWallpaper />
+								</ActionIcon>
+							</Popover.Target>
+							<Popover.Dropdown w='95%'>
+								<Group justify='space-between'>{popever}</Group>
+							</Popover.Dropdown>
+						</Popover>
+					) : (
+						popever
+					)}
+					<ToolbarHistory />
+				</Group>
+			</Stack>
+			<Layout
+				leftSection={<ContainerElement />}
+				rightSection={
+					<Tabs defaultValue='properties' h='100%'>
+						<Tabs.List>
+							<Tabs.Tab value='properties'>Свойства</Tabs.Tab>
+							<Tabs.Tab value='layers'>Слои</Tabs.Tab>
+							{storeApp.historyCount > 0 && <Tabs.Tab value='histories'>История</Tabs.Tab>}
+						</Tabs.List>
+						<Tabs.Panel value='properties'>
+							{storeTemplate.objects.length === 0 ? (
+								<Text c='dimmed' size='xl'>
+									Нет ни одного объекта
+								</Text>
+							) : storeTemplate.isChoosed() ? (
+								<ListProperties />
+							) : (
+								<Text c='dimmed' size='xl'>
+									Не один объект не выбран
+								</Text>
+							)}
+						</Tabs.Panel>
+						<Tabs.Panel value='layers'>
+							{storeTemplate.objects.length === 0 ? (
+								<Text c='dimmed' size='xl'>
+									Нет ни одного объекта
+								</Text>
+							) : (
+								<ListLayers />
+							)}
+						</Tabs.Panel>
+						<Tabs.Panel value='histories'>
+							<ListHistory />
+						</Tabs.Panel>
+					</Tabs>
+				}
+			>
+				<Band>
+					<Template />
+				</Band>
+			</Layout>
+			<DrawerDataMatrix />
+			<DrawerFontFamily />
+			<DrawerVariable />
+			<DrawerImage />
 		</>
 	)
 })

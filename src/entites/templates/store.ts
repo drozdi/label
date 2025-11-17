@@ -1,5 +1,6 @@
 import * as FileSaver from 'file-saver'
 import { makeAutoObservable } from 'mobx'
+import { Preview } from '../preview/preview'
 import {
 	requestObjectDelete,
 	requestObjectNew,
@@ -12,8 +13,7 @@ import {
 	requestTemplateSave,
 	requestTemplateUpdate,
 } from './api'
-import { Preview } from './preview'
-class StoreTemplates {
+class StoreTemplates implements IStoreTemplates {
 	isLoaded = false
 	isLoading = false
 	_list = []
@@ -26,10 +26,10 @@ class StoreTemplates {
 	constructor() {
 		makeAutoObservable(this)
 	}
-	async load(reloading: boolean = false) {
+	async load(reloading = false) {
 		if (reloading) {
 			this.isLoaded = false
-			this._list = []
+			//this._list = []
 		}
 		if (this.isLoaded) {
 			return
@@ -58,7 +58,6 @@ class StoreTemplates {
 		try {
 			const res = await requestTemplateId(id)
 			this.selected = new Preview(res)
-			console.log(this.selected)
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'
@@ -73,6 +72,7 @@ class StoreTemplates {
 		try {
 			await requestTemplateDelete(id)
 			this.load(true)
+			return true
 		} catch (e) {
 			console.error(e)
 			this.error = e.message || e.toString() || 'Unknown error'
@@ -80,6 +80,7 @@ class StoreTemplates {
 		} finally {
 			this.isLoading = false
 		}
+		return false
 	}
 	async newTemplate(template) {
 		this.isLoading = true
@@ -89,9 +90,9 @@ class StoreTemplates {
 			this.selectTemplate(res.data.id)
 			await this.load(true)
 			return res
-		} catch (e) {
-			console.error(e)
-			this.error = e.message || e.toString() || 'Unknown error'
+		} catch (error) {
+			console.error(error)
+			this.error = error.response?.data?.data || error.message || error.toString() || 'Unknown error'
 			throw this.error
 		} finally {
 			this.isLoading = false
@@ -101,16 +102,15 @@ class StoreTemplates {
 		this.isLoading = true
 		this.error = ''
 		try {
-			const deleteObjects = this.selected.objects.map(item => item.id)
+			const orig = await this.findById(template.id)
+
+			const deleteObjects = orig?.objects?.map(item => item.id) ?? []
 			const newObjects = []
 			const updateObjects = []
+
 			template.objects.forEach(item => {
 				let index = -1
-				if (
-					(index = deleteObjects.findIndex(
-						id => String(id) === String(item.id)
-					)) > -1
-				) {
+				if ((index = deleteObjects.findIndex(id => String(id) === String(item.id))) > -1) {
 					deleteObjects.splice(index, 1)
 				}
 				if (parseInt(item.id) > 0) {
@@ -144,9 +144,9 @@ class StoreTemplates {
 			await this.load(true)
 			await this.selectTemplate(template.id)
 			return res
-		} catch (e) {
-			console.error(e)
-			this.error = e.message || e.toString() || 'Unknown error'
+		} catch (error) {
+			console.error(error)
+			this.error = error.response?.data?.data || error.message || error.toString() || 'Unknown error'
 			throw this.error
 		} finally {
 			this.isLoading = false
@@ -180,6 +180,9 @@ class StoreTemplates {
 		} finally {
 			this.isLoading = false
 		}
+	}
+	async findById(id: number | string) {
+		return await requestTemplateId(id)
 	}
 }
 
