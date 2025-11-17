@@ -9,8 +9,8 @@ const a = process.env.VITE_DEV_SERVER_URL, E = o.join(process.env.APP_ROOT, "dis
 process.env.VITE_PUBLIC = a ? o.join(process.env.APP_ROOT, "public") : d;
 let e, s, i = null;
 n.commandLine.appendSwitch("enable-accelerated-2d-canvas");
-const T = n.requestSingleInstanceLock();
-if (!T)
+const g = n.requestSingleInstanceLock();
+if (!g)
   n.quit();
 else {
   let c = function() {
@@ -23,8 +23,8 @@ else {
       e?.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
     }), a ? e.loadURL(a) : e.loadFile(o.join(d, "index.html"));
   }, p = function() {
-    const t = o.join(r, "public/icon.png");
-    i = new u(t);
+    const t = o.join(r, "icon.png");
+    console.log(123456789, t), i = new u(t);
     const f = w.buildFromTemplate([
       {
         label: "Открыть приложение",

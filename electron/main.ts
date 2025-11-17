@@ -59,7 +59,8 @@ if (!gotTheLock) {
 
 	function createTray() {
 		// Указываем путь к иконке
-		const iconPath = path.join(__dirname, 'public/icon.png')
+		const iconPath = path.join(__dirname, 'icon.png')
+		console.log(123456789, iconPath)
 		// Создаем трей
 		tray = new Tray(iconPath)
 
